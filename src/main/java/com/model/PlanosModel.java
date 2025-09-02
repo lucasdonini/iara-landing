@@ -1,11 +1,11 @@
 package com.model;
 
-public class PlanosModel extends AbstractModel{
-//    attributes
+public class PlanosModel extends AbstractModel {
+//    atributos
     private double valor;
     private String descricao;
 
-//    constructor
+//    construtor
     public PlanosModel(int id, String nome, double valor, String descricao){
         super(id, nome);
         this.valor = valor;

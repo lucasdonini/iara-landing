@@ -4,7 +4,7 @@ import com.model.AbstractModel;
 
 public class ColunaModel extends AbstractModel {
 
-//    constructor
+//    construtor
     public ColunaModel(int id, String nome){
         super(id, nome);
     }

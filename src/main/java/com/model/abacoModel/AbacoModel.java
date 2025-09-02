@@ -5,7 +5,7 @@ import com.model.AbstractModel;
 import java.time.LocalDate;
 
 public class AbacoModel extends AbstractModel {
-//    attributes
+//    atributos
     private String descricao;
     private boolean ativo;
     private LocalDate dataCriacao;

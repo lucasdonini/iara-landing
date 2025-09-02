@@ -1,11 +1,11 @@
 package com.model;
 
 public abstract class AbstractModel {
-//    attributes
-    private int id;
-    private String nome;
+//    atributos
+    private final int id;
+    private final String nome;
 
-    //    constructor
+    //    construtor
     public AbstractModel(int id, String nome){
         this.id = id;
         this.nome = nome;
