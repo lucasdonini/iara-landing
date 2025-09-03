@@ -3,9 +3,9 @@ package com.model;
 import java.time.LocalDate;
 
 // tabela: usuario
-public class Usuario extends AbstractModel {
+public class Usuario {
   // Atributos
-  private String login;
+  private String nome;
   private String senha;
   private NivelAcesso nivelAcesso;
   private LocalDate dtCriacao;
@@ -13,14 +13,13 @@ public class Usuario extends AbstractModel {
   private int fkFabrica;
 
   // Construtores
-  public Usuario(int id, String nome, String login, String senha, NivelAcesso nivelAcesso, LocalDate dtCriacao,
+  public Usuario(String nome, String senha, NivelAcesso nivelAcesso, LocalDate dtCriacao,
       boolean status, int fkFabrica) {
-    super(id, nome);
 
+    this.nome = nome;
+    this.senha = senha;
     this.nivelAcesso = nivelAcesso;
     this.dtCriacao = dtCriacao;
-    this.login = login;
-    this.senha = senha;
     this.status = status;
     this.fkFabrica = fkFabrica;
   }
@@ -30,8 +29,8 @@ public class Usuario extends AbstractModel {
   }
 
   // Getters
-  public String getLogin() {
-    return login;
+  public String getNome() {
+    return nome;
   }
 
   public String getSenha() {
@@ -55,8 +54,8 @@ public class Usuario extends AbstractModel {
   }
 
   // Setters
-  public void setLogin(String login) {
-    this.login = login;
+  public void setNome(String nome) {
+    this.nome = nome;
   }
 
   public void setSenha(String password) {
