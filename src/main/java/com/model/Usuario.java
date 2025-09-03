@@ -6,6 +6,7 @@ import java.time.LocalDate;
 public class Usuario {
   // Atributos
   private String nome;
+  private String email;
   private String senha;
   private NivelAcesso nivelAcesso;
   private LocalDate dtCriacao;
@@ -13,10 +14,11 @@ public class Usuario {
   private int fkFabrica;
 
   // Construtores
-  public Usuario(String nome, String senha, NivelAcesso nivelAcesso, LocalDate dtCriacao,
+  public Usuario(String nome, String email, String senha, NivelAcesso nivelAcesso, LocalDate dtCriacao,
       boolean status, int fkFabrica) {
 
     this.nome = nome;
+    this.email = email;
     this.senha = senha;
     this.nivelAcesso = nivelAcesso;
     this.dtCriacao = dtCriacao;
@@ -31,6 +33,10 @@ public class Usuario {
   // Getters
   public String getNome() {
     return nome;
+  }
+
+  public String getEmail() {
+    return email;
   }
 
   public String getSenha() {
@@ -56,6 +62,10 @@ public class Usuario {
   // Setters
   public void setNome(String nome) {
     this.nome = nome;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 
   public void setSenha(String password) {
