@@ -17,6 +17,7 @@ public abstract class AbstractModel {
     }
 
     //    toString
+    @Override
     public String toString(){
         return String.format("ID: %d\nNome: %s\n", this.id, this.nome);
     }
