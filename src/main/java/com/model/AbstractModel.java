@@ -11,6 +11,11 @@ public abstract class AbstractModel {
         this.nome = nome;
     }
 
+    public AbstractModel() {
+        id = -1;
+        nome = null;
+    }
+
     //    toString
     public String toString(){
         return String.format("ID: %d\nNome: %s\n", this.id, this.nome);
