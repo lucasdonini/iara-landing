@@ -1,6 +1,6 @@
 package com.model;
 
-// tabela: super_adm
+// tabela: Super_Adm
 public class SuperAdm {
   // Atributos
   private int id;

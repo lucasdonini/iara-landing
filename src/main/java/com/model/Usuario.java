@@ -2,7 +2,7 @@ package com.model;
 
 import java.time.LocalDate;
 
-// tabela: usuario
+// tabela: Usuario
 public class Usuario {
   // Atributos
   private String nome;
