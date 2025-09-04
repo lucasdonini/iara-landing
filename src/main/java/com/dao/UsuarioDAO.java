@@ -13,7 +13,6 @@ import com.dto.CadastroUsuarioDTO;
 import com.dto.UsuarioDTO;
 import com.model.NivelAcesso;
 
-// TODO: alterar a assinatura de listarUsuarios() para listar() apenas
 // TODO: fazer o hash da senha com o método do Chris antes de guardar no banco
 
 public class UsuarioDAO extends DAO {
@@ -50,18 +49,24 @@ public class UsuarioDAO extends DAO {
       pstmt.setBoolean(5, status);
       pstmt.setInt(6, fkFabrica);
 
-      // Executa e commita o update
+      // Executa o update
       pstmt.executeUpdate();
-      conn.commit();
 
       // Recupera as chaves autogeradas
       try (ResultSet rs = pstmt.getGeneratedKeys()) {
-        id = rs.getInt("id");
+        if (rs.next()) {
+          id = rs.getInt("id");
 
-        // Conversão da data
-        Date temp = rs.getDate("data_criacao");
-        dtCriacao = temp != null ? temp.toLocalDate() : null;
+          // Conversão da data
+          Date temp = rs.getDate("data_criacao");
+          dtCriacao = temp != null ? temp.toLocalDate() : null;
+        } else {
+          throw new SQLException("Failed to get autognerated keys");
+        }
       }
+
+      // Commita as alterações no banco
+      conn.commit();
 
       // Inicializa e retorna o DTO de retorno
       return new UsuarioDTO(id, nome, email, NivelAcesso.ADMIN, dtCriacao, status, fkFabrica);
