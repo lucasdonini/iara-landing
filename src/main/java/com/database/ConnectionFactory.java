@@ -1,12 +1,13 @@
 package com.database;
 
-import io.github.cdimascio.dotenv.Dotenv;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
+// Classe concreta para abrir e fechar conexões com o bano através de JDBC
 public class ConnectionFactory {
     private static final Dotenv dotenv = Dotenv.load();
 
