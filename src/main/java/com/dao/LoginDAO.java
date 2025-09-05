@@ -12,7 +12,7 @@ public class LoginDAO extends DAO {
     super();
   }
 
-  public SuperAdmDTO login(LoginDTO credenciais) throws SQLException, ClassNotFoundException {
+  public SuperAdmDTO login(LoginDTO credenciais) throws SQLException {
 
     // Prepara o comando
     String sql = "SELECT * FROM super_adm WHERE email = ? AND senha = ?";
