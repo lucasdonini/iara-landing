@@ -12,6 +12,7 @@ public abstract class DAO implements AutoCloseable {
 
     protected DAO() throws SQLException {
         conn = connF.getConnection();
+        conn.setAutoCommit(false);
     }
 
     @Override

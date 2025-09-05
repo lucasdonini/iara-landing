@@ -16,7 +16,7 @@ public enum NivelAcesso {
   }
 
   public static NivelAcesso fromInteger(int i) {
-    return switch(i) {
+    return switch (i) {
       case 0 -> USUARIO;
       case 1 -> ADMIN;
       default -> null;

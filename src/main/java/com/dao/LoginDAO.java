@@ -1,10 +1,11 @@
 package com.dao;
 
-import java.sql.SQLException;
-import com.dto.SuperAdmDTO;
-import com.dto.LoginDTO;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.dto.LoginDTO;
+import com.dto.SuperAdmDTO;
 
 public class LoginDAO extends DAO {
   public LoginDAO() throws SQLException {

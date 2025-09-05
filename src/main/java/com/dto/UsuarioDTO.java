@@ -4,9 +4,7 @@ import java.time.LocalDate;
 
 import com.model.NivelAcesso;
 
-// tabela: usuario
 public class UsuarioDTO {
-  // Atributos
   private int id;
   private String nome;
   private String email;
@@ -15,7 +13,6 @@ public class UsuarioDTO {
   private boolean status;
   private int fkFabrica;
 
-  // Construtores
   public UsuarioDTO(int id, String nome, String email, NivelAcesso nivelAcesso, LocalDate dtCriacao,
       boolean status, int fkFabrica) {
 

@@ -1,23 +1,17 @@
 package com.dto;
 
-public class SuperAdmDTO {
-  private int id;
+public class CadastroSuperAdmDTO {
   private String nome;
   private String cargo;
   private String email;
 
-  public SuperAdmDTO(int id, String nome, String cargo, String email) {
-    this.id = id;
+  public CadastroSuperAdmDTO(String nome, String cargo, String email) {
     this.nome = nome;
     this.cargo = cargo;
     this.email = email;
   }
 
   // Getters
-  public int getId() {
-    return id;
-  }
-
   public String getNome() {
     return nome;
   }
@@ -31,10 +25,6 @@ public class SuperAdmDTO {
   }
 
   // Setters
-  public void setId(int id) {
-    this.id = id;
-  }
-
   public void setNome(String nome) {
     this.nome = nome;
   }

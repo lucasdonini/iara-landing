@@ -4,17 +4,15 @@ import java.time.LocalDate;
 
 // tabela: usuario
 public class Usuario {
-  // Atributos
-  private int id; //coluna: id
-  private String nome; // coluna: nome
-  private String email; // coluna: email
-  private String senha; // coluna: senha
-  private NivelAcesso nivelAcesso; //coluna: nivel_acesso
-  private LocalDate dtCriacao; // coluna: dt_criacao
-  private boolean status; //coluna: status
+  private int id;
+  private String nome;
+  private String email;
+  private String senha;
+  private NivelAcesso nivelAcesso;
+  private LocalDate dtCriacao;
+  private boolean status;
   private int fkFabrica;
 
-  // Construtores
   public Usuario(int id, String nome, String email, String senha, NivelAcesso nivelAcesso, LocalDate dtCriacao,
       boolean status, int fkFabrica) {
 
@@ -26,10 +24,6 @@ public class Usuario {
     this.dtCriacao = dtCriacao;
     this.status = status;
     this.fkFabrica = fkFabrica;
-  }
-
-  public Usuario() {
-    super();
   }
 
   // Getters

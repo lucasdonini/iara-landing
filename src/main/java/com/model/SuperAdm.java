@@ -2,14 +2,12 @@ package com.model;
 
 // tabela: super_adm
 public class SuperAdm {
-  // Atributos
   private int id;
   private String nome;
   private String cargo;
   private String email;
   private String senha;
 
-  // Construtores
   public SuperAdm(int id, String nome, String cargo, String email, String senha) {
     this.id = id;
     this.nome = nome;

@@ -9,6 +9,7 @@ public class LoginDTO {
     this.senha = senha;
   }
 
+  // Getters
   public String getEmail() {
     return email;
   }
@@ -17,6 +18,7 @@ public class LoginDTO {
     return senha;
   }
 
+  // Setters
   public void setEmail(String email) {
     this.email = email;
   }
