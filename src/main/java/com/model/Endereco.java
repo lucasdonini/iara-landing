@@ -5,12 +5,12 @@ public class Endereco {
 //    Atributos
     private Integer id; // coluna: id
     private String cep; // coluna: cep
-    private int numero; // coluna: numero
+    private Integer numero; // coluna: numero
     private String rua; // coluna: rua
     private String complemento; //coluna: complemento
 
 //    Construtor
-    public Endereco(Integer id, String cep, int numero, String rua, String complemento){
+    public Endereco(Integer id, String cep, Integer numero, String rua, String complemento){
         this.id = id;
         this.cep = cep;
         this.numero = numero;
@@ -33,7 +33,7 @@ public class Endereco {
         return cep;
     }
 
-    public int getNumero() {
+    public Integer getNumero() {
         return numero;
     }
 
