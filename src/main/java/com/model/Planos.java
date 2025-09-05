@@ -2,13 +2,13 @@ package com.model;
 
 public class Planos {
     // atributos
-    private int id;
+    private Integer id;
     private String nome;
-    private double valor;
+    private Double valor;
     private String descricao;
 
     // construtor
-    public Planos(int id, String nome, double valor, String descricao) {
+    public Planos(Integer id, String nome, Double valor, String descricao) {
         this.id = id;
         this.nome = nome;
         this.valor = valor;
@@ -23,7 +23,7 @@ public class Planos {
 
     // getters
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -31,7 +31,7 @@ public class Planos {
         return nome;
     }
 
-    public double getValor() {
+    public Double getValor() {
         return valor;
     }
 

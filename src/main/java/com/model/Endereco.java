@@ -2,14 +2,14 @@ package com.model;
 
 public class Endereco {
     // atributos
-    private int id;
+    private Integer id;
     private String cep;
-    private int numero;
+    private Integer numero;
     private String rua;
     private String complemento;
 
     // construtor
-    public Endereco(int id, String cep, int numero, String rua, String complemento) {
+    public Endereco(Integer id, String cep, Integer numero, String rua, String complemento) {
         this.id = id;
         this.cep = cep;
         this.numero = numero;
@@ -25,7 +25,7 @@ public class Endereco {
 
     // getters
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -33,7 +33,7 @@ public class Endereco {
         return cep;
     }
 
-    public int getNumero() {
+    public Integer getNumero() {
         return numero;
     }
 
