@@ -1,29 +1,29 @@
 package com.model;
 
-public class Planos {
-    // atributos
-    private int id;
+//tabela: Planos
+public class Planos{
+//    Atributos
+    private Integer id;
     private String nome;
-    private double valor;
+    private Double valor;
     private String descricao;
 
-    // construtor
-    public Planos(int id, String nome, double valor, String descricao) {
+//    Construtor
+    public Planos(Integer id, String nome, Double valor, String descricao){
         this.id = id;
         this.nome = nome;
         this.valor = valor;
         this.descricao = descricao;
     }
 
-    // toString
-    public String toString() {
-        return String.format("ID: %d\nNome: %s\nValor: R$%.2f\nDescrição: %s\n", this.id, this.nome, this.valor,
-                this.descricao);
+//    toString
+    public String toString(){
+        return String.format("ID: %d\nNome: %s\nValor: R$%.2f\nDescrição: %s\n", this.id, this.nome, this.valor, this.descricao);
     }
 
-    // getters
+//    Getters
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -31,7 +31,7 @@ public class Planos {
         return nome;
     }
 
-    public double getValor() {
+    public Double getValor() {
         return valor;
     }
 
@@ -39,4 +39,21 @@ public class Planos {
         return descricao;
     }
 
+//    Setters
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 }

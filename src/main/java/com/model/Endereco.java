@@ -1,15 +1,16 @@
 package com.model;
 
+//tabela: Endereco
 public class Endereco {
-    // atributos
-    private int id;
-    private String cep;
-    private int numero;
-    private String rua;
-    private String complemento;
+//    Atributos
+    private Integer id; // coluna: id
+    private String cep; // coluna: cep
+    private Integer numero; // coluna: numero
+    private String rua; // coluna: rua
+    private String complemento; //coluna: complemento
 
-    // construtor
-    public Endereco(int id, String cep, int numero, String rua, String complemento) {
+//    Construtor
+    public Endereco(Integer id, String cep, Integer numero, String rua, String complemento){
         this.id = id;
         this.cep = cep;
         this.numero = numero;
@@ -17,15 +18,14 @@ public class Endereco {
         this.complemento = complemento;
     }
 
-    // toString
-    public String toString() {
-        return String.format("ID: %s\nCEP: %s\nNúmero: %d\nRua: %s\nComplemento: %s\n", this.id, this.cep, this.numero,
-                this.rua, this.complemento);
+//    toString
+    public String toString(){
+        return String.format("ID: %s\nCEP: %s\nNúmero: %d\nRua: %s\nComplemento: %s\n", this.id, this.cep, this.numero, this.rua, this.complemento);
     }
 
-    // getters
+//    Getters
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -33,7 +33,7 @@ public class Endereco {
         return cep;
     }
 
-    public int getNumero() {
+    public Integer getNumero() {
         return numero;
     }
 
@@ -43,5 +43,27 @@ public class Endereco {
 
     public String getComplemento() {
         return complemento;
+    }
+
+//    Setters
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
+
+    public void setNumero(int numero) {
+        this.numero = numero;
+    }
+
+    public void setRua(String rua) {
+        this.rua = rua;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
     }
 }
