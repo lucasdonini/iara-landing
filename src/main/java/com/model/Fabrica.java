@@ -9,9 +9,10 @@ public class Fabrica {
   private String email;
   private String nomeEmpresa;
   private String ramo;
+  private Endereco endereco;
 
   public Fabrica(int id, String nome, String cnpj, Boolean status, String email, String nomeEmpresa,
-      String ramo) {
+      String ramo, Endereco endereco) {
     this.id = id;
     this.nome = nome;
     this.cnpj = cnpj;
@@ -19,6 +20,7 @@ public class Fabrica {
     this.email = email;
     this.nomeEmpresa = nomeEmpresa;
     this.ramo = ramo;
+    this.endereco = endereco;
   }
 
   // Getters
@@ -50,6 +52,8 @@ public class Fabrica {
     return ramo;
   }
 
+  public Endereco getEndereco(){return this.endereco;}
+
   // Setters
   public void setId(int id) {
     this.id = id;
@@ -78,4 +82,6 @@ public class Fabrica {
   public void setRamo(String sector) {
     this.ramo = sector;
   }
+
+  public void setEndereco(Endereco endereco){this.endereco = endereco;}
 }
