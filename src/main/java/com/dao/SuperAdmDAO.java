@@ -10,7 +10,7 @@ import com.dto.CadastroSuperAdmDTO;
 import com.dto.SuperAdmDTO;
 
 public class SuperAdmDAO extends DAO {
-  public SuperAdmDAO() throws SQLException {
+  public SuperAdmDAO() throws SQLException, ClassNotFoundException {
     super();
   }
 

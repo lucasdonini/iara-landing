@@ -14,7 +14,7 @@ import com.dto.UsuarioDTO;
 import com.model.NivelAcesso;
 
 public class UsuarioDAO extends DAO {
-  public UsuarioDAO() throws SQLException {
+  public UsuarioDAO() throws SQLException, ClassNotFoundException {
     super();
   }
 

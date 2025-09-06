@@ -11,7 +11,7 @@ import com.dto.CadastroFabricaDTO;
 import com.model.Fabrica;
 
 public class FabricaDAO extends DAO {
-  public FabricaDAO() throws SQLException {
+  public FabricaDAO() throws SQLException, ClassNotFoundException {
     super();
   }
 

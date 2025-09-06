@@ -8,7 +8,7 @@ import com.dto.AtualizarListarEnderecoDTO;
 
 public class EnderecoDAO extends DAO{
     //Construtor
-    public EnderecoDAO() throws SQLException {
+    public EnderecoDAO() throws SQLException, ClassNotFoundException {
         super();
     }
 
