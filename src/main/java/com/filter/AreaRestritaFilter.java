@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebFilter(filterName="area-restrita-filter", urlPatterns="/area-restrita/*")
+@WebFilter(filterName="area-restrita-filter", urlPatterns="/area-restrita.jsp")
 public class AreaRestritaFilter extends HttpFilter {
   @Override
   public void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {
@@ -21,10 +21,10 @@ public class AreaRestritaFilter extends HttpFilter {
     Object usuario = session.getAttribute("usuario");
 
     // Não tem usuário, redireciona para página de login
-    if (usuario == null || !(usuario instanceof SuperAdmDTO)) {
-      resp.sendRedirect("/login");
-    } else {
+    if (usuario instanceof SuperAdmDTO) {
       chain.doFilter(req, resp);
+    } else {
+      resp.sendRedirect(req.getContextPath() + "/login.jsp");
     }
   }
 }
