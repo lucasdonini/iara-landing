@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Pagamento {
     //Atributos
-    private Integer idPagamento;
+    private Integer id;
     private Boolean status;
     private LocalDate dataVencimento;
     private LocalDate dataPagamento;
@@ -12,8 +12,8 @@ public class Pagamento {
     private Integer fkPlano;
 
     //Construtor
-    public Pagamento(Integer idPagamento, Boolean status, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamnto, Integer fkPlano){
-        this.idPagamento = idPagamento;
+    public Pagamento(Integer id, Boolean status, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamnto, Integer fkPlano){
+        this.id = id;
         this.status = status;
         this.dataVencimento = dataVencimento;
         this.dataPagamento = dataPagamento;
@@ -23,13 +23,13 @@ public class Pagamento {
 
     //toString
     public String toString(){
-        return String.format("ID: %d\nStatus: %b\nData de Vencimento: %s\nData do Pagamento: %s\nTipo de Pagamento: %s\n", this.idPagamento, this.status, this.dataVencimento, this.dataPagamento, this.tipoPagamento);
+        return String.format("ID: %d\nStatus: %b\nData de Vencimento: %s\nData do Pagamento: %s\nTipo de Pagamento: %s\n", this.id, this.status, this.dataVencimento, this.dataPagamento, this.tipoPagamento);
     }
 
     //Getters
 
-    public Integer getIdPagamento() {
-        return idPagamento;
+    public Integer getId() {
+        return id;
     }
 
     public Boolean getStatus() {
@@ -54,8 +54,8 @@ public class Pagamento {
 
     //Setters
 
-    public void setIdPagamento(Integer idPagamento) {
-        this.idPagamento = idPagamento;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public void setStatus(Boolean status) {
