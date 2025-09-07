@@ -1,11 +1,11 @@
 package com.dto;
 
-import com.model.Endereco;
+import com.model.Planos;
 
-public class AtualizarListarEnderecoDTO extends Endereco {
+public class PlanosDTO extends Planos {
     //Construtor
-    public AtualizarListarEnderecoDTO(String cep, int numero, String rua, String complemento){
-        super(null, cep, numero, rua, complemento);
+    public PlanosDTO(String nome, Double valor, String descricao){
+        super(null, nome, valor, descricao);
     }
 
     //Cancelando métodos com ID
@@ -14,7 +14,6 @@ public class AtualizarListarEnderecoDTO extends Endereco {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void setId(Integer id){
         throw new UnsupportedOperationException();
     }

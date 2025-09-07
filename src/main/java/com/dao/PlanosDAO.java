@@ -1,6 +1,6 @@
 package com.dao;
 
-import com.dto.AtualizarListarPlanosDTO;
+import com.dto.PlanosDTO;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -11,7 +11,7 @@ public class PlanosDAO extends DAO{
     }
 
     //Cadastrar novo Plano
-    public void cadastrar(AtualizarListarPlanosDTO plano) throws SQLException {
+    public void cadastrar(PlanosDTO plano) throws SQLException {
         //Comando SQL
         String sql = "INSERT INTO planos(nome, valor, descricao) VALUES (?,?,?)";
 
@@ -35,7 +35,7 @@ public class PlanosDAO extends DAO{
     }
 
     //Remover plano
-    public void remover(AtualizarListarPlanosDTO plano) throws SQLException{
+    public void remover(PlanosDTO plano) throws SQLException{
         // Comando SQL
         String sql = "DELETE FROM planos WHERE nome = ?";
 
@@ -56,7 +56,7 @@ public class PlanosDAO extends DAO{
     }
 
     //Atualizar nome
-    private void alterarNome(AtualizarListarPlanosDTO plano, String novoNome) throws SQLException{
+    private void alterarNome(PlanosDTO plano, String novoNome) throws SQLException{
         //Comando SQL
         String sql = "UPDATE planos WHERE nome = ? SET nome = ?";
 
@@ -74,7 +74,7 @@ public class PlanosDAO extends DAO{
     }
 
     //Atualizar valor
-    private void alterarValor(AtualizarListarPlanosDTO plano, double novoValor) throws SQLException{
+    private void alterarValor(PlanosDTO plano, double novoValor) throws SQLException{
         //Comando SQL
         String sql = "UPDATE planos WHERE valor = ? SET valor = ?";
 
@@ -92,7 +92,7 @@ public class PlanosDAO extends DAO{
     }
 
     //Atualizar descrição
-    private void alterarDescricao(AtualizarListarPlanosDTO plano, String novaDescricao) throws SQLException{
+    private void alterarDescricao(PlanosDTO plano, String novaDescricao) throws SQLException{
         //Comando SQL
         String sql = "UPDATE planos WHERE descricao = ? SET descricao = ?";
 
@@ -110,7 +110,7 @@ public class PlanosDAO extends DAO{
     }
 
     //Verificar requisição de atualização e confirmar alteração no banco
-    public void alterar(AtualizarListarPlanosDTO plano, String nome, Double valor, String descricao) throws SQLException{
+    public void alterar(PlanosDTO plano, String nome, Double valor, String descricao) throws SQLException{
         try{
                 //realizando verificações
             if (plano.getNome()!=null){
