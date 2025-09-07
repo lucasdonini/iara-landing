@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public class PagamentoDAO extends DAO{
     //Construtor
-    public PagamentoDAO() throws SQLException {
+    public PagamentoDAO() throws SQLException, ClassNotFoundException {
         super();
     }
 

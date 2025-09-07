@@ -55,7 +55,7 @@ public class FabricaDAO extends DAO {
 
       // Commit das alterações e retorno
       conn.commit();
-      return new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo);
+      return new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, null);
 
     } catch (SQLException e) {
 
@@ -85,7 +85,7 @@ public class FabricaDAO extends DAO {
         String nomeEmpresa = rs.getString("nome_industria");
         String ramo = rs.getString("ramo");
 
-        fabricas.add(new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo));
+        fabricas.add(new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, null));
       }
 
       return fabricas;
