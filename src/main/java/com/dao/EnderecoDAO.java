@@ -3,7 +3,7 @@ package com.dao;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import com.dto.AtualizarListarEnderecoDTO;
+import com.dto.EnderecoDTO;
 
 
 public class EnderecoDAO extends DAO{
@@ -13,7 +13,7 @@ public class EnderecoDAO extends DAO{
     }
 
     //Cadastrar novo endereco
-    public void cadastrar(AtualizarListarEnderecoDTO endereco) throws SQLException{
+    public void cadastrar(EnderecoDTO endereco) throws SQLException{
         //Comando SQL
         String sql = "INSERT INTO endereco (cep, numero, rua, complemento) VALUES (?,?,?,?)";
 
@@ -37,7 +37,7 @@ public class EnderecoDAO extends DAO{
     }
 
     //Remover endereco
-    public void remover(AtualizarListarEnderecoDTO endereco) throws SQLException{
+    public void remover(EnderecoDTO endereco) throws SQLException{
         // Comando SQL
         String sql = "DELETE FROM endereco WHERE cep = ?";
 
@@ -60,7 +60,7 @@ public class EnderecoDAO extends DAO{
     }
 
     //Atualizar cep
-    private void alterarCep(AtualizarListarEnderecoDTO endereco, String novoCep) throws SQLException{
+    private void alterarCep(EnderecoDTO endereco, String novoCep) throws SQLException{
         //Comando SQL
         String sql = "UPDATE endereco WHERE cep = ? SET cep = ?";
 
@@ -78,7 +78,7 @@ public class EnderecoDAO extends DAO{
     }
 
     //Atualizar numero
-    private void alterarNumero(AtualizarListarEnderecoDTO endereco, Integer novoNumero) throws SQLException{
+    private void alterarNumero(EnderecoDTO endereco, Integer novoNumero) throws SQLException{
         //Comando SQL
         String sql = "UPDATE endereco WHERE numero = ? SET numero = ?";
 
@@ -96,7 +96,7 @@ public class EnderecoDAO extends DAO{
     }
 
     //Atualizar rua
-    private void alterarRua(AtualizarListarEnderecoDTO endereco, String novaRua) throws SQLException{
+    private void alterarRua(EnderecoDTO endereco, String novaRua) throws SQLException{
         //Comando SQL
         String sql = "UPDATE endereco WHERE rua = ? SET rua = ?";
 
@@ -114,7 +114,7 @@ public class EnderecoDAO extends DAO{
     }
 
     //Atualizar complemento
-    private void alterarComplemento(AtualizarListarEnderecoDTO endereco, String novoComplemento) throws SQLException{
+    private void alterarComplemento(EnderecoDTO endereco, String novoComplemento) throws SQLException{
         //Comando SQL
         String sql = "UPDATE endereco WHERE rua = ? SET rua = ?";
 
@@ -132,7 +132,7 @@ public class EnderecoDAO extends DAO{
     }
 
     //Verificar requisição de atualização e confirmar alteração no banco
-    public void alterar(AtualizarListarEnderecoDTO endereco, String cep, Integer numero, String rua, String complemento) throws SQLException{
+    public void alterar(EnderecoDTO endereco, String cep, Integer numero, String rua, String complemento) throws SQLException{
         try{
                 //realizando verificações
             if (endereco.getCep()!=null){
