@@ -12,8 +12,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 
-// TODO: Mudar o status de erro quando lançar exceção para um redirecionamento à página de erro
-
 @WebServlet("/login-handler")
 public class LoginServlet extends HttpServlet {
   @Override
@@ -26,7 +24,7 @@ public class LoginServlet extends HttpServlet {
 
     // Dados da resposta
     SuperAdmDTO superAdm;
-    String destino = "/login.html";
+    String destino = "/erro.html";
 
     try (LoginDAO dao = new LoginDAO()) {
       // Tenta fazer login e prepara os dados da resposta de acordo
@@ -35,7 +33,10 @@ public class LoginServlet extends HttpServlet {
       if (superAdm != null) {
         // Guarda o usuário na sessão
         session.setAttribute("usuario", superAdm);
-        destino = "/area-restrita/index.jsp";
+        destino = "/area-restrita/index";
+
+      } else {
+        destino = "/login.html";
       }
 
     } catch (SQLException e) {
