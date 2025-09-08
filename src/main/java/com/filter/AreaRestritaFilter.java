@@ -11,15 +11,15 @@ import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-// TODO: adicionar `false` no getSession para não criar sessã nova caso não exista uma
+
 @WebFilter(filterName="area-restrita-filter", urlPatterns="/area-restrita/*")
 public class AreaRestritaFilter extends HttpFilter {
   @Override
   public void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {
     // Procura o usuário logado na sessão
-    HttpSession session = req.getSession(false);
+    HttpSession session = req.getSession();
     String target = req.getRequestURI();
-    Object usuario = (session == null ? null : session.getAttribute("usuario"));
+    Object usuario = session.getAttribute("usuario");
 
     if (target.endsWith("/logout")) {
       chain.doFilter(req, resp);
