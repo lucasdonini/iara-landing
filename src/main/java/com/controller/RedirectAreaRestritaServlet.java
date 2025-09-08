@@ -17,6 +17,6 @@ Para impedir essa falha de segurança, tornei a página inicial da área restrit
 public class RedirectAreaRestritaServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-    req.getRequestDispatcher("area-restrita/index.jsp").forward(req, resp);
+    req.getRequestDispatcher("index.jsp").forward(req, resp);
   }
 }

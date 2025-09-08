@@ -33,21 +33,32 @@
     <th>Código da Fábrica</th>
   </tr>
   <% for (UsuarioDTO u : usuarios) { %>
-    <tr>
-      <td><%= u.getId() %></td>
-      <td><%= u.getNome() %></td>
-      <td><%= u.getEmail() %></td>
-      <td><%= u.getNivelAcesso().toString() %></td>
-      <td><%= u.getDtCriacao().format(isoDmy) %></td>
-      <td><%= u.getStatus() ? "Ativo" : "Inativo" %></td>
-      <td><%= u.getFkFabrica() %></td>
-      <td>
-        <form action="${pageContext.request.contextPath}/area-restrita/update-usuario" method="get">
+  <tr>
+    <td><%= u.getId() %>
+    </td>
+    <td><%= u.getNome() %>
+    </td>
+    <td><%= u.getEmail() %>
+    </td>
+    <td><%= u.getNivelAcesso().toString() %>
+    </td>
+    <td><%= u.getDtCriacao().format(isoDmy) %>
+    </td>
+    <td><%= u.getStatus() ? "Ativo" : "Inativo" %>
+    </td>
+    <td><%= u.getFkFabrica() %>
+    </td>
+    <td>
+      <form action="${pageContext.request.contextPath}/area-restrita/update-usuario" method="get">
         <input type="hidden" name="id" value="<%= u.getId() %>">
         <button type="submit">Editar</button>
       </form>
-      </td>
-    </tr>
+      <form action="${pageContext.request.contextPath}/area-restrita/delete-usuario" method="post">
+        <input type="hidden" name="id" value="<%= u.getId() %>">
+        <button type="submit">Deletar</button>
+      </form>
+    </td>
+  </tr>
   <% } %>
 </table>
 <a href="${pageContext.request.contextPath}/area-restrita/usuario/cadastro.html">Cadastrar novo Administrador</a>

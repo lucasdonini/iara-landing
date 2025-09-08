@@ -3,8 +3,6 @@ package com.controller;
 import com.dao.LoginDAO;
 import com.dto.LoginDTO;
 import com.dto.SuperAdmDTO;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +17,7 @@ import java.sql.SQLException;
 @WebServlet("/login-handler")
 public class LoginServlet extends HttpServlet {
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     // Dados da requisição
     String email = req.getParameter("email");
     String senha = req.getParameter("senha");
@@ -28,7 +26,7 @@ public class LoginServlet extends HttpServlet {
 
     // Dados da resposta
     SuperAdmDTO superAdm;
-    boolean logou = false;
+    String destino = "/login.html";
 
     try (LoginDAO dao = new LoginDAO()) {
       // Tenta fazer login e prepara os dados da resposta de acordo
@@ -37,7 +35,7 @@ public class LoginServlet extends HttpServlet {
       if (superAdm != null) {
         // Guarda o usuário na sessão
         session.setAttribute("usuario", superAdm);
-        logou = true;
+        destino = "/area-restrita/index.jsp";
       }
 
     } catch (SQLException e) {
@@ -52,17 +50,8 @@ public class LoginServlet extends HttpServlet {
     } catch (Throwable e) {
       System.err.println("Erro inesperado:");
       e.printStackTrace(System.err);
-
     }
 
-    if (logou) {
-      // Se o usuário logou corretamente, redireciona para a área restrita
-      RequestDispatcher rd = req.getRequestDispatcher("area-restrita/index.jsp");
-      rd.forward(req, resp);
-
-    } else {
-      // Senão, redireciona para a página de login
-      resp.sendRedirect(req.getContextPath() + "/login.html");
-    }
+    resp.sendRedirect(req.getContextPath() + destino);
   }
 }
