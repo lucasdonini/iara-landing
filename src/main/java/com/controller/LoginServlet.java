@@ -14,10 +14,12 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 
+// TODO: Mudar o status de erro quando lançar exceção para um redirecionamento à página de erro
+
 @WebServlet("/login-handler")
 public class LoginServlet extends HttpServlet {
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da requisição
     String email = req.getParameter("email");
     String senha = req.getParameter("senha");
@@ -26,8 +28,7 @@ public class LoginServlet extends HttpServlet {
 
     // Dados da resposta
     SuperAdmDTO superAdm;
-    String destino = "login.html";
-    StatusResposta status = StatusResposta.ERRO_INTERNO;
+    boolean logou = false;
 
     try (LoginDAO dao = new LoginDAO()) {
       // Tenta fazer login e prepara os dados da resposta de acordo
@@ -36,12 +37,9 @@ public class LoginServlet extends HttpServlet {
       if (superAdm != null) {
         // Guarda o usuário na sessão
         session.setAttribute("usuario", superAdm);
-        destino = "index.html";
-        status = StatusResposta.OK;
-
-      } else {
-        status = StatusResposta.ACESSO_NEGADO;
+        logou = true;
       }
+
     } catch (SQLException e) {
       // Se houver alguma exceção, registra no terminal
       System.err.println("Erro ao executar operação no banco:");
@@ -55,13 +53,16 @@ public class LoginServlet extends HttpServlet {
       System.err.println("Erro inesperado:");
       e.printStackTrace(System.err);
 
-    } finally {
-      // Adiciona o status como atributo da request
-      req.setAttribute("status", status.toString());
+    }
 
-      // Redireciona a request par a página jsp
-      RequestDispatcher rd = req.getRequestDispatcher(destino);
+    if (logou) {
+      // Se o usuário logou corretamente, redireciona para a área restrita
+      RequestDispatcher rd = req.getRequestDispatcher("area-restrita/index.jsp");
       rd.forward(req, resp);
+
+    } else {
+      // Senão, redireciona para a página de login
+      resp.sendRedirect(req.getContextPath() + "/login.html");
     }
   }
 }

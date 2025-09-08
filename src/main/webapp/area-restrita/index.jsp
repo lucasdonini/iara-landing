@@ -8,8 +8,10 @@
 </head>
 
 <body>
-  <h1>Landing page para Teste</h1>
-  <a href="area-restrita/index.jsp">Área restrita</a>
+  <h1>Área Restrita</h1>
+  <a href="../index.html">Página inicial</a>
+  <a href="logout">Logout</a>
+  <a href="usuario">Usuários</a>
 </body>
 
 </html>
