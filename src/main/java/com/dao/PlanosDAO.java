@@ -1,9 +1,16 @@
 package com.dao;
 
 import com.dto.PlanosDTO;
+import com.dto.SuperAdmDTO;
+import com.model.Planos;
+import com.model.SuperAdm;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlanosDAO extends DAO{
     public PlanosDAO() throws SQLException, ClassNotFoundException {
@@ -34,101 +41,146 @@ public class PlanosDAO extends DAO{
 
     }
 
+    public PlanosDTO getPlanoById(int id) throws SQLException {
+        // Prepara o comando
+        String sql = "SELECT * FROM planos WHERE id = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+
+                return new PlanosDTO(
+                        id,
+                        rs.getString("nome"),
+                        rs.getDouble("valor"),
+                        rs.getString("descricao"));
+            }
+        }
+    }
+
     //Remover plano
-    public void remover(PlanosDTO plano) throws SQLException{
-        // Comando SQL
-        String sql = "DELETE FROM planos WHERE nome = ?";
+    public void remover(int id) throws SQLException {
+        // Prepara o comando
+        String sql = "DELETE FROM planos WHERE id = ?";
 
-        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)){
-            //Definindo variáveis no código SQL
-            pstmt.setString(1,plano.getNome());
-            //Salvando alterações no banco
-            if (pstmt.executeUpdate()!=1){
-                throw new SQLException();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // Completa os parâmetros faltantes
+            pstmt.setInt(1, id);
+
+            // Executa o comando e commita as mudanças
+            pstmt.executeUpdate();
+            conn.commit();
+
+        } catch (SQLException e) {
+
+            // Faz o rollback das modificações e propaga a exceção
+            conn.rollback();
+            throw e;
+        }
+    }
+
+    public void atualizar(Planos original, Planos alterado) throws SQLException {
+        // Desempacotamento do model alterado
+        int id = alterado.getId();
+        String nome = alterado.getNome();
+        Double valor = alterado.getValor();
+        String descricao = alterado.getDescricao();
+
+        // Monta o comando de acordo com os campos alterados
+        StringBuilder sql = new StringBuilder("UPDATE planos SET ");
+        List<Object> valores = new ArrayList<>();
+
+        if (!original.getNome().equals(nome)) {
+            sql.append("nome = ?, ");
+            valores.add(nome);
+        }
+
+        if (!original.getValor().equals(valor)) {
+            sql.append("valor = ?, ");
+            valores.add(valor);
+        }
+
+        if (!original.getDescricao().equals(descricao)) {
+            sql.append("descricao = ?, ");
+            valores.add(descricao);
+        }
+
+        // Sái do metodo se nada foi alterado
+        if (valores.isEmpty()) {
+            return;
+        }
+
+        // Remove o último espaço e a última vírgula
+        sql.setLength(sql.length() - 2);
+
+        // Adiciona o WHERE
+        sql.append(" WHERE id = ?");
+        valores.add(id);
+
+        // Prepara, preenche e executa o comando
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < valores.size(); i++) {
+                pstmt.setObject(i + 1, valores.get(i));
             }
-            //Confirmando transações
-            this.conn.commit();
-        } catch(SQLException e){
-            System.err.println(e.getMessage());
-            this.conn.rollback();
-            throw e;
-        }
-    }
 
-    //Atualizar nome
-    private void alterarNome(PlanosDTO plano, String novoNome) throws SQLException{
-        //Comando SQL
-        String sql = "UPDATE planos WHERE nome = ? SET nome = ?";
-
-        try(PreparedStatement pstmt = this.conn.prepareStatement(sql)){ //Preparando comando SQL
-            //Definindo variáveis no código SQL
-            pstmt.setString(1, plano.getNome());
-            pstmt.setString(2, novoNome);
-            //Salvando alterações no banco de dados
             pstmt.executeUpdate();
-        } catch(SQLException e){
-            System.err.println(e.getMessage());
-            //Lançando exceção
+
+            // Commita as alterações
+            conn.commit();
+
+        } catch (SQLException e) {
+
+            // Faz o rollback das alterações e propaga a exceção
+            conn.rollback();
             throw e;
         }
     }
 
-    //Atualizar valor
-    private void alterarValor(PlanosDTO plano, double novoValor) throws SQLException{
-        //Comando SQL
-        String sql = "UPDATE planos WHERE valor = ? SET valor = ?";
+    //Listar planos
+    public List<PlanosDTO> listarPlanos() throws SQLException {
+        List<PlanosDTO> planosDTOS = new ArrayList<>();
 
-        try(PreparedStatement pstmt = this.conn.prepareStatement(sql)){ //Preparando comando SQL
-            //Definindo variáveis no código SQL
-            pstmt.setDouble(1, plano.getValor());
-            pstmt.setDouble(2, novoValor);
-            //Salvando alterações no banco de dados
-            pstmt.executeUpdate();
-        } catch(SQLException e){
-            System.err.println(e.getMessage());
-            //Lançando exceção
-            throw e;
-        }
-    }
+        // Prepara o comando
+        String sql = "SELECT * FROM planos ORDER BY id";
 
-    //Atualizar descrição
-    private void alterarDescricao(PlanosDTO plano, String novaDescricao) throws SQLException{
-        //Comando SQL
-        String sql = "UPDATE planos WHERE descricao = ? SET descricao = ?";
+        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nome = rs.getString("nome");
+                double valor = rs.getDouble("valor");
+                String descricao = rs.getString("descricao");
 
-        try(PreparedStatement pstmt = this.conn.prepareStatement(sql)){ //Preparando comando SQL
-            //Definindo variáveis no código SQL
-            pstmt.setString(1, plano.getDescricao());
-            pstmt.setString(2, novaDescricao);
-            //Salvando alterações no banco de dados
-            pstmt.executeUpdate();
-        } catch(SQLException e){
-            System.err.println(e.getMessage());
-            //Lançando exceção
-            throw e;
-        }
-    }
-
-    //Verificar requisição de atualização e confirmar alteração no banco
-    public void alterar(PlanosDTO plano, String nome, Double valor, String descricao) throws SQLException{
-        try{
-                //realizando verificações
-            if (plano.getNome()!=null){
-                this.alterarNome(plano, nome);
-            } else if(plano.getValor()!=null){
-                this.alterarValor(plano, valor);
-            } else if(plano.getDescricao()!=null){
-                this.alterarDescricao(plano, descricao);
+                planosDTOS.add(new PlanosDTO(id, nome, valor, descricao));
             }
-           //Confirmando transação
-           this.conn.commit(); 
-        } catch(SQLException sql){
-            System.err.println(sql.getMessage());
-            //Cancelando transação
-            this.conn.rollback();
-            //Lançando excessão
-            throw sql;
         }
-        
+
+        return planosDTOS;
+    }
+
+    //Campos Alteraveis
+    public Planos getCamposAlteraveis(int id) throws SQLException {
+        // Prepara o comando
+        String sql = "SELECT * FROM planos WHERE id = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String nome = rs.getString("nome");
+                    Double valor = rs.getDouble("valor");
+                    String descricao = rs.getString("descricao");
+
+                    return new Planos(id, nome, valor, descricao);
+                } else {
+                    throw new SQLException("Erro ao recuperar as informações do super adm");
+                }
+            }
+        }
     }
 }
