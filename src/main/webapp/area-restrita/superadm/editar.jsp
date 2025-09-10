@@ -22,7 +22,8 @@
   <input type="text" name="cargo" value="<%= adm.getCargo() %>" placeholder="Novo cargo">
   <input type="email" name="email" value="<%= adm.getEmail() %>" placeholder="Novo email">
   <input type="text" name="senha_atual" placeholder="Insira sua senha atual">
-  <input type="text" name="nova_senha" pattern=".{8,}" title="A senha deve ter 8 caractéres ou mais" placeholder="Insira sua nova senha">
+  <input type="text" name="nova_senha" pattern=".{8,}" title="A senha deve ter 8 caractéres ou mais"
+         placeholder="Insira sua nova senha">
   <button type="submit">Salvar</button>
 </form>
 </body>

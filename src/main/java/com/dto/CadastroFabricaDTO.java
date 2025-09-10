@@ -8,7 +8,7 @@ public class CadastroFabricaDTO {
   private String ramo;
 
   public CadastroFabricaDTO(String nome, String cnpj, String email, String nomeEmpresa,
-      String ramo) {
+                            String ramo) {
     this.nome = nome;
     this.cnpj = cnpj;
     this.email = email;
@@ -16,42 +16,41 @@ public class CadastroFabricaDTO {
     this.ramo = ramo;
   }
 
-  // Getters
+  // Getters e Setters
   public String getNome() {
     return nome;
+  }
+
+  public void setNome(String nome) {
+    this.nome = nome;
   }
 
   public String getCnpj() {
     return cnpj;
   }
 
-  public String getEmail() {
-    return email;
-  }
-
-  public String getNomeEmpresa() {
-    return nomeEmpresa;
-  }
-
-  public String getRamo() {
-    return ramo;
-  }
-
-  // Setters
-  public void setNome(String nome) {
-    this.nome = nome;
-  }
-
   public void setCnpj(String cnpj) {
     this.cnpj = cnpj;
+  }
+
+  public String getEmail() {
+    return email;
   }
 
   public void setEmail(String email) {
     this.email = email;
   }
 
+  public String getNomeEmpresa() {
+    return nomeEmpresa;
+  }
+
   public void setNomeEmpresa(String factory_name) {
     this.nomeEmpresa = factory_name;
+  }
+
+  public String getRamo() {
+    return ramo;
   }
 
   public void setRamo(String sector) {

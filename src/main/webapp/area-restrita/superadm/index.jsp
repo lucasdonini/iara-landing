@@ -26,22 +26,26 @@
     <th>Email</th>
   </tr>
   <% for (SuperAdmDTO adm : adms) { %>
-    <tr>
-      <td><%= adm.getId() %></td>
-      <td><%= adm.getNome() %></td>
-      <td><%= adm.getCargo() %></td>
-      <td><%= adm.getEmail() %></td>
-      <td>
-        <form action="${pageContext.request.contextPath}/area-restrita/update-superadm" method="get">
-          <input type="hidden" name="id" value="<%= adm.getId() %>">
-          <button type="submit">Editar</button>
-        </form>
-        <form action="${pageContext.request.contextPath}/area-restrita/delete-superadm" method="post">
-          <input type="hidden" name="id" value="<%= adm.getId() %>">
-          <button type="submit">Deletar</button>
-        </form>
-      </td>
-    </tr>
+  <tr>
+    <td><%= adm.getId() %>
+    </td>
+    <td><%= adm.getNome() %>
+    </td>
+    <td><%= adm.getCargo() %>
+    </td>
+    <td><%= adm.getEmail() %>
+    </td>
+    <td>
+      <form action="${pageContext.request.contextPath}/area-restrita/update-superadm" method="get">
+        <input type="hidden" name="id" value="<%= adm.getId() %>">
+        <button type="submit">Editar</button>
+      </form>
+      <form action="${pageContext.request.contextPath}/area-restrita/delete-superadm" method="post">
+        <input type="hidden" name="id" value="<%= adm.getId() %>">
+        <button type="submit">Deletar</button>
+      </form>
+    </td>
+  </tr>
   <% } %>
 </table>
 <a href="${pageContext.request.contextPath}/area-restrita/superadm/cadastro.html">Cadastrar novo Super Administrador</a>

@@ -13,34 +13,33 @@ public class CadastroSuperAdmDTO {
     this.senha = senha;
   }
 
-  // Getters
+  // Getters e Setters
   public String getNome() {
     return nome;
+  }
+
+  public void setNome(String nome) {
+    this.nome = nome;
   }
 
   public String getCargo() {
     return cargo;
   }
 
-  public String getEmail() {
-    return email;
-  }
-
-  public String getSenha() {
-    return senha;
-  }
-
-  // Setters
-  public void setNome(String nome) {
-    this.nome = nome;
-  }
-
   public void setCargo(String cargo) {
     this.cargo = cargo;
   }
 
+  public String getEmail() {
+    return email;
+  }
+
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getSenha() {
+    return senha;
   }
 
   public void setSenha(String senha) {

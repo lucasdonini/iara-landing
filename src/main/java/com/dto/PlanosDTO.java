@@ -1,60 +1,55 @@
 package com.dto;
 
-import com.model.Planos;
+public class PlanosDTO {
+  // Atributos
+  private Integer id;
+  private String nome;
+  private Double valor;
+  private String descricao;
 
-public class PlanosDTO{
-    //    Atributos
-    private Integer id;
-    private String nome;
-    private Double valor;
-    private String descricao;
+  // Construtor
+  public PlanosDTO(Integer id, String nome, Double valor, String descricao) {
+    this.id = id;
+    this.nome = nome;
+    this.valor = valor;
+    this.descricao = descricao;
+  }
 
-    //    Construtor
-    public PlanosDTO(Integer id, String nome, Double valor, String descricao){
-        this.id = id;
-        this.nome = nome;
-        this.valor = valor;
-        this.descricao = descricao;
-    }
+  // toString
+  public String toString() {
+    return String.format("ID: %d\nNome: %s\nValor: R$%.2f\nDescrição: %s\n", this.id, this.nome, this.valor, this.descricao);
+  }
 
-    //    toString
-    public String toString(){
-        return String.format("ID: %d\nNome: %s\nValor: R$%.2f\nDescrição: %s\n", this.id, this.nome, this.valor, this.descricao);
-    }
+  // Getters e Setters
+  public Integer getId() {
+    return id;
+  }
 
-//    Getters
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    public Integer getId() {
-        return id;
-    }
+  public String getNome() {
+    return nome;
+  }
 
-    public String getNome() {
-        return nome;
-    }
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
 
-    public Double getValor() {
-        return valor;
-    }
+  public Double getValor() {
+    return valor;
+  }
 
-    public String getDescricao() {
-        return descricao;
-    }
+  public void setValor(Double valor) {
+    this.valor = valor;
+  }
 
-//    Setters
+  public String getDescricao() {
+    return descricao;
+  }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public void setValor(Double valor) {
-        this.valor = valor;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
+  public void setDescricao(String descricao) {
+    this.descricao = descricao;
+  }
 }

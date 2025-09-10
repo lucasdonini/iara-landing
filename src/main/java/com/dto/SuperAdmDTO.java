@@ -13,34 +13,33 @@ public class SuperAdmDTO {
     this.email = email;
   }
 
-  // Getters
+  // Getters e Setters
   public int getId() {
     return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getNome() {
     return nome;
   }
 
-  public String getCargo() {
-    return cargo;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  // Setters
-  public void setId(int id) {
-    this.id = id;
-  }
-
   public void setNome(String nome) {
     this.nome = nome;
   }
 
+  public String getCargo() {
+    return cargo;
+  }
+
   public void setCargo(String cargo) {
     this.cargo = cargo;
+  }
+
+  public String getEmail() {
+    return email;
   }
 
   public void setEmail(String email) {

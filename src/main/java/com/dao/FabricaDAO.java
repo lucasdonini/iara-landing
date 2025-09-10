@@ -1,14 +1,14 @@
 package com.dao;
 
+import com.dto.CadastroFabricaDTO;
+import com.model.Fabrica;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.dto.CadastroFabricaDTO;
-import com.model.Fabrica;
 
 public class FabricaDAO extends DAO {
   public FabricaDAO() throws SQLException, ClassNotFoundException {
@@ -74,7 +74,7 @@ public class FabricaDAO extends DAO {
     String sql = "SELECT * FROM fabrica";
 
     try (Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(sql)) {
+         ResultSet rs = stmt.executeQuery(sql)) {
 
       while (rs.next()) {
         int id = rs.getInt("id");
@@ -184,7 +184,7 @@ public class FabricaDAO extends DAO {
       conn.commit();
 
     } catch (SQLException e) {
-      
+
       // Faz o rollback das modificações
       conn.rollback();
 

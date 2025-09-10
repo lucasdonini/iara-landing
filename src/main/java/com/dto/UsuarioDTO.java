@@ -1,8 +1,8 @@
 package com.dto;
 
-import java.time.LocalDate;
-
 import com.model.NivelAcesso;
+
+import java.time.LocalDate;
 
 public class UsuarioDTO {
   private int id;
@@ -14,7 +14,7 @@ public class UsuarioDTO {
   private int fkFabrica;
 
   public UsuarioDTO(int id, String nome, String email, NivelAcesso nivelAcesso, LocalDate dtCriacao,
-      boolean status, int fkFabrica) {
+                    boolean status, int fkFabrica) {
 
     this.id = id;
     this.nome = nome;
@@ -25,58 +25,57 @@ public class UsuarioDTO {
     this.fkFabrica = fkFabrica;
   }
 
-  // Getters
+  // Getters e Setters
   public int getId() {
     return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getNome() {
     return nome;
   }
 
-  public String getEmail() {
-    return email;
-  }
-
-  public NivelAcesso getNivelAcesso() {
-    return nivelAcesso;
-  }
-
-  public LocalDate getDtCriacao() {
-    return dtCriacao;
-  }
-
-  public boolean getStatus() {
-    return status;
-  }
-
-  public int getFkFabrica() {
-    return fkFabrica;
-  }
-
-  // Setters
-  public void setId(int id) {
-    this.id = id;
-  }
-
   public void setNome(String nome) {
     this.nome = nome;
+  }
+
+  public String getEmail() {
+    return email;
   }
 
   public void setEmail(String email) {
     this.email = email;
   }
 
+  public NivelAcesso getNivelAcesso() {
+    return nivelAcesso;
+  }
+
   public void setNivelAcesso(NivelAcesso accessLevel) {
     this.nivelAcesso = accessLevel;
+  }
+
+  public LocalDate getDtCriacao() {
+    return dtCriacao;
   }
 
   public void setDtCriacao(LocalDate creationDate) {
     this.dtCriacao = creationDate;
   }
 
+  public boolean getStatus() {
+    return status;
+  }
+
   public void setStatus(boolean status) {
     this.status = status;
+  }
+
+  public int getFkFabrica() {
+    return fkFabrica;
   }
 
   public void setFkFabrica(int fkFabrica) {

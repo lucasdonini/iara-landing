@@ -1,15 +1,15 @@
 package com.dao;
 
+import com.dto.CadastroSuperAdmDTO;
+import com.dto.SuperAdmDTO;
+import com.model.SuperAdm;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.dto.CadastroSuperAdmDTO;
-import com.dto.SuperAdmDTO;
-import com.model.SuperAdm;
 
 public class SuperAdmDAO extends DAO {
   public SuperAdmDAO() throws SQLException, ClassNotFoundException {

@@ -8,20 +8,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <%
-    PlanosDTO plano = (PlanosDTO) request.getAttribute("infosPlano");
+  PlanosDTO plano = (PlanosDTO) request.getAttribute("infosPlano");
 %>
 <head>
-    <title>Landing Teste</title>
+  <title>Landing Teste</title>
 </head>
 <body>
 <h1>Editar Plano - ID: <%= plano.getId() %>
 </h1>
 <form action="${pageContext.request.contextPath}/area-restrita/update-plano" method="post">
-    <input type="hidden" name="id" value="<%= plano.getId() %>">
-    <input type="text" name="nome" value="<%= plano.getNome() %>" placeholder="Novo nome">
-    <input type="number" name="valor" value="<%= plano.getValor() %>" placeholder="Novo valor">
-    <input type="text" name="descricao" value="<%= plano.getDescricao() %>" placeholder="Nova descricao">
-    <button type="submit">Salvar</button>
+  <input type="hidden" name="id" value="<%= plano.getId() %>">
+  <input type="text" name="nome" value="<%= plano.getNome() %>" placeholder="Novo nome">
+  <input type="number" name="valor" value="<%= plano.getValor() %>" placeholder="Novo valor">
+  <input type="text" name="descricao" value="<%= plano.getDescricao() %>" placeholder="Nova descricao">
+  <button type="submit">Salvar</button>
 </form>
 </body>
 </html>

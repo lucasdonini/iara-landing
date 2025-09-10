@@ -1,9 +1,6 @@
 package com.filter;
 
-import java.io.IOException;
-
 import com.dto.SuperAdmDTO;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebFilter;
@@ -12,7 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebFilter(filterName="area-restrita-filter", urlPatterns="/area-restrita/*")
+import java.io.IOException;
+
+@WebFilter(filterName = "area-restrita-filter", urlPatterns = "/area-restrita/*")
 public class AreaRestritaFilter extends HttpFilter {
   @Override
   public void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {

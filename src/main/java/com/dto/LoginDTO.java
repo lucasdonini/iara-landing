@@ -9,18 +9,17 @@ public class LoginDTO {
     this.senha = senha;
   }
 
-  // Getters
+  // Getters e Setters
   public String getEmail() {
     return email;
   }
 
-  public String getSenha() {
-    return senha;
-  }
-
-  // Setters
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getSenha() {
+    return senha;
   }
 
   public void setSenha(String senha) {

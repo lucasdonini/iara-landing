@@ -24,13 +24,13 @@
   <input type="text" name="email" value="<%= usuario.getEmail() %>" placeholder="Novo email">
   <select name="nivel_acesso">
     <% for (NivelAcesso n : NivelAcesso.values()) { %>
-    <option value="<%= n.nivel() %>" <%= n == usuario.getNivelAcesso() ? "selected" : "" %>> <%= n.toString() %>
+    <option value="<%= n.nivel() %>" <%= n == usuario.getNivelAcesso() ? "selected" : "" %>><%= n.toString() %>
     </option>
     <% } %>
   </select>
   <select name="status">
     <% for (boolean b : List.of(true, false)) { %>
-    <option value="<%= b %>" <%= b == usuario.getStatus() ? "selected" : "" %>> <%= b ? "Ativo" : "Inativo" %>
+    <option value="<%= b %>" <%= b == usuario.getStatus() ? "selected" : "" %>><%= b ? "Ativo" : "Inativo" %>
     </option>
     <% } %>
   </select>

@@ -13,34 +13,33 @@ public class CadastroUsuarioDTO {
     this.fkFabrica = fkFabrica;
   }
 
-  // Getters
+  // Getters e Setters
   public String getNome() {
     return nome;
+  }
+
+  public void setNome(String nome) {
+    this.nome = nome;
   }
 
   public String getEmail() {
     return email;
   }
 
-  public String getSenha() {
-    return senha;
-  }
-
-  public int getFkFabrica() {
-    return fkFabrica;
-  }
-
-  // Setters
-  public void setNome(String nome) {
-    this.nome = nome;
-  }
-
   public void setEmail(String email) {
     this.email = email;
   }
 
+  public String getSenha() {
+    return senha;
+  }
+
   public void setSenha(String password) {
     this.senha = password;
+  }
+
+  public int getFkFabrica() {
+    return fkFabrica;
   }
 
   public void setFkFabrica(int fkFabrica) {
