@@ -84,4 +84,14 @@ public class Fabrica {
   }
 
   public void setEndereco(Endereco endereco){this.endereco = endereco;}
+
+  // Outros métodos
+  public String cnpjFormatado() {
+    StringBuilder sb = new StringBuilder(cnpj);
+    sb.insert(12, "-");
+    sb.insert(8, "/");
+    sb.insert(5, ".");
+    sb.insert(2, ".");
+    return sb.toString();
+  }
 }

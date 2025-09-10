@@ -1,8 +1,10 @@
-package com.controller.superadm;
+package com.controller.fabrica;
 
-import com.dao.SuperAdmDAO;
-import com.dto.CadastroSuperAdmDTO;
-import com.dto.SuperAdmDTO;
+import com.dao.EnderecoDAO;
+import com.dao.FabricaDAO;
+import com.dto.CadastroFabricaDTO;
+import com.model.Endereco;
+import com.model.Fabrica;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,19 +16,19 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/area-restrita/create-read-superadm")
-public class CreateReadSuperAdmServlet extends HttpServlet {
+@WebServlet("/area-restrita/create-read-fabrica")
+public class CreateReadFabricaServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da resposta
-    List<SuperAdmDTO> superAdms;
+    List<Fabrica> fabricas;
     boolean erro = true;
 
-    try (SuperAdmDAO dao = new SuperAdmDAO()) {
+    try (FabricaDAO dao = new FabricaDAO()) {
 
       // Recupera os usuários do banco e registra na request
-      superAdms = dao.listarSuperAdms();
-      req.setAttribute("admins", superAdms);
+      fabricas = dao.listarFabricas();
+      req.setAttribute("fabricas", fabricas);
 
       // setta erro como false
       erro = false;
@@ -50,7 +52,7 @@ public class CreateReadSuperAdmServlet extends HttpServlet {
     if (erro) {
       resp.sendRedirect(req.getContextPath() + "/erro.html");
     } else {
-      RequestDispatcher rd = req.getRequestDispatcher("superadm/index.jsp");
+      RequestDispatcher rd = req.getRequestDispatcher("fabrica/index.jsp");
       rd.forward(req, resp);
     }
   }
@@ -58,25 +60,36 @@ public class CreateReadSuperAdmServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da request
-    CadastroSuperAdmDTO credenciais = new CadastroSuperAdmDTO(
-        req.getParameter("nome"),
-        req.getParameter("cargo"),
-        req.getParameter("email"),
-        req.getParameter("senha")
+    String temp = req.getParameter("numero");
+    Endereco endereco = new Endereco(
+        null,
+        req.getParameter("cep"),
+        Integer.parseInt(temp),
+        req.getParameter("logradouro"),
+        req.getParameter("complemento")
     );
-
-    if (!credenciais.getSenha().matches(".{8,}")) {
-      resp.sendRedirect(req.getContextPath() + "/superadm/cadastro.html");
-      return;
-    }
+    CadastroFabricaDTO credenciais = new CadastroFabricaDTO(
+        req.getParameter("nome"),
+        req.getParameter("cnpj"),
+        req.getParameter("email"),
+        req.getParameter("empresa"),
+        req.getParameter("ramo"),
+        0
+    );
 
     // Dados da resposta
     String destino = "/erro.html";
 
-    try (SuperAdmDAO dao = new SuperAdmDAO()) {
+    try (FabricaDAO fDao = new FabricaDAO(); EnderecoDAO eDao = new EnderecoDAO()) {
+      // Cadastra o endereço e recupera o id gerado
+      int id = eDao.cadastrar(endereco);
+
+      // setta o id do endereco nas credenciais da fabrica
+      credenciais.setFkEndereco(id);
+
       // Cadastra o usuário e setta o destino para mostrar os usuários
-      dao.cadastrar(credenciais);
-      destino = "/area-restrita/create-read-superadm";
+      fDao.cadastrar(credenciais);
+      destino = "/area-restrita/create-read-fabrica";
 
     } catch (SQLException e) {
       // Se houver alguma exceção, registra no terminal

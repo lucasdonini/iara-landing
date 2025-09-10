@@ -1,6 +1,7 @@
 package com.dao;
 
 import com.dto.CadastroFabricaDTO;
+import com.model.Endereco;
 import com.model.Fabrica;
 
 import java.sql.PreparedStatement;
@@ -15,21 +16,20 @@ public class FabricaDAO extends DAO {
     super();
   }
 
-  public Fabrica cadastrar(CadastroFabricaDTO credenciais) throws SQLException {
+  public void cadastrar(CadastroFabricaDTO credenciais) throws SQLException {
     // Variáveis
     String nome = credenciais.getNome();
     String cnpj = credenciais.getCnpj();
     String email = credenciais.getEmail();
     String nomeEmpresa = credenciais.getNomeEmpresa();
     String ramo = credenciais.getRamo();
+    int idEndereco = credenciais.getFkEndereco();
     boolean status = true;
-    int id;
 
     // Preparação do comando
     String sql = """
-        INSERT INTO fabrica (nome, cnpj_unidade, email_corporativo, nome_industria, status, ramo)
-        VALUES (?, ?, ?, ?, ?, ?)
-        RETURNING id
+        INSERT INTO fabrica (nome, cnpj_unidade, email_corporativo, nome_industria, status, ramo, id_endereco)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -40,30 +40,18 @@ public class FabricaDAO extends DAO {
       pstmt.setString(4, nomeEmpresa);
       pstmt.setBoolean(5, status);
       pstmt.setString(6, ramo);
+      pstmt.setInt(7, idEndereco);
 
       // Execução do update
       pstmt.executeUpdate();
 
-      // Recuperação e armazenamento do id gerado
-      try (ResultSet rs = pstmt.getGeneratedKeys()) {
-        if (rs.next()) {
-          id = rs.getInt("id");
-        } else {
-          throw new SQLException("Falha ao recuperar campos autogerados");
-        }
-      }
-
-      // Commit das alterações e retorno
+      // Commit das alterações
       conn.commit();
-      return new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, null);
 
     } catch (SQLException e) {
 
       // Faz o rollback das alterações
       conn.rollback();
-
-      // Registra o erro no terminal e o propaga
-      System.err.println(e.getMessage());
       throw e;
     }
   }
@@ -71,13 +59,21 @@ public class FabricaDAO extends DAO {
   public List<Fabrica> listarFabricas() throws SQLException {
     List<Fabrica> fabricas = new ArrayList<>();
 
-    String sql = "SELECT * FROM fabrica";
+    String sql = """
+        SELECT
+            f.id as "id_fabrica", f.*,
+            e.id as "id_endereco", e.*
+        FROM fabrica f
+        JOIN endereco e ON e.id = f.id_endereco
+        ORDER BY f.id
+        """;
 
     try (Statement stmt = conn.createStatement();
          ResultSet rs = stmt.executeQuery(sql)) {
 
       while (rs.next()) {
-        int id = rs.getInt("id");
+        // Informações da fábrica
+        int idFabrica = rs.getInt("id_fabrica");
         String nome = rs.getString("nome");
         String cnpj = rs.getString("cnpj_unidade");
         boolean status = rs.getBoolean("status");
@@ -85,21 +81,25 @@ public class FabricaDAO extends DAO {
         String nomeEmpresa = rs.getString("nome_industria");
         String ramo = rs.getString("ramo");
 
-        fabricas.add(new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, null));
+        // Informações do endereco
+        int idEndereco = rs.getInt("id_endereco");
+        String cep = rs.getString("cep");
+        int numero = rs.getInt("numero");
+        String rua = rs.getString("rua");
+        String complemento = rs.getString("complemento");
+
+        // Cria e armazena os objetos
+        Endereco endereco = new Endereco(idEndereco, cep, numero, rua, complemento);
+        Fabrica fabrica = new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, endereco);
+        fabricas.add(fabrica);
       }
 
       return fabricas;
-
-    } catch (SQLException e) {
-
-      // Registra o erro no terminal e o propaga
-      System.err.println(e.getMessage());
-      throw e;
     }
   }
 
-  public void atualizar(Fabrica alteracoes) throws SQLException {
-    // Variáveis
+  public void atualizar(Fabrica original, Fabrica alteracoes) throws SQLException {
+    // Desempacotamento do model
     int id = alteracoes.getId();
     String nome = alteracoes.getNome();
     String cnpj = alteracoes.getCnpj();
@@ -109,35 +109,35 @@ public class FabricaDAO extends DAO {
     String ramo = alteracoes.getRamo();
 
     // Contrução do script dinâmico
-    StringBuilder sql = new StringBuilder("UPDATE fabrica SET");
+    StringBuilder sql = new StringBuilder("UPDATE fabrica SET ");
     List<Object> valores = new ArrayList<>();
 
-    if (nome != null) {
+    if (!original.getNome().equals(nome)) {
       sql.append("nome = ?, ");
       valores.add(nome);
     }
 
-    if (cnpj != null) {
+    if (!original.getCnpj().equals(cnpj)) {
       sql.append("cnpj_unidade = ?, ");
       valores.add(cnpj);
     }
 
-    if (status != null) {
+    if (original.getStatus() != status) {
       sql.append("status = ?, ");
       valores.add(status);
     }
 
-    if (email != null) {
+    if (!original.getEmail().equals(email)) {
       sql.append("email_corporativo = ?, ");
       valores.add(email);
     }
 
-    if (nomeEmpresa != null) {
+    if (!original.getNomeEmpresa().equals(nomeEmpresa)) {
       sql.append("nome_industria = ?, ");
       valores.add(nomeEmpresa);
     }
 
-    if (ramo != null) {
+    if (!original.getRamo().equals(ramo)) {
       sql.append("ramo = ?, ");
       valores.add(ramo);
     }
@@ -151,7 +151,7 @@ public class FabricaDAO extends DAO {
     sql.setLength(sql.length() - 2);
 
     // Adiciona a cláusula WHERE
-    sql.append("WHERE id = ?");
+    sql.append(" WHERE id = ?");
     valores.add(id);
 
     // Execução do comando
@@ -165,18 +165,14 @@ public class FabricaDAO extends DAO {
 
     } catch (SQLException e) {
 
-      // Faz o rollback das modificações
+      // Faz o rollback das modificações e propaga a exceção
       conn.rollback();
-
-      // Registra o erro no terminal e o propaga
-      System.err.println(e.getMessage());
       throw e;
     }
   }
 
-  public void remover(Fabrica fabrica) throws SQLException {
+  public void remover(int id) throws SQLException {
     String sql = "DELETE FROM fabrica WHERE id = ?";
-    int id = fabrica.getId();
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, id);
@@ -191,6 +187,49 @@ public class FabricaDAO extends DAO {
       // Registra o erro no terminal e o propaga
       System.err.println(e.getMessage());
       throw e;
+    }
+  }
+
+  public Fabrica getFabricaById(int id) throws SQLException {
+    // Prepara o comando
+    String sql = """
+         SELECT
+            f.id as "id_fabrica", f.*,
+            e.id as "id_endereco", e.*
+        FROM fabrica f
+        JOIN endereco e ON e.id = f.id_endereco
+        WHERE F.ID = ?
+        """;
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setInt(1, id);
+
+      try (ResultSet rs = pstmt.executeQuery()) {
+        if (rs.next()) {
+          // Informações da fábrica
+          int idFabrica = rs.getInt("id_fabrica");
+          String nome = rs.getString("nome");
+          String cnpj = rs.getString("cnpj_unidade");
+          boolean status = rs.getBoolean("status");
+          String email = rs.getString("email_corporativo");
+          String nomeEmpresa = rs.getString("nome_industria");
+          String ramo = rs.getString("ramo");
+
+          // Informações do endereco
+          int idEndereco = rs.getInt("id_endereco");
+          String cep = rs.getString("cep");
+          int numero = rs.getInt("numero");
+          String rua = rs.getString("rua");
+          String complemento = rs.getString("complemento");
+
+          // Cria e retorna o objeto
+          Endereco endereco = new Endereco(idEndereco, cep, numero, rua, complemento);
+          return new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, endereco);
+
+        } else {
+          throw new SQLException("Falha ao recuperar o usuário");
+        }
+      }
     }
   }
 }

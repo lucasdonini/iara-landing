@@ -1,9 +1,12 @@
 package com.dao;
 
-import com.dto.EnderecoDTO;
+import com.model.Endereco;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class EnderecoDAO extends DAO {
@@ -12,147 +15,134 @@ public class EnderecoDAO extends DAO {
     super();
   }
 
-  //Cadastrar novo endereco
-  public void cadastrar(EnderecoDTO endereco) throws SQLException {
-    //Comando SQL
-    String sql = "INSERT INTO endereco (cep, numero, rua, complemento) VALUES (?,?,?,?)";
+  //Cadastrar novo endereço e retornar o id gerado
+  public int cadastrar(Endereco credenciais) throws SQLException {
+    // Desempacotamento do objeto Endereco
+    String cep = credenciais.getCep();
+    int numero = credenciais.getNumero();
+    String rua = credenciais.getRua();
+    String complemento = credenciais.getComplemento();
+    int id;
 
-    try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) { //Preparando comando SQL
+    // Insere null se o complemento estiver vazio
+    complemento = complemento.isBlank() ? null : complemento;
+
+    //Comando SQL
+    String sql = """
+        INSERT INTO endereco (cep, numero, rua, complemento)
+        VALUES (?,?,?,?)
+        RETURNING id
+        """;
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) { //Preparando comando SQL
       //Definindo variáveis do comando SQL
-      pstmt.setString(1, endereco.getCep());
-      pstmt.setInt(2, endereco.getNumero());
-      pstmt.setString(3, endereco.getRua());
-      pstmt.setString(4, endereco.getComplemento());
-      //Salvando inserção no banco
-      pstmt.execute();
+      pstmt.setString(1, cep);
+      pstmt.setInt(2, numero);
+      pstmt.setString(3, rua);
+      pstmt.setString(4, complemento);
+
+      // Recuperando o id gerado ao executar inserção
+      try (ResultSet rs = pstmt.executeQuery()) {
+        if (rs.next()) {
+          id = rs.getInt("id");
+        } else {
+          throw new SQLException("Algo deu errado ao inserir o endereço");
+        }
+      }
       //Efetuando transação
-      this.conn.commit();
+      conn.commit();
+
+      // Retornando o id gerado
+      return id;
+
     } catch (SQLException e) {
-      System.err.println(e.getMessage());
       //Cancelando transação
-      this.conn.rollback();
-      //Lançando excessão
+      conn.rollback();
+      //Lançando exceção
       throw e;
     }
   }
 
-  //Remover endereco
-  public void remover(EnderecoDTO endereco) throws SQLException {
+  //Remover endereço
+  public void remover(int id) throws SQLException {
     // Comando SQL
-    String sql = "DELETE FROM endereco WHERE cep = ?";
+    String sql = "DELETE FROM endereco WHERE id = ?";
 
     try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
       //Definindo variáveis no código SQL
-      pstmt.setString(1, endereco.getCep());
+      pstmt.setInt(1, id);
       //Salvando alterações no banco
       if (pstmt.executeUpdate() != 1) {
         throw new SQLException();
       }
       //Confirmando transações
-      this.conn.commit();
+      conn.commit();
     } catch (SQLException e) {
-      System.err.println(e.getMessage());
       //Cancelando transações
-      this.conn.rollback();
+      conn.rollback();
       //Lançando excessões
       throw e;
     }
   }
 
-  //Atualizar cep
-  private void alterarCep(EnderecoDTO endereco, String novoCep) throws SQLException {
-    //Comando SQL
-    String sql = "UPDATE endereco WHERE cep = ? SET cep = ?";
+  public void atualizar(Endereco original, Endereco alterado) throws SQLException {
+    // Desempacotamento do objeto atualizado
+    int id = alterado.getId();
+    String rua = alterado.getRua();
+    String cep = alterado.getCep();
+    String complemento = alterado.getComplemento();
+    int numero = alterado.getNumero();
 
-    try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) { //Preparando comando SQL
-      //Definindo variáveis no código SQL
-      pstmt.setString(1, endereco.getCep());
-      pstmt.setString(2, novoCep);
-      //Salvando alterações no banco de dados
-      pstmt.executeUpdate();
-    } catch (SQLException e) {
-      System.err.println(e.getMessage());
-      //Lançando exceção
-      throw e;
+    // Contrução do script dinâmico
+    StringBuilder sql = new StringBuilder("UPDATE endereco SET ");
+    List<Object> valores = new ArrayList<>();
+
+    if (!original.getRua().equals(rua) && !rua.isBlank()) {
+      sql.append("rua = ?, ");
+      valores.add(rua);
     }
-  }
 
-  //Atualizar numero
-  private void alterarNumero(EnderecoDTO endereco, Integer novoNumero) throws SQLException {
-    //Comando SQL
-    String sql = "UPDATE endereco WHERE numero = ? SET numero = ?";
-
-    try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) { //Preparando comando SQL
-      //Definindo variáveis no código SQL
-      pstmt.setInt(1, endereco.getNumero());
-      pstmt.setInt(2, novoNumero);
-      //Salvando alterações no banco de dados
-      pstmt.executeUpdate();
-    } catch (SQLException e) {
-      System.err.println(e.getMessage());
-      //Lançando exceção
-      throw e;
+    if (!original.getCep().equals(cep) && !cep.isBlank()) {
+      sql.append("cep = ?, ");
+      valores.add(cep);
     }
-  }
 
-  //Atualizar rua
-  private void alterarRua(EnderecoDTO endereco, String novaRua) throws SQLException {
-    //Comando SQL
-    String sql = "UPDATE endereco WHERE rua = ? SET rua = ?";
-
-    try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) { //Preparando comando SQL
-      //Definindo variáveis no código SQL
-      pstmt.setString(1, endereco.getRua());
-      pstmt.setString(2, novaRua);
-      //Salvando alterações no banco de dados
-      pstmt.executeUpdate();
-    } catch (SQLException e) {
-      System.err.println(e.getMessage());
-      //Lançando exceção
-      throw e;
+    if (!original.getComplemento().equals(complemento) && !complemento.isBlank()) {
+      sql.append("complemento = ?, ");
+      valores.add(complemento);
     }
-  }
 
-  //Atualizar complemento
-  private void alterarComplemento(EnderecoDTO endereco, String novoComplemento) throws SQLException {
-    //Comando SQL
-    String sql = "UPDATE endereco WHERE rua = ? SET rua = ?";
-
-    try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) { //Preparando comando SQL
-      //Definindo variáveis no código SQL
-      pstmt.setString(1, endereco.getComplemento());
-      pstmt.setString(2, novoComplemento);
-      //Salvando alterações no banco de dados
-      pstmt.executeUpdate();
-    } catch (SQLException e) {
-      System.err.println(e.getMessage());
-      //Lançando exceção
-      throw e;
+    if (original.getNumero() != numero) {
+      sql.append("numero = ?, ");
+      valores.add(numero);
     }
-  }
 
-  //Verificar requisição de atualização e confirmar alteração no banco
-  public void alterar(EnderecoDTO endereco, String cep, Integer numero, String rua, String complemento) throws SQLException {
-    try {
-      //realizando verificações
-      if (endereco.getCep() != null) {
-        this.alterarCep(endereco, cep);
-      } else if (endereco.getNumero() != null) {
-        this.alterarNumero(endereco, numero);
-      } else if (endereco.getRua() != null) {
-        this.alterarRua(endereco, rua);
-      } else if (endereco.getComplemento() != null) {
-        this.alterarComplemento(endereco, complemento);
+    // Retorno se nada foi alterado
+    if (valores.isEmpty()) {
+      return;
+    }
+
+    // Remoção do último ", "
+    sql.setLength(sql.length() - 2);
+
+    // Adiciona a cláusula WHERE
+    sql.append(" WHERE id = ?");
+    valores.add(id);
+
+    // Execução do comando
+    try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+      for (int i = 0; i < valores.size(); i++) {
+        pstmt.setObject(i + 1, valores.get(i));
       }
-      //Confirmando transação
-      this.conn.commit();
-    } catch (SQLException sql) {
-      System.err.println(sql.getMessage());
-      //Cancelando transação
-      this.conn.rollback();
-      //Lançando excessão
-      throw sql;
-    }
 
+      pstmt.executeUpdate();
+      conn.commit();
+
+    } catch (SQLException e) {
+
+      // Faz o rollback das modificações e propaga a exceção
+      conn.rollback();
+      throw e;
+    }
   }
 }
