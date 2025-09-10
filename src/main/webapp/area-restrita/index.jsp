@@ -8,10 +8,10 @@
 
 <body>
   <h1>Área Restrita</h1>
-  <a href="${pageContext.request.contextPath}/index.html">Página inicial</a>
+  <a href=${pageContext.request.contextPath}/index.html>Página inicial</a>
   <a href="logout">Logout</a>
   <a href="create-read-usuario">Usuários</a>
-  <a href="create-read-superadm">Super Admins</a>
+  <a href="create-plano">Planos</a>
 </body>
 
 </html>
