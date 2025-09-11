@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+// TODO: criar opções de filtragem para o READ
 
 @WebServlet("/area-restrita/create-read-superadm")
 public class CreateReadSuperAdmServlet extends HttpServlet {
@@ -66,7 +67,7 @@ public class CreateReadSuperAdmServlet extends HttpServlet {
     );
 
     if (!credenciais.getSenha().matches(".{8,}")) {
-      resp.sendRedirect(req.getContextPath() + "/superadm/cadastro.html");
+      resp.sendRedirect(req.getContextPath() + "/area-restrita/superadm/cadastro.html");
       return;
     }
 
