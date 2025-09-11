@@ -9,16 +9,14 @@ public class Pagamento {
     private LocalDate dataVencimento;
     private LocalDate dataPagamento;
     private String tipoPagamento;
-    private Integer fkPlano;
 
     //Construtor
-    public Pagamento(Integer id, Boolean status, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamnto, Integer fkPlano){
+    public Pagamento(Integer id, Boolean status, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamento){
         this.id = id;
         this.status = status;
         this.dataVencimento = dataVencimento;
         this.dataPagamento = dataPagamento;
-        this.tipoPagamento = tipoPagamnto;
-        this.fkPlano = fkPlano;
+        this.tipoPagamento = tipoPagamento;
     }
 
     //toString
@@ -48,9 +46,6 @@ public class Pagamento {
         return tipoPagamento;
     }
 
-    public Integer getFkPlano() {
-        return fkPlano;
-    }
 
     //Setters
 
@@ -74,7 +69,4 @@ public class Pagamento {
         this.tipoPagamento = tipoPagamento;
     }
 
-    public void setFkPlano(Integer fkPlano) {
-        this.fkPlano = fkPlano;
-    }
 }

@@ -9,7 +9,6 @@ public class PagamentoDTO {
   private LocalDate dataVencimento;
   private LocalDate dataPagamento;
   private String tipoPagamento;
-  private Integer fkPlano;
 
   //Construtor
   public PagamentoDTO(Integer id, Boolean status, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamnto, Integer fkPlano) {
@@ -18,7 +17,6 @@ public class PagamentoDTO {
     this.dataVencimento = dataVencimento;
     this.dataPagamento = dataPagamento;
     this.tipoPagamento = tipoPagamnto;
-    this.fkPlano = fkPlano;
   }
 
   //toString
@@ -65,13 +63,5 @@ public class PagamentoDTO {
 
   public void setTipoPagamento(String tipoPagamento) {
     this.tipoPagamento = tipoPagamento;
-  }
-
-  public Integer getFkPlano() {
-    return fkPlano;
-  }
-
-  public void setFkPlano(Integer fkPlano) {
-    this.fkPlano = fkPlano;
   }
 }

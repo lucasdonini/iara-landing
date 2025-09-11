@@ -16,7 +16,7 @@ public class PagamentoDAO extends DAO {
   //Cadastrar novo pagamento
   public void cadastrar(PagamentoDTO pagamento) throws SQLException {
     //Comando SQL
-    String sql = "INSERT INTO pagamento(status, data_vencimento, data_pagamento, tipo_pagamento, fk_plano) VALUES (?,?,?,?,?)";
+    String sql = "INSERT INTO pagamento(status, data_vencimento, data_pagamento, tipo_pagamento) VALUES (?,?,?,?,?)";
 
     try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) { //Preparando comando SQL
       //Definindo variáveis do código SQL
@@ -24,7 +24,6 @@ public class PagamentoDAO extends DAO {
       pstmt.setDate(2, Date.valueOf(pagamento.getDataVencimento()));
       pstmt.setDate(3, Date.valueOf(pagamento.getDataPagamento()));
       pstmt.setString(4, pagamento.getTipoPagamento());
-      pstmt.setInt(5, pagamento.getFkPlano());
       //Salvando alterações no banco de dados
       pstmt.execute();
       //Realizando transações
@@ -136,26 +135,8 @@ public class PagamentoDAO extends DAO {
     }
   }
 
-  //Atualizar FK do plano
-  private void atualizarFkPlano(PagamentoDTO pagamento, Integer novaFkPlano) throws SQLException {
-    //Comando SQL
-    String sql = "UPDATE pagamento WHERE id = ? SET fk_plano = ?";
-
-    try (PreparedStatement pstmt = conn.prepareStatement(sql)) { //Preparando comando SQL
-      //Definindo variáveis do código SQL
-      pstmt.setInt(1, pagamento.getId());
-      pstmt.setInt(1, novaFkPlano);
-      //Salvando no banco de dados
-      pstmt.executeUpdate();
-    } catch (SQLException e) {
-      System.err.println(e.getMessage());
-      //Lançanco excessão
-      throw e;
-    }
-  }
-
   //Metodo para chamar o metodo update adequado
-  public void alterar(PagamentoDTO pagamento, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamento, Integer fkPlano) throws SQLException {
+  public void alterar(PagamentoDTO pagamento, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamento) throws SQLException {
 
     try {
       //Condicionais para chamar metodo atualizar
@@ -166,8 +147,6 @@ public class PagamentoDAO extends DAO {
         this.atualizarStatus(pagamento);
       } else if (tipoPagamento != null) {
         this.atualizarTipoPagamento(pagamento, tipoPagamento);
-      } else if (fkPlano != null) {
-        this.atualizarFkPlano(pagamento, fkPlano);
       }
 
       //Realizando transações
