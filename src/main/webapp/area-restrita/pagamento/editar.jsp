@@ -17,6 +17,7 @@
 <h1>Editar Pagamento - ID: <%= pagamento.getId() %>
 </h1>
 <form action="${pageContext.request.contextPath}/area-restrita/update-pagamento" method="post">
+    <input type="hidden" value="<%=pagamento.getId()%>" name="id">
     <label>Valor pago: R$</label>
     <input type="number" placeholder="Novo valor" name="valorPago" value="<%= pagamento.getValorPago() %>">
     <label>Status:</label>

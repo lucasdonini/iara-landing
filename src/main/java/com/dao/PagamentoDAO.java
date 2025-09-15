@@ -112,7 +112,7 @@ public class PagamentoDAO extends DAO {
         Integer fkFabrica = alterado.getFkFabrica();
 
         // Monta o comando de acordo com os campos alterados
-        StringBuilder sql = new StringBuilder("UPDATE planos SET ");
+        StringBuilder sql = new StringBuilder("UPDATE pagamento SET ");
         List<Object> valores = new ArrayList<>();
 
         if (original.getValorPago() != valorPago) {
