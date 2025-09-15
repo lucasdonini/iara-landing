@@ -3,6 +3,7 @@ package com.controller.superadm;
 import com.dao.SuperAdmDAO;
 import com.dto.CadastroSuperAdmDTO;
 import com.dto.SuperAdmDTO;
+import com.utils.PasswordUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -59,14 +60,16 @@ public class CreateReadSuperAdmServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da request
+    String senhaOriginal = req.getParameter("senha");
+    String senhaHash = PasswordUtils.hashed(senhaOriginal);
     CadastroSuperAdmDTO credenciais = new CadastroSuperAdmDTO(
         req.getParameter("nome"),
         req.getParameter("cargo"),
         req.getParameter("email"),
-        req.getParameter("senha")
+        senhaHash
     );
 
-    if (!credenciais.getSenha().matches(".{8,}")) {
+    if (!senhaOriginal.matches(".{8,}")) {
       resp.sendRedirect(req.getContextPath() + "/area-restrita/superadm/cadastro.html");
       return;
     }

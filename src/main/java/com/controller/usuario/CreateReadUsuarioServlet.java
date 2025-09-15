@@ -4,6 +4,7 @@ import com.dao.FabricaDAO;
 import com.dao.UsuarioDAO;
 import com.dto.CadastroUsuarioDTO;
 import com.dto.UsuarioDTO;
+import com.utils.PasswordUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -80,14 +81,16 @@ public class CreateReadUsuarioServlet extends HttpServlet {
     // Dados da requisição
     String temp = req.getParameter("fk_fabrica").trim();
     int fkFabrica = Integer.parseInt(temp);
+    String senhaOriginal = req.getParameter("senha");
+    String hashSenha = PasswordUtils.hashed(temp);
     CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(
         req.getParameter("nome"),
         req.getParameter("email"),
-        req.getParameter("senha"),
+        hashSenha,
         fkFabrica
     );
 
-    if (!credenciais.getSenha().matches(".{8,}")) {
+    if (!senhaOriginal.matches(".{8,}")) {
       resp.sendRedirect(req.getContextPath() + "/usuario/cadastro.html");
     }
 

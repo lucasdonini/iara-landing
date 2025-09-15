@@ -2,6 +2,7 @@ package com.dao;
 
 import com.dto.LoginDTO;
 import com.dto.SuperAdmDTO;
+import com.utils.PasswordUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,13 +15,12 @@ public class LoginDAO extends DAO {
 
   public SuperAdmDTO login(LoginDTO credenciais) throws SQLException {
     // Prepara o comando
-    String sql = "SELECT * FROM super_adm WHERE email = ? AND senha = ?";
+    String sql = "SELECT * FROM super_adm WHERE email = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       // Completa os parâmetros faltantes
       pstmt.setString(1, credenciais.getEmail());
-      pstmt.setString(2, credenciais.getSenha());
 
       // Captura o resultado
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -30,7 +30,15 @@ public class LoginDAO extends DAO {
           return null;
         }
 
-        // Caso contrário, armazena os atributos e retorna o DTO
+        // Caso contrário, busca o hash da senha no banco
+        String senhaHash = rs.getString("senha");
+
+        // Se a senha não confere, login falhou
+        if (!PasswordUtils.comparar(credenciais.getSenha(), senhaHash)) {
+          return null;
+        }
+
+        // Se o login der certo, retorna as informações do usuário
         int id = rs.getInt("id");
         String nome = rs.getString("nome");
         String cargo = rs.getString("cargo");

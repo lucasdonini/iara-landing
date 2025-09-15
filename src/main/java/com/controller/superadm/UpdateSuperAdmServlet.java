@@ -3,6 +3,7 @@ package com.controller.superadm;
 import com.dao.SuperAdmDAO;
 import com.dto.SuperAdmDTO;
 import com.model.SuperAdm;
+import com.utils.PasswordUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -75,11 +76,15 @@ public class UpdateSuperAdmServlet extends HttpServlet {
       SuperAdm original = dao.getCamposAlteraveis(id);
 
       // Se a senha foi alterada e a original estiver incorreta ou a nova for inválida, volta ao formulário
-      if (!novaSenha.isBlank() && (!novaSenha.matches(".{8,}") || !original.getSenha().equals(senhaAtual))) {
+      if (!novaSenha.isBlank() && (!novaSenha.matches(".{8,}") || !PasswordUtils.comparar(original.getSenha(), senhaAtual))) {
         String url = req.getRequestURI() + "?id=" + id;
         resp.sendRedirect(url);
         return;
       }
+
+      // Faz o hash da senha antes de salvar no banco
+      String novaSenhaHash = PasswordUtils.hashed(alterado.getSenha());
+      alterado.setSenha(novaSenhaHash);
 
       // Salva as informações no banco
       dao.atualizar(original, alterado);
