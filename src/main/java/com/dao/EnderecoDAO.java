@@ -63,6 +63,26 @@ public class EnderecoDAO extends DAO {
     }
   }
 
+  // Buscar o id do endereço
+  public Integer getIdEndereco(String cep, int numero) throws SQLException {
+    // prepara o comando
+    String sql = "SELECT id FROM endereco WHERE cep = ? AND numero = ?";
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setString(1, cep);
+      pstmt.setInt(2, numero);
+
+      try (ResultSet rs = pstmt.executeQuery()) {
+        if (rs.next()) {
+          return rs.getInt("id");
+
+        } else {
+          return null;
+        }
+      }
+    }
+  }
+
   //Remover endereço
   public void remover(int id) throws SQLException {
     // Comando SQL
