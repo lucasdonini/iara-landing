@@ -3,6 +3,7 @@ package com.dao;
 import com.dto.PagamentoDTO;
 import com.model.Pagamento;
 
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -177,13 +178,52 @@ public class PagamentoDAO extends DAO {
     }
 
     //Listar planos
-    public List<PagamentoDTO> listarPagamentos() throws SQLException {
+    public List<PagamentoDTO> listarPagamentos(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
         List<PagamentoDTO> pagamentoDTOS = new ArrayList<>();
 
         // Prepara o comando
-        String sql = "SELECT * FROM pagamento ORDER BY id";
+        StringBuilder sql = new StringBuilder("SELECT * FROM pagamento");
 
-        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+        // Verificando campo do filtro
+        if (campoFiltro!=null){
+            switch (campoFiltro) {
+                case "id" -> sql.append(" WHERE id = ?");
+                case "status" -> sql.append(" WHERE status = ?");
+                case "tipo_pagamento" -> sql.append(" WHERE tipo_pagamento = ?");
+                case "data_vencimento" -> sql.append(" WHERE data_vencimento = ?");
+                case "fk_fabrica" -> sql.append(" WHERE fk_fabrica = ?");
+                case "data_pagamento" -> sql.append(" WHERE data_pagamento = ?");
+                default -> sql.append(" WHERE valor_pago = ?");
+            }
+        }
+
+        //Verificando campo para ordenar a consulta
+        if (campoSequencia!=null){
+            switch (campoSequencia) {
+                case "id" -> sql.append(" ORDER BY id");
+                case "status" -> sql.append(" ORDER BY status");
+                case "tipo_pagamento" -> sql.append(" ORDER BY tipo_pagamento");
+                case "data_vencimento" -> sql.append(" ORDER BY data_vencimento");
+                case "fk_fabrica" -> sql.append(" ORDER BY fk_fabrica");
+                case "data_pagamento" -> sql.append(" ORDER BY data_pagamento");
+                default -> sql.append(" ORDER BY valor_pago");
+            }
+
+            //Verificando direção da sequencia
+            switch(direcaoSequencia){
+                case "crescente" -> sql.append(" ASC");
+                case "decrescente" -> sql.append(" DESC");
+            }
+        }
+
+        try (PreparedStatement pstmt = conn.prepareStatement(String.valueOf(sql))) {
+            //Definindo parâmetro vazio
+            if (campoFiltro!=null){
+                pstmt.setObject(1, valorFiltro);
+            }
+
+            //Instanciando um ResultSet
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 int id = rs.getInt("id");
                 double valorPago = rs.getDouble("valor_pago");
