@@ -12,7 +12,7 @@ public class Fabrica {
   private Endereco endereco;
 
   public Fabrica(int id, String nome, String cnpj, Boolean status, String email, String nomeEmpresa,
-      String ramo, Endereco endereco) {
+                 String ramo, Endereco endereco) {
     this.id = id;
     this.nome = nome;
     this.cnpj = cnpj;
@@ -23,70 +23,79 @@ public class Fabrica {
     this.endereco = endereco;
   }
 
-  // Getters
+  // Getters e Setters
   public int getId() {
     return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getNome() {
     return nome;
   }
 
-  public String getCnpj() {
-    return cnpj;
-  }
-
-  public Boolean getStatus() {
-    return status;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public String getNomeEmpresa() {
-    return nomeEmpresa;
-  }
-
-  public String getRamo() {
-    return ramo;
-  }
-
-  public Endereco getEndereco(){return this.endereco;}
-
-  // Setters
-  public void setId(int id) {
-    this.id = id;
-  }
-
   public void setNome(String nome) {
     this.nome = nome;
+  }
+
+  public String getCnpj() {
+    return cnpj;
   }
 
   public void setCnpj(String cnpj) {
     this.cnpj = cnpj;
   }
 
+  public Boolean getStatus() {
+    return status;
+  }
+
   public void setStatus(Boolean status) {
     this.status = status;
+  }
+
+  public String getEmail() {
+    return email;
   }
 
   public void setEmail(String email) {
     this.email = email;
   }
 
+  public String getNomeEmpresa() {
+    return nomeEmpresa;
+  }
+
   public void setNomeEmpresa(String factory_name) {
     this.nomeEmpresa = factory_name;
+  }
+
+  public String getRamo() {
+    return ramo;
   }
 
   public void setRamo(String sector) {
     this.ramo = sector;
   }
 
-  public void setEndereco(Endereco endereco){this.endereco = endereco;}
+  public Endereco getEndereco() {
+    return this.endereco;
+  }
+
+  public void setEndereco(Endereco endereco) {
+    this.endereco = endereco;
+  }
+
+  // toString()
+  @Override
+  public String toString() {
+    return "%s - %s, %s".formatted(nome, nomeEmpresa, endereco.getRua());
+  }
 
   // Outros métodos
-  public String cnpjFormatado() {
+  public String getCnpjFormatado() {
     StringBuilder sb = new StringBuilder(cnpj);
     sb.insert(12, "-");
     sb.insert(8, "/");

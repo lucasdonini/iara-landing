@@ -38,7 +38,7 @@
       <%= f.getNome() %>
     </td>
     <td>
-      <%= f.cnpjFormatado() %>
+      <%= f.getCnpjFormatado() %>
     </td>
     <td>
       <%= f.getStatus() ? "Ativa" : "Inativa" %>
