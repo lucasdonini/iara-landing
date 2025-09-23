@@ -26,7 +26,7 @@ public class CreateReadSuperAdmServlet extends HttpServlet {
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
 
       // Recupera os usuários do banco e registra na request
-      superAdms = dao.listarSuperAdms();
+      superAdms = dao.listarSuperAdms(null, null, null, null);
       req.setAttribute("admins", superAdms);
 
       // setta erro como false
