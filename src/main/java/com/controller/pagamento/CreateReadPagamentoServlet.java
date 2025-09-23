@@ -26,7 +26,7 @@ public class CreateReadPagamentoServlet extends HttpServlet {
         try (PagamentoDAO dao = new PagamentoDAO()) {
 
             // Recupera os usuários do banco e registra na request
-            pagamentoDTOS = dao.listarPagamentos();
+            pagamentoDTOS = dao.listarPagamentos(null, null, null, null);
             req.setAttribute("pagamentos", pagamentoDTOS);
 
             // setta erro como false

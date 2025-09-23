@@ -54,7 +54,7 @@ public class CreateReadPlanosServlet extends HttpServlet {
     try (PlanosDAO dao = new PlanosDAO()) {
 
       // Recupera os usuários do banco e registra na request
-      planosDTOS = dao.listarPlanos();
+      planosDTOS = dao.listarPlanos(null, null, null, null);
       req.setAttribute("planos", planosDTOS);
 
       // setta erro como false
