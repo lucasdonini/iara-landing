@@ -3,7 +3,6 @@ package com.controller;
 import com.dao.SuperAdmDAO;
 import com.dto.CadastroSuperAdmDTO;
 import com.dto.SuperAdmDTO;
-import com.dto.UsuarioDTO;
 import com.exception.ExcecaoDePagina;
 import com.model.SuperAdm;
 import com.utils.PasswordUtils;
@@ -25,13 +24,13 @@ public class SuperAdmServlet extends HttpServlet {
   private static final String PAGINA_PRINCIPAL = "jsp/superadms.jsp";
   private static final String PAGINA_CADASTRO = "jsp/cadastro-superadm.jsp";
   private static final String PAGINA_EDICAO = "jsp/editar-superadm.jsp";
-  private static final String PAGINA_ERRO = "/html/erro.html";
-  private static final String ESSE_ENDPOINT = "/area-restrita/superadms";
+  private static final String PAGINA_ERRO = "html/erro.html";
+  private static final String ESSE_ENDPOINT = "area-restrita/superadms";
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da request
-    String action = req.getParameter("action");
+    String action = req.getParameter("action").trim();
 
     // Dados da resposta
     boolean erro = true;
@@ -51,6 +50,7 @@ public class SuperAdmServlet extends HttpServlet {
           destino = PAGINA_EDICAO;
         }
 
+        case "create" -> destino = PAGINA_CADASTRO;
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
@@ -68,12 +68,11 @@ public class SuperAdmServlet extends HttpServlet {
     } catch (Throwable e) {
       System.err.println("Erro inesperado:");
       e.printStackTrace(System.err);
-
     }
 
     // Redireciona a request par a página jsp
     if (erro) {
-      resp.sendRedirect(req.getContextPath() + PAGINA_ERRO);
+      resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
     } else {
       RequestDispatcher rd = req.getRequestDispatcher(destino);
       rd.forward(req, resp);
@@ -83,7 +82,7 @@ public class SuperAdmServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da request
-    String action = req.getParameter("action");
+    String action = req.getParameter("action").trim();
 
     // Dados da resposta
     String destino = PAGINA_ERRO;
@@ -115,11 +114,10 @@ public class SuperAdmServlet extends HttpServlet {
     } catch (Throwable e) {
       System.err.println("Erro inesperado:");
       e.printStackTrace(System.err);
-
     }
 
     // Redireciona para a página de destino
-    resp.sendRedirect(req.getContextPath() + destino);
+    resp.sendRedirect(req.getContextPath() + '/' + destino);
   }
 
   private List<SuperAdmDTO> getListaSuperAdms() throws SQLException, ClassNotFoundException {
@@ -131,7 +129,7 @@ public class SuperAdmServlet extends HttpServlet {
 
   private SuperAdmDTO getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da request
-    String temp = req.getParameter("id");
+    String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
@@ -144,13 +142,12 @@ public class SuperAdmServlet extends HttpServlet {
     // Dados da request
     String senhaOriginal = req.getParameter("senha");
     String senhaHash = PasswordUtils.hashed(senhaOriginal);
-    String email = req.getParameter("email");
-    CadastroSuperAdmDTO credenciais = new CadastroSuperAdmDTO(
-        req.getParameter("nome"),
-        req.getParameter("cargo"),
-        email,
-        senhaHash
-    );
+
+    String nome = req.getParameter("nome").trim();
+    String cargo = req.getParameter("cargo").trim();
+    String email = req.getParameter("email").trim();
+
+    CadastroSuperAdmDTO credenciais = new CadastroSuperAdmDTO(nome, cargo, email, senhaHash);
 
     if (!senhaOriginal.matches(".{8,}")) {
       throw ExcecaoDePagina.senhaCurta(8);
@@ -158,9 +155,8 @@ public class SuperAdmServlet extends HttpServlet {
 
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
       // Verifica se o usuário não viola a chave UNIQUE de email
-      SuperAdmDTO temp = dao.getSuperAdmByEmail(email);
-
-      if (temp != null) {
+      SuperAdmDTO teste = dao.getSuperAdmByEmail(email);
+      if (teste != null) {
         throw ExcecaoDePagina.emailDuplicado("super administrador");
       }
 
@@ -171,7 +167,7 @@ public class SuperAdmServlet extends HttpServlet {
 
   private void removerSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da request
-    String temp = req.getParameter("id");
+    String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
@@ -182,18 +178,26 @@ public class SuperAdmServlet extends HttpServlet {
 
   private void atualizarSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da request
-    String temp = req.getParameter("id");
+    String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
-    String nome = req.getParameter("nome");
-    String cargo = req.getParameter("cargo");
-    String email = req.getParameter("email");
-    String senhaAtual = req.getParameter("senha_atual");
-    String novaSenha = req.getParameter("nova_senha");
+
+    String nome = req.getParameter("nome").trim();
+    String cargo = req.getParameter("cargo").trim();
+    String email = req.getParameter("email").trim();
+    String senhaAtual = req.getParameter("senha_atual").trim();
+    String novaSenha = req.getParameter("nova_senha").trim();
+
     SuperAdm alterado = new SuperAdm(id, nome, cargo, email, novaSenha);
 
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
       // Recupera as informações originais do banco
       SuperAdm original = dao.getCamposAlteraveis(id);
+
+      // Verifica se o email alterado não viola a chave UNIQUE
+      SuperAdmDTO teste = dao.getSuperAdmByEmail(email);
+      if (teste != null && teste.getId() != id) {
+        throw ExcecaoDePagina.emailDuplicado("super administrador");
+      }
 
       // Se a senha foi alterada e a original estiver incorreta ou a nova for inválida, volta ao formulário
       if (!novaSenha.isBlank()) {
@@ -204,11 +208,6 @@ public class SuperAdmServlet extends HttpServlet {
 
         if (!PasswordUtils.comparar(senhaAtual, original.getSenha())) {
           throw ExcecaoDePagina.falhaAutenticacao();
-        }
-
-        SuperAdmDTO superAdmVerificacao = dao.getSuperAdmByEmail(email);
-        if (superAdmVerificacao.getEmail().equals(email) && superAdmVerificacao.getId() != id) {
-          throw ExcecaoDePagina.emailDuplicado("super administrador");
         }
 
         // Faz o hash da senha antes de salvar no banco

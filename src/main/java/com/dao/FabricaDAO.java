@@ -9,9 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FabricaDAO extends DAO {
   public FabricaDAO() throws SQLException, ClassNotFoundException {
@@ -200,7 +198,7 @@ public class FabricaDAO extends DAO {
             e.id as "id_endereco", e.*
         FROM fabrica f
         JOIN endereco e ON e.id = f.id_endereco
-        WHERE F.ID = ?
+        WHERE f.id = ?
         """;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -209,9 +207,50 @@ public class FabricaDAO extends DAO {
       try (ResultSet rs = pstmt.executeQuery()) {
         if (rs.next()) {
           // Informações da fábrica
-          int idFabrica = rs.getInt("id_fabrica");
           String nome = rs.getString("nome");
           String cnpj = rs.getString("cnpj_unidade");
+          boolean status = rs.getBoolean("status");
+          String email = rs.getString("email_corporativo");
+          String nomeEmpresa = rs.getString("nome_industria");
+          String ramo = rs.getString("ramo");
+
+          // Informações do endereco
+          int idEndereco = rs.getInt("id_endereco");
+          String cep = rs.getString("cep");
+          int numero = rs.getInt("numero");
+          String rua = rs.getString("rua");
+          String complemento = rs.getString("complemento");
+
+          // Cria e retorna o objeto
+          Endereco endereco = new Endereco(idEndereco, cep, numero, rua, complemento);
+          return new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, endereco);
+
+        } else {
+          throw new SQLException("Falha ao recuperar o usuário");
+        }
+      }
+    }
+  }
+
+  public Fabrica getFabricaByCnpj(String cnpj) throws SQLException {
+    // Prepara o comando
+    String sql = """
+         SELECT
+            f.id as "id_fabrica", f.*,
+            e.id as "id_endereco", e.*
+        FROM fabrica f
+        JOIN endereco e ON e.id = f.id_endereco
+        WHERE f.cnpj_unidade = ?
+        """;
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setString(1, cnpj);
+
+      try (ResultSet rs = pstmt.executeQuery()) {
+        if (rs.next()) {
+          // Informações da fábrica
+          int idFabrica = rs.getInt("id_fabrica");
+          String nome = rs.getString("nome");
           boolean status = rs.getBoolean("status");
           String email = rs.getString("email_corporativo");
           String nomeEmpresa = rs.getString("nome_industria");
@@ -233,21 +272,5 @@ public class FabricaDAO extends DAO {
         }
       }
     }
-  }
-
-  public Map<Integer, String> getNomes() throws SQLException {
-    // Prepara o comando o instancia o objeto da resposta
-    String sql = "SELECT id, nome FROM fabrica";
-    Map<Integer, String> nomes = new HashMap<>();
-
-    try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
-      while (rs.next()) {
-        String nome = rs.getString("nome");
-        int id = rs.getInt("id");
-        nomes.put(id, nome);
-      }
-    }
-
-    return nomes;
   }
 }

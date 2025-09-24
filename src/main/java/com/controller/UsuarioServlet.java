@@ -33,7 +33,7 @@ public class UsuarioServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     // Dados da requisição
-    String action = req.getParameter("action");
+    String action = req.getParameter("action").trim();
 
     // Dados da resposta
     boolean erro = true;
@@ -48,7 +48,6 @@ public class UsuarioServlet extends HttpServlet {
           req.setAttribute("usuarios", usuarios);
           req.setAttribute("fabricasPorFk", fabricasPorFk);
           destino = PAGINA_PRINCIPAL;
-          erro = false;
         }
 
         case "update" -> {
@@ -58,7 +57,6 @@ public class UsuarioServlet extends HttpServlet {
           req.setAttribute("infosUsuario", usuario);
           req.setAttribute("fabricasPorFk", fabricasPorFk);
           destino = PAGINA_EDICAO;
-          erro = false;
         }
 
         case "create" -> {
@@ -66,11 +64,12 @@ public class UsuarioServlet extends HttpServlet {
 
           req.setAttribute("nomesFabricas", nomesFabricas);
           destino = PAGINA_CADASTRO;
-          erro = false;
         }
 
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
+
+      erro = false;
 
     } catch (SQLException e) {
       // Se houver alguma exceção, registra no terminal
@@ -98,7 +97,7 @@ public class UsuarioServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da request
-    String action = req.getParameter("action");
+    String action = req.getParameter("action").trim();
 
     // Dados da resposta
     String destino = PAGINA_ERRO;
@@ -161,22 +160,20 @@ public class UsuarioServlet extends HttpServlet {
   private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da requisição
     String temp = req.getParameter("fk_fabrica").trim();
+
     if (temp.isBlank()) {
       throw ExcecaoDePagina.campoNecessarioFaltante("fabrica");
     }
+
     int fkFabrica = Integer.parseInt(temp);
 
     String senhaOriginal = req.getParameter("senha");
     String hashSenha = PasswordUtils.hashed(temp);
 
-    String email = req.getParameter("email");
+    String email = req.getParameter("email").trim();
+    String nome = req.getParameter("nome").trim();
 
-    CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(
-        req.getParameter("nome"),
-        req.getParameter("email"),
-        hashSenha,
-        fkFabrica
-    );
+    CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(nome, email, hashSenha, fkFabrica);
 
     if (!senhaOriginal.matches(".{8,}")) {
       throw ExcecaoDePagina.senhaCurta(8);
@@ -219,16 +216,10 @@ public class UsuarioServlet extends HttpServlet {
     int nivelAcessoInt = Integer.parseInt(temp);
     NivelAcesso nivelAcesso = NivelAcesso.fromInteger(nivelAcessoInt);
 
-    String email = req.getParameter("email");
+    String email = req.getParameter("email").trim();
+    String nome = req.getParameter("nome").trim();
 
-    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(
-        id,
-        req.getParameter("nome"),
-        email,
-        nivelAcesso,
-        status,
-        fkFabrica
-    );
+    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, email, nivelAcesso, status, fkFabrica);
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
       // Busca no banco o usuário original
@@ -247,7 +238,7 @@ public class UsuarioServlet extends HttpServlet {
 
   private void removerUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da request
-    String temp = req.getParameter("id");
+    String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
     try (UsuarioDAO dao = new UsuarioDAO()) {

@@ -25,7 +25,7 @@ public class PlanoServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     // Dados da requisição
-    String action = req.getParameter("action");
+    String action = req.getParameter("action").trim();
 
     // Dados da resposta
     boolean erro = true;
@@ -37,23 +37,19 @@ public class PlanoServlet extends HttpServlet {
           List<Plano> planos = getListaPlanos();
           req.setAttribute("planos", planos);
           destino = PAGINA_PRINCIPAL;
-          erro = false;
         }
 
         case "update" -> {
           Plano plano = getInformacoesAlteraveis(req);
           req.setAttribute("infosPlano", plano);
           destino = PAGINA_EDICAO;
-          erro = false;
         }
 
-        case "create" -> {
-          destino = PAGINA_CADASTRO;
-          erro = false;
-        }
-
+        case "create" -> destino = PAGINA_CADASTRO;
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
+
+      erro = false;
 
     } catch (SQLException e) {
       // Se houver alguma exceção, registra no terminal
@@ -81,7 +77,7 @@ public class PlanoServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da request
-    String action = req.getParameter("action");
+    String action = req.getParameter("action").trim();
 
     // Dados da resposta
     String destino = PAGINA_ERRO;
@@ -128,7 +124,7 @@ public class PlanoServlet extends HttpServlet {
 
   private Plano getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da requisição
-    String temp = req.getParameter("id");
+    String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
     try (PlanoDAO dao = new PlanoDAO()) {
@@ -139,14 +135,14 @@ public class PlanoServlet extends HttpServlet {
 
   private void registrarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da requisição
-    String temp = req.getParameter("valor");
-    if (temp == null || temp.isBlank()) {
+    String temp = req.getParameter("valor").trim();
+    if (temp.isBlank()) {
       throw ExcecaoDePagina.campoNecessarioFaltante("valor");
     }
-
-    String nome = req.getParameter("nome");
-    String descricao = req.getParameter("descricao");
     double valor = Double.parseDouble(temp);
+
+    String nome = req.getParameter("nome").trim();
+    String descricao = req.getParameter("descricao").trim();
     Plano plano = new Plano(null, nome, valor, descricao);
 
     try (PlanoDAO dao = new PlanoDAO()) {
@@ -162,7 +158,7 @@ public class PlanoServlet extends HttpServlet {
 
   private void removerPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da requisição
-    String temp = req.getParameter("id");
+    String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
     try (PlanoDAO dao = new PlanoDAO()) {
@@ -173,12 +169,18 @@ public class PlanoServlet extends HttpServlet {
 
   private void atualizarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da request
-    String temp = req.getParameter("id");
+    String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
-    String nome = req.getParameter("nome");
-    temp = req.getParameter("valor");
+
+    String nome = req.getParameter("nome").trim();
+
+    temp = req.getParameter("valor").trim();
+    if (temp.isBlank()) {
+      throw ExcecaoDePagina.campoNecessarioFaltante("valor");
+    }
     double valor = Double.parseDouble(temp);
-    String descricao = req.getParameter("descricao");
+
+    String descricao = req.getParameter("descricao").trim();
     Plano alterado = new Plano(id, nome, valor, descricao);
 
     try (PlanoDAO dao = new PlanoDAO()) {
@@ -186,7 +188,8 @@ public class PlanoServlet extends HttpServlet {
       Plano original = dao.getCamposAlteraveis(id);
 
       // Verifica se o novo nome viola a chave UNIQUE
-      if (dao.getPlanoByNome(nome) != null && !original.getNome().equals(nome)) {
+      Plano teste = dao.getPlanoByNome(nome);
+      if (teste != null && id != teste.getId()) {
         throw ExcecaoDePagina.nomeDuplicado();
       }
 

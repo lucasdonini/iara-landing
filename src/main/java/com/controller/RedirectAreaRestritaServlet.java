@@ -1,5 +1,6 @@
 package com.controller;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,6 +18,7 @@ Para impedir essa falha de segurança, tornei a página inicial da área restrit
 public class RedirectAreaRestritaServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-    req.getRequestDispatcher("index.jsp").forward(req, resp);
+    RequestDispatcher rd = req.getRequestDispatcher("index.jsp");
+    rd.forward(req, resp);
   }
 }
