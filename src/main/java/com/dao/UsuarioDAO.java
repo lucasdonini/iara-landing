@@ -200,4 +200,33 @@ public class UsuarioDAO extends DAO {
       }
     }
   }
+
+  public UsuarioDTO getUsuarioByEmail(String email) throws SQLException {
+    // Prepara o comando
+    String sql = "SELECT * FROM usuario WHERE email = ?";
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setString(1, email);
+
+      try (ResultSet rs = pstmt.executeQuery()) {
+        if (!rs.next()) {
+          return null;
+        }
+
+        int id = rs.getInt("id");
+        String nome = rs.getString("nome");
+
+        int nivelAcessoInt = rs.getInt("nivel_acesso");
+        NivelAcesso nivelAcesso = NivelAcesso.fromInteger(nivelAcessoInt);
+
+        Date dtCriacaoDate = rs.getDate("data_criacao");
+        LocalDate dtCriacao = dtCriacaoDate == null ? null : dtCriacaoDate.toLocalDate();
+
+        boolean status = rs.getBoolean("status");
+        int fkFabrica = rs.getInt("fk_fabrica");
+
+        return new UsuarioDTO(id, nome, email, nivelAcesso, dtCriacao, status, fkFabrica);
+      }
+    }
+  }
 }

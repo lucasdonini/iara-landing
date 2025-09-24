@@ -1,0 +1,258 @@
+package com.controller;
+
+import com.dao.FabricaDAO;
+import com.dao.UsuarioDAO;
+import com.dto.AtualizacaoUsuarioDTO;
+import com.dto.CadastroUsuarioDTO;
+import com.dto.UsuarioDTO;
+import com.exception.ExcecaoDePagina;
+import com.model.Fabrica;
+import com.model.NivelAcesso;
+import com.utils.PasswordUtils;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@WebServlet("/area-restrita/usuarios")
+public class UsuarioServlet extends HttpServlet {
+  private static final String PAGINA_PRINCIPAL = "jsp/usuarios.jsp";
+  private static final String PAGINA_CADASTRO = "jsp/cadastro-usuario.jsp";
+  private static final String PAGINA_EDICAO = "jsp/editar-usuario.jsp";
+  private static final String PAGINA_ERRO = "html/erro.html";
+  private static final String ESSE_ENDPOINT = "area-restrita/usuarios";
+
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    // Dados da requisição
+    String action = req.getParameter("action");
+
+    // Dados da resposta
+    boolean erro = true;
+    String destino = null;
+
+    try {
+      switch (action) {
+        case "read" -> {
+          List<UsuarioDTO> usuarios = getListaUsuarios();
+          Map<Integer, String> fabricasPorFk = getMapFabricaPorFk();
+
+          req.setAttribute("usuarios", usuarios);
+          req.setAttribute("fabricasPorFk", fabricasPorFk);
+          destino = PAGINA_PRINCIPAL;
+          erro = false;
+        }
+
+        case "update" -> {
+          AtualizacaoUsuarioDTO usuario = getInformacoesAlteraveis(req);
+          Map<Integer, String> fabricasPorFk = getMapFabricaPorFk();
+
+          req.setAttribute("infosUsuario", usuario);
+          req.setAttribute("fabricasPorFk", fabricasPorFk);
+          destino = PAGINA_EDICAO;
+          erro = false;
+        }
+
+        case "create" -> {
+          Map<Integer, String> nomesFabricas = getMapFabricaPorFk();
+
+          req.setAttribute("nomesFabricas", nomesFabricas);
+          destino = PAGINA_CADASTRO;
+          erro = false;
+        }
+
+        default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
+      }
+
+    } catch (SQLException e) {
+      // Se houver alguma exceção, registra no terminal
+      System.err.println("Erro ao executar operação no banco:");
+      e.printStackTrace(System.err);
+
+    } catch (ClassNotFoundException e) {
+      System.err.println("Falha ao carregar o driver postgresql:");
+      e.printStackTrace(System.err);
+
+    } catch (Throwable e) {
+      System.err.println("Erro inesperado:");
+      e.printStackTrace(System.err);
+    }
+
+    // Redireciona a request par a página jsp
+    if (erro) {
+      resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
+    } else {
+      RequestDispatcher rd = req.getRequestDispatcher(destino);
+      rd.forward(req, resp);
+    }
+  }
+
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    // Dados da request
+    String action = req.getParameter("action");
+
+    // Dados da resposta
+    String destino = PAGINA_ERRO;
+
+    try {
+      switch (action) {
+        case "create" -> registrarUsuario(req);
+        case "update" -> atualizarUsuario(req);
+        case "delete" -> removerUsuario(req);
+        default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
+      }
+
+      destino = ESSE_ENDPOINT + "?action=read";
+
+    } catch (ExcecaoDePagina e) {
+      req.setAttribute("erro", e.getMessage());
+      doGet(req, resp);
+      return;
+
+    } catch (SQLException e) {
+      // Se houver alguma exceção grave, registra no terminal
+      System.err.println("Erro ao executar operação no banco:");
+      e.printStackTrace(System.err);
+
+    } catch (ClassNotFoundException e) {
+      System.err.println("Falha ao carregar o driver postgresql:");
+      e.printStackTrace(System.err);
+
+    } catch (Throwable e) {
+      System.err.println("Erro inesperado:");
+      e.printStackTrace(System.err);
+    }
+
+    // Redireciona para a página de destino
+    resp.sendRedirect(req.getContextPath() + '/' + destino);
+  }
+
+  private List<UsuarioDTO> getListaUsuarios() throws SQLException, ClassNotFoundException {
+    try (UsuarioDAO dao = new UsuarioDAO()) {
+      // Recupera os usuários do banco e armazena na lista
+      return dao.listarUsuarios();
+    }
+  }
+
+  private Map<Integer, String> getMapFabricaPorFk() throws SQLException, ClassNotFoundException {
+    // Dados da resposta
+    Map<Integer, String> fabricasPorFk = new HashMap<>();
+
+    try (FabricaDAO dao = new FabricaDAO()) {
+      // Percorre os usuários e armazena a visualização de suas fábricas
+      for (Fabrica f : dao.listarFabricas()) {
+        fabricasPorFk.put(f.getId(), f.toString());
+      }
+
+      // Retorna o HashMap com os dados
+      return fabricasPorFk;
+    }
+  }
+
+  private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    // Dados da requisição
+    String temp = req.getParameter("fk_fabrica").trim();
+    if (temp.isBlank()) {
+      throw ExcecaoDePagina.campoNecessarioFaltante("fabrica");
+    }
+    int fkFabrica = Integer.parseInt(temp);
+
+    String senhaOriginal = req.getParameter("senha");
+    String hashSenha = PasswordUtils.hashed(temp);
+
+    String email = req.getParameter("email");
+
+    CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(
+        req.getParameter("nome"),
+        req.getParameter("email"),
+        hashSenha,
+        fkFabrica
+    );
+
+    if (!senhaOriginal.matches(".{8,}")) {
+      throw ExcecaoDePagina.senhaCurta(8);
+    }
+
+    try (UsuarioDAO dao = new UsuarioDAO()) {
+      // Verifica se o cadastro viola a constraint UNIQUE de
+      if (dao.getUsuarioByEmail(email) != null) {
+        throw ExcecaoDePagina.emailDuplicado("super administrador");
+      }
+
+      // Cadastra o usuário
+      dao.cadastrar(credenciais);
+    }
+  }
+
+  private AtualizacaoUsuarioDTO getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    // Dados da request
+    String temp = req.getParameter("id").trim();
+    int id = Integer.parseInt(temp);
+
+    try (UsuarioDAO dao = new UsuarioDAO()) {
+      // Recupera as informações atuais do usuário e prepara o display
+      return dao.getCamposAlteraveis(id);
+    }
+  }
+
+  private void atualizarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    // Dados da request
+    String temp = req.getParameter("id").trim();
+    int id = Integer.parseInt(temp);
+
+    temp = req.getParameter("status").trim();
+    boolean status = Boolean.parseBoolean(temp);
+
+    temp = req.getParameter("fk_fabrica").trim();
+    int fkFabrica = Integer.parseInt(temp);
+
+    temp = req.getParameter("nivel_acesso").trim();
+    int nivelAcessoInt = Integer.parseInt(temp);
+    NivelAcesso nivelAcesso = NivelAcesso.fromInteger(nivelAcessoInt);
+
+    String email = req.getParameter("email");
+
+    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(
+        id,
+        req.getParameter("nome"),
+        email,
+        nivelAcesso,
+        status,
+        fkFabrica
+    );
+
+    try (UsuarioDAO dao = new UsuarioDAO()) {
+      // Busca no banco o usuário original
+      AtualizacaoUsuarioDTO original = dao.getCamposAlteraveis(id);
+
+      // Verifica se a atualização não viola a constraint UNIQUE de email
+      UsuarioDTO teste = dao.getUsuarioByEmail(email);
+      if (teste != null && teste.getId() != id) {
+        throw ExcecaoDePagina.emailDuplicado("usuário");
+      }
+
+      // Atualiza o usuário
+      dao.atualizar(original, alteracoes);
+    }
+  }
+
+  private void removerUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    // Dados da request
+    String temp = req.getParameter("id");
+    int id = Integer.parseInt(temp);
+
+    try (UsuarioDAO dao = new UsuarioDAO()) {
+      // Remove o usuário
+      dao.remover(id);
+    }
+  }
+}
