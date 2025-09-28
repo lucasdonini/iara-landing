@@ -2,12 +2,8 @@ package com.dao;
 
 import com.dto.PagamentoDTO;
 import com.model.Pagamento;
-import com.model.Plano;
-
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +19,6 @@ public class PagamentoDAO extends DAO {
             "Data de Pagamento", "data_pagamento",
             "FK de Fábrica", "fk_fabrica"
     );
-
-    public Map<String, String> getCamposFiltraveis(){
-        return camposFiltraveis;
-    }
 
     public PagamentoDAO() throws SQLException, ClassNotFoundException {
         super();

@@ -2,6 +2,7 @@ package com.controller;
 
 import com.dao.EnderecoDAO;
 import com.dao.FabricaDAO;
+import com.dao.PagamentoDAO;
 import com.dto.CadastroFabricaDTO;
 import com.exception.ExcecaoDePagina;
 import com.model.Endereco;
@@ -38,7 +39,7 @@ public class FabricaServlet extends HttpServlet {
     try {
       switch (action) {
         case "read" -> {
-          List<Fabrica> fabricas = getListaFabricas();
+          List<Fabrica> fabricas = listarFabricas(req);
           req.setAttribute("fabricas", fabricas);
           destino = PAGINA_PRINCIPAL;
         }
@@ -93,6 +94,10 @@ public class FabricaServlet extends HttpServlet {
         case "create" -> registrarFabrica(req);
         case "update" -> atualizarFabrica(req);
         case "delete" -> removerFabrica(req);
+        case "read" -> {
+            List<Fabrica> fabricas = listarFabricas(req);
+            req.setAttribute("fabricas", fabricas);
+        }
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
@@ -222,10 +227,18 @@ public class FabricaServlet extends HttpServlet {
     }
   }
 
-  private List<Fabrica> getListaFabricas() throws SQLException, ClassNotFoundException {
-    try (FabricaDAO dao = new FabricaDAO()) {
-      return dao.listarFabricas();
-    }
+  private List<Fabrica> listarFabricas(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+      try (FabricaDAO dao = new FabricaDAO()) {
+          //Dados da requisição
+          String campoFiltro = req.getParameter("campoFiltro");
+          String temp = req.getParameter("valorFiltro");
+          Object valorFiltro = dao.converterValor(campoFiltro, temp);
+          String campoSequencia = req.getParameter("campoSequencia");
+          String direcaoSequencia = req.getParameter("direcaoSequencia");
+
+          // Recupera os planos do banco
+          return dao.listarFabricas(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+      }
   }
 
   private void removerFabrica(HttpServletRequest req) throws SQLException, ClassNotFoundException {

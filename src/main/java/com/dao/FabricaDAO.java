@@ -22,8 +22,7 @@ public class FabricaDAO extends DAO {
             "Status", "status",
             "Email Corporativo", "email_corporativo",
             "Nome da Indústria", "nome_industria",
-            "Ramo", "ramo",
-            "FK de Plano", "fk_plano"
+            "Ramo", "ramo"
     );
 
   public FabricaDAO() throws SQLException, ClassNotFoundException {
@@ -72,7 +71,7 @@ public class FabricaDAO extends DAO {
 
   public Object converterValor(String campo, String valor){
       return switch(campo){
-          case "id", "fk_plano" -> Integer.parseInt(valor);
+          case "id" -> Integer.parseInt(valor);
           case "status" -> Boolean.parseBoolean(valor);
           default -> valor;
       };

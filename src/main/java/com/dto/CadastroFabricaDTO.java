@@ -7,16 +7,14 @@ public class CadastroFabricaDTO {
     private String nomeEmpresa;
     private String ramo;
     private int fkEndereco;
-    private int fkPlano;
 
-    public CadastroFabricaDTO(String nome, String cnpj, String email, String nomeEmpresa, String ramo, int fkEndereco, int fkPlano) {
+    public CadastroFabricaDTO(String nome, String cnpj, String email, String nomeEmpresa, String ramo, int fkEndereco) {
         this.nome = nome;
         this.cnpj = cnpj;
         this.email = email;
         this.nomeEmpresa = nomeEmpresa;
         this.ramo = ramo;
         this.fkEndereco = fkEndereco;
-        this.fkPlano = fkPlano;
     }
 
     // Getters e Setters
@@ -68,11 +66,4 @@ public class CadastroFabricaDTO {
         this.fkEndereco = fkEndereco;
     }
 
-    public int getFkPlano() {
-        return fkPlano;
-    }
-
-    public void setFkPlano(int fkPlano) {
-        this.fkPlano = fkPlano;
-    }
 }
