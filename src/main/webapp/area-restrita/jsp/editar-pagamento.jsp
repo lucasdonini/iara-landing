@@ -1,14 +1,15 @@
-<%@ page import="com.dto.PagamentoDTO" %><%--
+<%@ page import="com.model.Pagamento" %><%--
   Created by IntelliJ IDEA.
   User: ryanmoraes-ieg
-  Date: 11/09/2025
-  Time: 20:09
+  Date: 28/09/2025
+  Time: 17:19
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<html lang="pt-BR">
 <%
-    PagamentoDTO pagamento = (PagamentoDTO) request.getAttribute("infosPagamento");
+    Pagamento pagamento = (Pagamento) request.getAttribute("infosPagamento");
+    String erro = (String) request.getAttribute("erro");
 %>
 <head>
     <title>Landing Teste</title>

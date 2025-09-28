@@ -14,14 +14,13 @@
 <body>
 <h1>Editar Fábrica - ID: <%= f.getId() %>
 </h1>
-<form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="post">
+<form action="${pageContext.request.contextPath}/area-restrita/fabricas?action=update" method="post">
   <h2>Dados da fábrica</h2>
   <input type="text" name="nome" value="<%= f.getNome() %>" placeholder="Nome">
   <input type="text" name="cnpj" value="<%= f.getCnpj() %>" pattern="\d{14}" title="CNPJ inválido" placeholder="CNPJ">
   <input type="email" name="email" value="<%= f.getEmail() %>" placeholder="Email para contato">
   <input type="text" name="ramo" value="<%= f.getRamo() %>" placeholder="Ramo">
   <input type="text" name="nome_empresa" value="<%= f.getNomeEmpresa() %>" placeholder="Nome da empresa">
-    <input type="number" name="fk_plano" value="<%= f.getFkPlano()%>" placeholder="Número do plano relacionado">
   <select name="status">
     <% for (Boolean b : List.of(true, false)) { %>
     <option value="<%= b.toString() %>" <%= b ? "selected" : "" %>><%= b ? "Ativa" : "Inativa" %>
@@ -30,8 +29,7 @@
   </select>
   
   <h2>Endereço da fábrica</h2>
-  <input type="text" name="cep" value="<%= e.getCep() %>" pattern="\d{8}" title="Insira um CEP válido"
-         placeholder="CEP">
+  <input type="text" name="cep" value="<%= e.getCep() %>" pattern="\d{8}" title="Insira um CEP válido" placeholder="CEP">
   <input type="text" name="logradouro" value="<%= e.getRua() %>" placeholder="Logradouro">
   <input type="number" name="numero" value="<%= e.getNumero() %>" placeholder="n°">
   <input type="text" name="complemento" value="<%= complemento != null ? complemento : "" %>" placeholder="Complemento">

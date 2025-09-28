@@ -8,7 +8,7 @@
 </head>
 <body>
 <h1>Cadastro - Fábrica</h1>
-<form action="${pageContext.request.pageContext}/fabricas" method="post">
+<form action="${pageContext.request.pageContext}/area-restrita/fabricas?action=create" method="post">
   <h2>Dados da fábrica</h2>
   <input type="hidden" name="action" value="create">
   <input type="text" name="nome" placeholder="Nome">

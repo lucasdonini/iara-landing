@@ -11,7 +11,7 @@
 <body>
 <h1>Editar Plano - ID: <%= plano.getId() %>
 </h1>
-<form action="${pageContext.request.contextPath}/area-restrita/planos" method="post">
+<form action="${pageContext.request.contextPath}/area-restrita/planos?action=update" method="post">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="id" value="<%= plano.getId() %>">
   <input type="text" name="nome" value="<%= plano.getNome() %>" placeholder="Novo nome">

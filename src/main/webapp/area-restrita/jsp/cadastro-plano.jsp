@@ -8,7 +8,7 @@
 </head>
 <body>
 <h1>Página de Teste para Cadastro</h1>
-<form action="${pageContext.request.contextPath}/area-restrita/planos" method="post">
+<form action="${pageContext.request.contextPath}/area-restrita/planos?action=create" method="post">
   <input type="hidden" name="action" value="create">
   <label>Nome:</label>
   <input type="text" name="nome">
