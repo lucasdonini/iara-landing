@@ -1,5 +1,8 @@
 package com.exception;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 public class ExcecaoDePagina extends RuntimeException {
   public ExcecaoDePagina(String message) {
     super(message);
@@ -39,5 +42,10 @@ public class ExcecaoDePagina extends RuntimeException {
 
   public static ExcecaoDePagina falhaAutenticacao() {
     return new ExcecaoDePagina("Autenticação falhou. Verifique suas credenciais.");
+  }
+
+  public static ExcecaoDePagina formatoInvalido(String campo, String formato) {
+    String msg = "Formato inválido para valor do campo %s. Formato correto: %s".formatted(campo, formato);
+    return new ExcecaoDePagina(msg);
   }
 }
