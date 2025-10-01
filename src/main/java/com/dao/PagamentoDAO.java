@@ -1,21 +1,30 @@
 package com.dao;
 
-import com.dto.PagamentoDTO;
 import com.model.Pagamento;
-
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PagamentoDAO extends DAO {
+    //Map
+    public static final Map<String, String> camposFiltraveis = Map.of(
+            "ID", "id",
+            "Valor", "valor_pago",
+            "Status", "status",
+            "Tipo de Pagamento", "tipo_pagamento",
+            "Data de Vencimento", "data_vencimento",
+            "Data de Pagamento", "data_pagamento",
+            "FK de Fábrica", "fk_fabrica"
+    );
+
     public PagamentoDAO() throws SQLException, ClassNotFoundException {
         super();
     }
 
     //Cadastrar novo Plano
-    public void cadastrar(PagamentoDTO pagamento) throws SQLException {
+    public void cadastrar(Pagamento pagamento) throws SQLException {
         //Comando SQL
         String sql = "INSERT INTO pagamento(valor_pago, status, data_vencimento, data_pagamento, tipo_pagamento, fk_fabrica) VALUES (?,?,?,?,?,?)";
 
@@ -55,7 +64,7 @@ public class PagamentoDAO extends DAO {
         }
     }
 
-    public PagamentoDTO getPagamentoById(int id) throws SQLException {
+    public Pagamento getPagamentoById(int id) throws SQLException {
         // Prepara o comando
         String sql = "SELECT * FROM pagamento WHERE id = ?";
 
@@ -67,7 +76,7 @@ public class PagamentoDAO extends DAO {
                     return null;
                 }
 
-                return new PagamentoDTO(
+                return new Pagamento(
                         id,
                         rs.getDouble("valor_pago"),
                         rs.getBoolean("status"),
@@ -100,6 +109,16 @@ public class PagamentoDAO extends DAO {
             conn.rollback();
             throw e;
         }
+    }
+
+    public Object converterValor(String campo, String valor){
+        return switch(campo){
+            case "id", "fk_fabrica" -> Integer.parseInt(valor);
+            case "valor" -> Double.parseDouble(valor);
+            case "data_vencimento", "data_pagamento" -> LocalDate.parse(valor);
+            case "tipo_pagamento" -> String.valueOf(valor);
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     public void atualizar(Pagamento original, Pagamento alterado) throws SQLException {
@@ -177,39 +196,24 @@ public class PagamentoDAO extends DAO {
         }
     }
 
-    //Listar planos
-    public List<PagamentoDTO> listarPagamentos(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
-        List<PagamentoDTO> pagamentoDTOS = new ArrayList<>();
+    public List<Pagamento> listarPagamentos(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+        List<Pagamento> pagamentos = new ArrayList<>();
 
         // Prepara o comando
-        StringBuilder sql = new StringBuilder("SELECT * FROM pagamento");
+        StringBuilder sql = new StringBuilder("SELECT * FROM pagamentos");
 
-        // Verificando campo do filtro
-        if (campoFiltro!=null){
-            switch (campoFiltro) {
-                case "id" -> sql.append(" WHERE id = ?");
-                case "status" -> sql.append(" WHERE status = ?");
-                case "tipo_pagamento" -> sql.append(" WHERE tipo_pagamento = ?");
-                case "data_vencimento" -> sql.append(" WHERE data_vencimento = ?");
-                case "fk_fabrica" -> sql.append(" WHERE fk_fabrica = ?");
-                case "data_pagamento" -> sql.append(" WHERE data_pagamento = ?");
-                default -> sql.append(" WHERE valor_pago = ?");
-            }
+        //Verificando o campo do filtro
+        if (!campoFiltro.isBlank()){
+            sql.append(" WHERE ");
+            sql.append(campoFiltro);
+            sql.append(" = ?");
         }
 
-        //Verificando campo para ordenar a consulta
-        if (campoSequencia!=null){
-            switch (campoSequencia) {
-                case "id" -> sql.append(" ORDER BY id");
-                case "status" -> sql.append(" ORDER BY status");
-                case "tipo_pagamento" -> sql.append(" ORDER BY tipo_pagamento");
-                case "data_vencimento" -> sql.append(" ORDER BY data_vencimento");
-                case "fk_fabrica" -> sql.append(" ORDER BY fk_fabrica");
-                case "data_pagamento" -> sql.append(" ORDER BY data_pagamento");
-                default -> sql.append(" ORDER BY valor_pago");
-            }
-
-            //Verificando direção da sequencia
+        //Verificando campo e direcao para ordernar a consulta
+        if (!campoSequencia.isBlank()){
+            sql.append(" ORDER BY ");
+            sql.append(campoSequencia);
+            //Verificando direção da sequência
             switch(direcaoSequencia){
                 case "crescente" -> sql.append(" ASC");
                 case "decrescente" -> sql.append(" DESC");
@@ -218,7 +222,7 @@ public class PagamentoDAO extends DAO {
 
         try (PreparedStatement pstmt = conn.prepareStatement(String.valueOf(sql))) {
             //Definindo parâmetro vazio
-            if (campoFiltro!=null){
+            if (!campoFiltro.isBlank()) {
                 pstmt.setObject(1, valorFiltro);
             }
 
@@ -231,13 +235,13 @@ public class PagamentoDAO extends DAO {
                 LocalDate dataVencimento = rs.getDate("data_vencimento").toLocalDate();
                 LocalDate dataPagamento = rs.getDate("data_pagamento").toLocalDate();
                 String tipoPagamento = rs.getString("tipo_pagamento");
-                Integer fkFabrica = rs.getInt("fk_fabrica");
+                int fkFabrica = rs.getInt("fk_fabrica");
 
-                pagamentoDTOS.add(new PagamentoDTO(id, valorPago, status, dataVencimento, dataPagamento, tipoPagamento, fkFabrica));
+                pagamentos.add(new Pagamento(id, valorPago, status, dataVencimento, dataPagamento, tipoPagamento, fkFabrica));
             }
         }
 
-        return pagamentoDTOS;
+        return pagamentos;
     }
 
     //Campos Alteraveis

@@ -1,7 +1,9 @@
 package com.controller;
 
+import com.dao.PagamentoDAO;
 import com.dao.PlanoDAO;
 import com.exception.ExcecaoDePagina;
+import com.model.Pagamento;
 import com.model.Plano;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -34,7 +36,7 @@ public class PlanoServlet extends HttpServlet {
     try {
       switch (action) {
         case "read" -> {
-          List<Plano> planos = getListaPlanos();
+          List<Plano> planos = listaPlanos(req);
           req.setAttribute("planos", planos);
           destino = PAGINA_PRINCIPAL;
         }
@@ -87,6 +89,10 @@ public class PlanoServlet extends HttpServlet {
         case "create" -> registrarPlano(req);
         case "update" -> atualizarPlano(req);
         case "delete" -> removerPlano(req);
+        case "read" -> {
+            List<Plano> planos = listaPlanos(req);
+            req.setAttribute("planos", planos);
+        }
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
@@ -115,12 +121,19 @@ public class PlanoServlet extends HttpServlet {
     resp.sendRedirect(req.getContextPath() + '/' + destino);
   }
 
-  private List<Plano> getListaPlanos() throws SQLException, ClassNotFoundException {
-    try (PlanoDAO dao = new PlanoDAO()) {
-      // Recupera os planos do banco
-      return dao.listarPlanos();
+    private List<Plano> listaPlanos(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+        try (PlanoDAO dao = new PlanoDAO()) {
+            //Dados da requisição
+            String campoFiltro = req.getParameter("campoFiltro");
+            String temp = req.getParameter("valorFiltro");
+            Object valorFiltro = dao.converterValor(campoFiltro, temp);
+            String campoSequencia = req.getParameter("campoSequencia");
+            String direcaoSequencia = req.getParameter("direcaoSequencia");
+
+            // Recupera os planos do banco
+            return dao.listarPlanos(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+        }
     }
-  }
 
   private Plano getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da requisição

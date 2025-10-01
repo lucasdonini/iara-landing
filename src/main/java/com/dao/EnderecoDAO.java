@@ -5,11 +5,23 @@ import com.model.Endereco;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class EnderecoDAO extends DAO {
+    //Map
+    public static final Map<String, String> camposFiltraveis = Map.of(
+            "ID", "id",
+            "CEP", "cep",
+            "Número", "numero",
+            "Rua", "rua",
+            "Complemento", "complemento"
+    );
+
   //Construtor
   public EnderecoDAO() throws SQLException, ClassNotFoundException {
     super();
@@ -104,6 +116,14 @@ public class EnderecoDAO extends DAO {
       throw e;
     }
   }
+
+    public Object converterValor(String campo, String valor) {
+        return switch(campo){
+            case "id", "numero" -> Integer.parseInt(valor);
+            case "cep", "rua", "complemento" -> String.valueOf(valor);
+            default -> throw new IllegalArgumentException();
+        };
+    }
 
   public void atualizar(Endereco original, Endereco alterado) throws SQLException {
     // Desempacotamento do objeto atualizado

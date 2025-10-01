@@ -14,6 +14,17 @@ import java.util.List;
 import java.util.Map;
 
 public class FabricaDAO extends DAO {
+    //Map
+    public static final Map<String, String> camposFiltraveis = Map.of(
+            "ID", "id",
+            "CNPJ", "cnpj_unidade",
+            "Nome da Unidade", "nome",
+            "Status", "status",
+            "Email Corporativo", "email_corporativo",
+            "Nome da Indústria", "nome_industria",
+            "Ramo", "ramo"
+    );
+
   public FabricaDAO() throws SQLException, ClassNotFoundException {
     super();
   }
@@ -58,6 +69,15 @@ public class FabricaDAO extends DAO {
     }
   }
 
+  public Object converterValor(String campo, String valor){
+      return switch(campo){
+          case "id" -> Integer.parseInt(valor);
+          case "status" -> Boolean.parseBoolean(valor);
+          case "cnpj_unidade", "nome", "email_corporativo", "nome_industria", "ramo" -> String.valueOf(valor);
+          default -> throw new IllegalArgumentException();
+      };
+  }
+
   public List<Fabrica> listarFabricas(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     List<Fabrica> fabricas = new ArrayList<>();
 
@@ -69,39 +89,16 @@ public class FabricaDAO extends DAO {
        """);
 
     //Verificando o campo do filtro
-      if (campoFiltro!=null){
-          switch(campoFiltro){
-              case "id_industria" -> sql.append(" WHERE f.id_industria = ?");
-              case "nome" -> sql.append(" WHERE f.nome = ?");
-              case "cnpj_unidade" -> sql.append(" WHERE f.cnpj_unidade = ?");
-              case "status" -> sql.append(" WHERE f.status = ?");
-              case "email_corporativo" -> sql.append(" WHERE f.email_corporativo = ?");
-              case "nome_industria" -> sql.append(" WHERE f.nome_industria = ?");
-              case "ramo" -> sql.append(" WHERE f.ramo = ?");
-              case "cep" -> sql.append(" WHERE e.cep = ?");
-              case "rua" -> sql.append(" WHERE e.rua = ?");
-              case "complemento" -> sql.append(" WHERE e.complemento = ?");
-              default -> throw new RuntimeException("valor inválido para chave do filtro");
-          }
+      if (!campoFiltro.isBlank()){
+          sql.append(" WHERE ");
+          sql.append(campoFiltro);
+          sql.append(" = ?");
       }
 
       //Verificando campo e direcao para ordernar a consulta
-      if (campoSequencia!=null){
-          switch (campoSequencia) {
-              case "id_industria" -> sql.append(" ORDER BY f.id_industria");
-              case "nome" -> sql.append(" ORDER BY f.nome");
-              case "cnpj_unidade" -> sql.append(" ORDER BY f.cnpj_unidade");
-              case "status" -> sql.append(" ORDER BY f.status = ?");
-              case "email_corporativo" -> sql.append(" ORDER BY f.email_corporativo");
-              case "nome_industria" -> sql.append(" ORDER BY f.nome_industria");
-              case "ramo" -> sql.append(" ORDER BY f.ramo");
-              case "cep" -> sql.append(" ORDER BY e.cep");
-              case "numero" -> sql.append(" ORDER BY e.numero");
-              case "rua" -> sql.append(" ORDER BY e.rua");
-              case "complemento" -> sql.append(" ORDER BY e.complemento");
-            default -> throw new RuntimeException("valor inválido para chave de ordenação");
-          }
-
+      if (!campoSequencia.isBlank()){
+          sql.append(" ORDER BY ");
+          sql.append(campoSequencia);
           //Verificando direção da sequência
           switch(direcaoSequencia){
               case "crescente" -> sql.append(" ASC");
@@ -111,7 +108,7 @@ public class FabricaDAO extends DAO {
 
     try (PreparedStatement pstmt = conn.prepareStatement(String.valueOf(sql))) {
         //Definindo parâmetro vazio
-        if (campoFiltro!=null){
+        if (!campoFiltro.isBlank()){
             pstmt.setObject(1, valorFiltro);
         }
 
