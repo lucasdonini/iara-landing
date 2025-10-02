@@ -18,9 +18,15 @@ import java.sql.SQLException;
 @WebServlet("/login-handler")
 public class LoginServlet extends HttpServlet {
   private static final String PAGINA_ERRO = "html/erro.html";
-  private static final String AREA_RESTRITA = "area-restrita/index";
+  private static final String AREA_RESTRITA = "WEB-INF/jsp/area-restrita.jsp";
   private static final String PAGINA_INICIAL = "index.html";
-  private static final String PAGINA_LOGIN = "jsp/login.jsp";
+  private static final String PAGINA_LOGIN = "WEB-INF/jsp/login.jsp";
+
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    RequestDispatcher rd = req.getRequestDispatcher(PAGINA_LOGIN);
+    rd.forward(req, resp);
+  }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -29,6 +35,7 @@ public class LoginServlet extends HttpServlet {
     HttpSession session = req.getSession();
 
     // Dados da resposta
+    boolean redirect = true;
     String destino = PAGINA_ERRO;
 
     try {
@@ -37,6 +44,7 @@ public class LoginServlet extends HttpServlet {
           SuperAdmDTO usuario = login(req);
           session.setAttribute("usuario", usuario);
           destino = AREA_RESTRITA;
+          redirect = false;
         }
 
         case "logout" -> {
@@ -49,9 +57,8 @@ public class LoginServlet extends HttpServlet {
 
     } catch (ExcecaoDePagina e) {
       req.setAttribute("erro", e.getMessage());
-
-      RequestDispatcher rd = req.getRequestDispatcher(PAGINA_LOGIN);
-      rd.forward(req, resp);
+      doGet(req, resp);
+      return;
 
     } catch (SQLException e) {
       // Se houver alguma exceção, registra no terminal
@@ -67,7 +74,13 @@ public class LoginServlet extends HttpServlet {
       e.printStackTrace(System.err);
     }
 
-    resp.sendRedirect(req.getContextPath() + '/' + destino);
+    if (redirect) {
+      resp.sendRedirect(req.getContextPath() + '/' + destino);
+
+    } else {
+      RequestDispatcher rd = req.getRequestDispatcher(destino);
+      rd.forward(req, resp);
+    }
   }
 
   private SuperAdmDTO login(HttpServletRequest req) throws SQLException, ClassNotFoundException {
