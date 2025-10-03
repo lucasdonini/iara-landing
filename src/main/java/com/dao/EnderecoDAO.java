@@ -5,22 +5,20 @@ import com.model.Endereco;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 
 public class EnderecoDAO extends DAO {
-    //Map
-    public static final Map<String, String> camposFiltraveis = Map.of(
-            "ID", "id",
-            "CEP", "cep",
-            "Número", "numero",
-            "Rua", "rua",
-            "Complemento", "complemento"
-    );
+  //Map
+  public static final Map<String, String> camposFiltraveis = Map.of(
+      "ID", "id",
+      "CEP", "cep",
+      "Número", "numero",
+      "Rua", "rua",
+      "Complemento", "complemento"
+  );
 
   //Construtor
   public EnderecoDAO() throws SQLException, ClassNotFoundException {
@@ -28,22 +26,21 @@ public class EnderecoDAO extends DAO {
   }
 
   //Cadastrar novo endereço e retornar o id gerado
-  public int cadastrar(Endereco credenciais) throws SQLException {
+  public void cadastrar(Endereco credenciais) throws SQLException {
     // Desempacotamento do objeto Endereco
     String cep = credenciais.getCep();
     int numero = credenciais.getNumero();
     String rua = credenciais.getRua();
     String complemento = credenciais.getComplemento();
-    int id;
+    int idFabrica = credenciais.getIdFabrica();
 
     // Insere null se o complemento estiver vazio
     complemento = complemento.isBlank() ? null : complemento;
 
     //Comando SQL
     String sql = """
-        INSERT INTO endereco (cep, numero, rua, complemento)
-        VALUES (?,?,?,?)
-        RETURNING id
+        INSERT INTO endereco (cep, numero, rua, complemento, id_fabrica)
+        VALUES (?, ?, ?, ?, ?)
         """;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) { //Preparando comando SQL
@@ -52,46 +49,19 @@ public class EnderecoDAO extends DAO {
       pstmt.setInt(2, numero);
       pstmt.setString(3, rua);
       pstmt.setString(4, complemento);
+      pstmt.setInt(5, idFabrica);
 
-      // Recuperando o id gerado ao executar inserção
-      try (ResultSet rs = pstmt.executeQuery()) {
-        if (rs.next()) {
-          id = rs.getInt("id");
-        } else {
-          throw new SQLException("Algo deu errado ao inserir o endereço");
-        }
-      }
+      pstmt.executeUpdate();
+
       //Efetuando transação
       conn.commit();
-
-      // Retornando o id gerado
-      return id;
 
     } catch (SQLException e) {
       //Cancelando transação
       conn.rollback();
+
       //Lançando exceção
       throw e;
-    }
-  }
-
-  // Buscar o id do endereço
-  public Integer getIdEndereco(String cep, int numero) throws SQLException {
-    // prepara o comando
-    String sql = "SELECT id FROM endereco WHERE cep = ? AND numero = ?";
-
-    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      pstmt.setString(1, cep);
-      pstmt.setInt(2, numero);
-
-      try (ResultSet rs = pstmt.executeQuery()) {
-        if (rs.next()) {
-          return rs.getInt("id");
-
-        } else {
-          return null;
-        }
-      }
     }
   }
 
@@ -117,17 +87,17 @@ public class EnderecoDAO extends DAO {
     }
   }
 
-    public Object converterValor(String campo, String valor) {
-        return switch(campo){
-            case "id", "numero" -> Integer.parseInt(valor);
-            case "cep", "rua", "complemento" -> String.valueOf(valor);
-            default -> throw new IllegalArgumentException();
-        };
-    }
+  public Object converterValor(String campo, String valor) {
+    return switch (campo) {
+      case "id", "numero" -> Integer.parseInt(valor);
+      case "cep", "rua", "complemento" -> String.valueOf(valor);
+      default -> throw new IllegalArgumentException();
+    };
+  }
 
   public void atualizar(Endereco original, Endereco alterado) throws SQLException {
     // Desempacotamento do objeto atualizado
-    int id = alterado.getId();
+    int id = original.getId();
     String rua = alterado.getRua();
     String cep = alterado.getCep();
     String complemento = alterado.getComplemento();
@@ -183,6 +153,33 @@ public class EnderecoDAO extends DAO {
       // Faz o rollback das modificações e propaga a exceção
       conn.rollback();
       throw e;
+    }
+  }
+
+  public Endereco pesquisarPorIdFabrica(int idFabrica) throws SQLException {
+    // Prepara o comando
+    String sql = "SELECT * FROM endereco WHERE id_fabrica = ?";
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setInt(1, idFabrica);
+
+      try (ResultSet rs = pstmt.executeQuery()) {
+        if (rs.next()) {
+          // Informações do endereço
+          int id = rs.getInt("id");
+          String cep = rs.getString("cep");
+          int numero = rs.getInt("numero");
+          String rua = rs.getString("rua");
+          String complemento = rs.getString("complemento");
+
+
+          // Cria e retorna o objeto
+          return new Endereco(id, cep, numero, rua, complemento, idFabrica);
+
+        } else {
+          throw new SQLException("Falha ao recuperar endereço");
+        }
+      }
     }
   }
 }

@@ -9,10 +9,9 @@ public class Fabrica {
   private String email;
   private String nomeEmpresa;
   private String ramo;
-  private Endereco endereco;
+  private int idPlano;
 
-  public Fabrica(int id, String nome, String cnpj, Boolean status, String email, String nomeEmpresa,
-                 String ramo, Endereco endereco) {
+  public Fabrica(int id, String nome, String cnpj, Boolean status, String email, String nomeEmpresa, String ramo, int idPlano) {
     this.id = id;
     this.nome = nome;
     this.cnpj = cnpj;
@@ -20,7 +19,7 @@ public class Fabrica {
     this.email = email;
     this.nomeEmpresa = nomeEmpresa;
     this.ramo = ramo;
-    this.endereco = endereco;
+    this.idPlano = idPlano;
   }
 
   // Getters e Setters
@@ -80,27 +79,11 @@ public class Fabrica {
     this.ramo = sector;
   }
 
-  public Endereco getEndereco() {
-    return this.endereco;
+  public int getIdPlano() {
+    return idPlano;
   }
 
-  public void setEndereco(Endereco endereco) {
-    this.endereco = endereco;
-  }
-
-  // toString()
-  @Override
-  public String toString() {
-    return "%s - %s, %s".formatted(nome, nomeEmpresa, endereco.getRua());
-  }
-
-  // Outros métodos
-  public String getCnpjFormatado() {
-    StringBuilder sb = new StringBuilder(cnpj);
-    sb.insert(12, "-");
-    sb.insert(8, "/");
-    sb.insert(5, ".");
-    sb.insert(2, ".");
-    return sb.toString();
+  public void setIdPlano(int idPlano) {
+    this.idPlano = idPlano;
   }
 }

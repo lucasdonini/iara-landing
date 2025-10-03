@@ -1,48 +1,49 @@
 package com.dao;
 
 import com.dto.CadastroFabricaDTO;
-import com.model.Endereco;
+import com.dto.FabricaDTO;
 import com.model.Fabrica;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class FabricaDAO extends DAO {
-    //Map
-    public static final Map<String, String> camposFiltraveis = Map.of(
-            "ID", "id",
-            "CNPJ", "cnpj_unidade",
-            "Nome da Unidade", "nome",
-            "Status", "status",
-            "Email Corporativo", "email_corporativo",
-            "Nome da Indústria", "nome_industria",
-            "Ramo", "ramo"
-    );
+  //Map
+  public static final Map<String, String> camposFiltraveis = Map.of(
+      "ID", "id",
+      "CNPJ", "cnpj",
+      "Nome da Unidade", "nome_unidade",
+      "Status", "status",
+      "Email Corporativo", "email_corporativo",
+      "Nome da Indústria", "nome_industria",
+      "Ramo", "ramo",
+      "Endereço", "endereco",
+      "Plano", "plano"
+  );
 
   public FabricaDAO() throws SQLException, ClassNotFoundException {
     super();
   }
 
-  public void cadastrar(CadastroFabricaDTO credenciais) throws SQLException {
+  public int cadastrar(CadastroFabricaDTO credenciais) throws SQLException {
     // Variáveis
     String nome = credenciais.getNome();
     String cnpj = credenciais.getCnpj();
     String email = credenciais.getEmail();
     String nomeEmpresa = credenciais.getNomeEmpresa();
     String ramo = credenciais.getRamo();
-    int idEndereco = credenciais.getFkEndereco();
+    int idPlano = credenciais.getIdPlano();
     boolean status = true;
 
     // Preparação do comando
     String sql = """
-        INSERT INTO fabrica (nome, cnpj_unidade, email_corporativo, nome_industria, status, ramo, id_endereco)
+        INSERT INTO fabrica (nome_unidade, cnpj, email_corporativo, nome_industria, status, ramo, id_plano)
         VALUES (?, ?, ?, ?, ?, ?, ?)
+        RETURNING id
         """;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -53,13 +54,23 @@ public class FabricaDAO extends DAO {
       pstmt.setString(4, nomeEmpresa);
       pstmt.setBoolean(5, status);
       pstmt.setString(6, ramo);
-      pstmt.setInt(7, idEndereco);
+      pstmt.setInt(7, idPlano);
 
-      // Execução do update
-      pstmt.executeUpdate();
+      // Cadastra a fábrica e recupera o id gerado
+      int id;
+      try (ResultSet rs = pstmt.executeQuery()) {
+        if (!rs.next()) {
+          throw new SQLException("Erro inesperado ao criar fábrica");
+        }
+
+        id = rs.getInt("id");
+      }
 
       // Commit das alterações
       conn.commit();
+
+      // Retorna o id gerado
+      return id;
 
     } catch (SQLException e) {
 
@@ -69,73 +80,57 @@ public class FabricaDAO extends DAO {
     }
   }
 
-  public Object converterValor(String campo, String valor){
-      return switch(campo){
-          case "id" -> Integer.parseInt(valor);
-          case "status" -> Boolean.parseBoolean(valor);
-          case "cnpj_unidade", "nome", "email_corporativo", "nome_industria", "ramo" -> String.valueOf(valor);
-          default -> throw new IllegalArgumentException();
-      };
+  public Object converterValor(String campo, String valor) {
+    if (campo == null) {
+      return null;
+    }
+
+    return switch (campo) {
+      case "id" -> Integer.parseInt(valor);
+      case "status" -> Boolean.parseBoolean(valor);
+      case "cnpj", "nome_unidade", "email_corporativo", "nome_industria", "ramo" -> String.valueOf(valor);
+      default -> throw new IllegalArgumentException();
+    };
   }
 
-  public List<Fabrica> listarFabricas(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
-    List<Fabrica> fabricas = new ArrayList<>();
+  public List<FabricaDTO> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+    List<FabricaDTO> fabricas = new ArrayList<>();
 
     //Prepara o comando
-    StringBuilder sql = new StringBuilder("""
-        SELECT f.id as "id_fabrica", f.*, e.id as "id_endereco", e.*
-        FROM fabrica f
-        JOIN endereco e ON e.id = f.id_endereco
-       """);
+    String sql = "SELECT * FROM exibicao_fabrica";
 
     //Verificando o campo do filtro
-      if (!campoFiltro.isBlank()){
-          sql.append(" WHERE ");
-          sql.append(campoFiltro);
-          sql.append(" = ?");
+    if (campoFiltro != null && !campoFiltro.isBlank()) {
+      sql += " WHERE %s = ?".formatted(campoFiltro);
+    }
+
+    //Verificando campo e direcao para ordernar a consulta
+    if (campoSequencia != null && !campoSequencia.isBlank()) {
+      sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
+    }
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      //Definindo parâmetro vazio
+      if (campoFiltro != null && !campoFiltro.isBlank()) {
+        pstmt.setObject(1, valorFiltro);
       }
 
-      //Verificando campo e direcao para ordernar a consulta
-      if (!campoSequencia.isBlank()){
-          sql.append(" ORDER BY ");
-          sql.append(campoSequencia);
-          //Verificando direção da sequência
-          switch(direcaoSequencia){
-              case "crescente" -> sql.append(" ASC");
-              case "decrescente" -> sql.append(" DESC");
-          }
-      }
-
-    try (PreparedStatement pstmt = conn.prepareStatement(String.valueOf(sql))) {
-        //Definindo parâmetro vazio
-        if (!campoFiltro.isBlank()){
-            pstmt.setObject(1, valorFiltro);
-        }
-
-        //Instanciando um ResultSet
-        ResultSet rs = pstmt.executeQuery();
+      //Instanciando um ResultSet
+      ResultSet rs = pstmt.executeQuery();
 
       while (rs.next()) {
-        // Informações da fábrica
-        int idFabrica = rs.getInt("id_fabrica");
-        String nome = rs.getString("nome");
-        String cnpj = rs.getString("cnpj_unidade");
+        int idFabrica = rs.getInt("id");
+        String nome = rs.getString("nome_unidade");
+        String cnpj = rs.getString("cnpj");
         boolean status = rs.getBoolean("status");
         String email = rs.getString("email_corporativo");
         String nomeEmpresa = rs.getString("nome_industria");
         String ramo = rs.getString("ramo");
+        String endereco = rs.getString("endereco");
+        String plano = rs.getString("plano");
 
-        // Informações do endereco
-        int idEndereco = rs.getInt("id_endereco");
-        String cep = rs.getString("cep");
-        int numero = rs.getInt("numero");
-        String rua = rs.getString("rua");
-        String complemento = rs.getString("complemento");
-
-        // Cria e armazena os objetos
-        Endereco endereco = new Endereco(idEndereco, cep, numero, rua, complemento);
-        Fabrica fabrica = new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, endereco);
-        fabricas.add(fabrica);
+        FabricaDTO f = new FabricaDTO(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, endereco, plano);
+        fabricas.add(f);
       }
 
       return fabricas;
@@ -234,16 +229,9 @@ public class FabricaDAO extends DAO {
     }
   }
 
-  public Fabrica getFabricaById(int id) throws SQLException {
+  public Fabrica pesquisarPorId(int id) throws SQLException {
     // Prepara o comando
-    String sql = """
-         SELECT
-            f.id as "id_fabrica", f.*,
-            e.id as "id_endereco", e.*
-        FROM fabrica f
-        JOIN endereco e ON e.id = f.id_endereco
-        WHERE f.id = ?
-        """;
+    String sql = "SELECT * FROM fabrica WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, id);
@@ -251,41 +239,27 @@ public class FabricaDAO extends DAO {
       try (ResultSet rs = pstmt.executeQuery()) {
         if (rs.next()) {
           // Informações da fábrica
-          String nome = rs.getString("nome");
-          String cnpj = rs.getString("cnpj_unidade");
+          String nome = rs.getString("nome_unidade");
+          String cnpj = rs.getString("cnpj");
           boolean status = rs.getBoolean("status");
           String email = rs.getString("email_corporativo");
           String nomeEmpresa = rs.getString("nome_industria");
           String ramo = rs.getString("ramo");
-
-          // Informações do endereco
-          int idEndereco = rs.getInt("id_endereco");
-          String cep = rs.getString("cep");
-          int numero = rs.getInt("numero");
-          String rua = rs.getString("rua");
-          String complemento = rs.getString("complemento");
+          int idPlano = rs.getInt("id_plano");
 
           // Cria e retorna o objeto
-          Endereco endereco = new Endereco(idEndereco, cep, numero, rua, complemento);
-          return new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, endereco);
+          return new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
 
         } else {
-          throw new SQLException("Falha ao recuperar o usuário");
+          throw new SQLException("Falha ao recuperar fábrica");
         }
       }
     }
   }
 
-  public Fabrica getFabricaByCnpj(String cnpj) throws SQLException {
+  public Fabrica pesquisarPorCnpj(String cnpj) throws SQLException {
     // Prepara o comando
-    String sql = """
-         SELECT
-            f.id as "id_fabrica", f.*,
-            e.id as "id_endereco", e.*
-        FROM fabrica f
-        JOIN endereco e ON e.id = f.id_endereco
-        WHERE f.cnpj_unidade = ?
-        """;
+    String sql = "SELECT * FROM fabrica WHERE cnpj = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setString(1, cnpj);
@@ -293,26 +267,18 @@ public class FabricaDAO extends DAO {
       try (ResultSet rs = pstmt.executeQuery()) {
         if (rs.next()) {
           // Informações da fábrica
-          int idFabrica = rs.getInt("id_fabrica");
-          String nome = rs.getString("nome");
+          int idFabrica = rs.getInt("id");
+          String nome = rs.getString("nome_unidade");
           boolean status = rs.getBoolean("status");
           String email = rs.getString("email_corporativo");
           String nomeEmpresa = rs.getString("nome_industria");
           String ramo = rs.getString("ramo");
+          int idPlano = rs.getInt("id_plano");
 
-          // Informações do endereco
-          int idEndereco = rs.getInt("id_endereco");
-          String cep = rs.getString("cep");
-          int numero = rs.getInt("numero");
-          String rua = rs.getString("rua");
-          String complemento = rs.getString("complemento");
-
-          // Cria e retorna o objeto
-          Endereco endereco = new Endereco(idEndereco, cep, numero, rua, complemento);
-          return new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, endereco);
+          return new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
 
         } else {
-          throw new SQLException("Falha ao recuperar o usuário");
+          return null;
         }
       }
     }

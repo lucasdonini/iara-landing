@@ -5,8 +5,10 @@ import com.model.Plano;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +29,7 @@ public class PlanoDAO extends DAO {
   //Cadastrar novo Plano
   public void cadastrar(Plano plano) throws SQLException {
     //Comando SQL
-    String sql = "INSERT INTO planos(nome, valor, descricao) VALUES (?,?,?)";
+    String sql = "INSERT INTO plano(nome, valor, descricao) VALUES (?, ?, ?)";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) { //Preparando comando SQL
       //Definindo variáveis no código SQL
@@ -49,7 +51,7 @@ public class PlanoDAO extends DAO {
 
   public Plano getPlanoById(int id) throws SQLException {
     // Prepara o comando
-    String sql = "SELECT * FROM planos WHERE id = ?";
+    String sql = "SELECT * FROM plano WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, id);
@@ -70,7 +72,7 @@ public class PlanoDAO extends DAO {
 
   public Plano getPlanoByNome(String nome) throws SQLException {
     // Prepara o comando
-    String sql = "SELECT * FROM planos WHERE nome = ?";
+    String sql = "SELECT * FROM plano WHERE nome = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setString(1, nome);
@@ -92,7 +94,7 @@ public class PlanoDAO extends DAO {
   //Remover plano
   public void remover(int id) throws SQLException {
     // Prepara o comando
-    String sql = "DELETE FROM planos WHERE id = ?";
+    String sql = "DELETE FROM plano WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -227,7 +229,7 @@ public class PlanoDAO extends DAO {
   //Campos Alteráveis
   public Plano getCamposAlteraveis(int id) throws SQLException {
     // Prepara o comando
-    String sql = "SELECT * FROM planos WHERE id = ?";
+    String sql = "SELECT * FROM plano WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, id);
@@ -244,5 +246,22 @@ public class PlanoDAO extends DAO {
         }
       }
     }
+  }
+
+  public Map<Integer, String> getMapIdNome() throws SQLException {
+    Map<Integer, String> map = new HashMap<>();
+
+    // Prepara o comando
+    String sql = "SELECT id, nome FROM plano";
+
+    try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+      while (rs.next()) {
+        int id = rs.getInt("id");
+        String nome = rs.getString("nome");
+        map.put(id, nome);
+      }
+    }
+
+    return map;
   }
 }
