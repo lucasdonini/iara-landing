@@ -17,20 +17,22 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-// TODO: criar opções de filtragem para o READ
-
-@WebServlet("/area-restrita/superadms")
+@WebServlet("/superadms")
 public class SuperAdmServlet extends HttpServlet {
-  private static final String PAGINA_PRINCIPAL = "jsp/superadms.jsp";
-  private static final String PAGINA_CADASTRO = "jsp/cadastro-superadm.jsp";
-  private static final String PAGINA_EDICAO = "jsp/editar-superadm.jsp";
+  private static final String PAGINA_PRINCIPAL = "WEB-INF/jsp/superadms.jsp";
+  private static final String PAGINA_CADASTRO = "WEB-INF/jsp/cadastro-superadm.jsp";
+  private static final String PAGINA_EDICAO = "WEB-INF/jsp/editar-superadm.jsp";
   private static final String PAGINA_ERRO = "html/erro.html";
-  private static final String ESSE_ENDPOINT = "area-restrita/superadms";
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da request
     String action = req.getParameter("action").trim();
+    Object origem = req.getAttribute("origem");
+
+    if ("post".equals(origem)) {
+      action = "read";
+    }
 
     // Dados da resposta
     boolean erro = true;
@@ -39,14 +41,14 @@ public class SuperAdmServlet extends HttpServlet {
     try {
       switch (action) {
         case "read" -> {
-          List<SuperAdmDTO> superAdms = getListaSuperAdms();
+          List<SuperAdmDTO> superAdms = getListaSuperAdms(req);
           req.setAttribute("superAdms", superAdms);
           destino = PAGINA_PRINCIPAL;
         }
 
         case "update" -> {
           SuperAdmDTO superAdm = getInformacoesAlteraveis(req);
-          req.setAttribute("infosSuperAdm", superAdm);
+          req.setAttribute("superAdm", superAdm);
           destino = PAGINA_EDICAO;
         }
 
@@ -85,7 +87,7 @@ public class SuperAdmServlet extends HttpServlet {
     String action = req.getParameter("action").trim();
 
     // Dados da resposta
-    String destino = PAGINA_ERRO;
+    boolean erro = true;
 
     try {
       switch (action) {
@@ -95,7 +97,7 @@ public class SuperAdmServlet extends HttpServlet {
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
-      destino = ESSE_ENDPOINT + "?action=read";
+      erro = false;
 
     } catch (ExcecaoDePagina e) {
       req.setAttribute("erro", e.getMessage());
@@ -117,13 +119,27 @@ public class SuperAdmServlet extends HttpServlet {
     }
 
     // Redireciona para a página de destino
-    resp.sendRedirect(req.getContextPath() + '/' + destino);
+    if (erro) {
+      resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
+
+    } else {
+      req.setAttribute("origem", "post");
+      doGet(req, resp);
+    }
   }
 
-  private List<SuperAdmDTO> getListaSuperAdms() throws SQLException, ClassNotFoundException {
+  private List<SuperAdmDTO> getListaSuperAdms(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    // Dados da requisição
+    String campoFiltro = req.getParameter("campo_filtro");
+    String valorFiltroStr = req.getParameter("valor_filtro");
+    String campoSequencia = req.getParameter("campo_sequencia");
+    String direcaoSequencia = req.getParameter("direcao_sequencia");
+
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
+      Object valorFiltro = dao.converterValor(campoFiltro, valorFiltroStr);
+
       // Recupera os usuários do banco
-      return dao.listarSuperAdms();
+      return dao.listarSuperAdms(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
     }
   }
 

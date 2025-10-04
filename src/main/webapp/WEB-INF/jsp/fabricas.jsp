@@ -7,7 +7,7 @@
 
 <%
   List<FabricaDTO> fabricas = (List<FabricaDTO>) request.getAttribute("fabricas");
-  Map<String, String> camposFiltraveisFabrica = FabricaDAO.camposFiltraveis;
+  Map<String, String> camposFiltraveis = FabricaDAO.camposFiltraveis;
 %>
 
 <html>
@@ -28,8 +28,8 @@
     <select name="campoFiltro">
       <option value="" selected>Nenhum selecionado</option>
       
-      <% for (String chave : camposFiltraveisFabrica.keySet()) { %>
-      <option value="<%= camposFiltraveisFabrica.get(chave) %>">
+      <% for (String chave : camposFiltraveis.keySet()) { %>
+      <option value="<%= camposFiltraveis.get(chave) %>">
         <%= chave %>
       </option>
       <% } %>
@@ -46,8 +46,8 @@
     <select name="campoSequencia">
       <option value="" selected>Nenhum selecionado</option>
       
-      <% for (String chave : camposFiltraveisFabrica.keySet()) { %>
-      <option value="<%= camposFiltraveisFabrica.get(chave) %>">
+      <% for (String chave : camposFiltraveis.keySet()) { %>
+      <option value="<%= camposFiltraveis.get(chave) %>">
         <%= chave %>
       </option>
       <% } %>

@@ -1,7 +1,7 @@
 <%@ page import="com.dto.SuperAdmDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-  SuperAdmDTO adm = (SuperAdmDTO) request.getAttribute("infosSuperAdm");
+  SuperAdmDTO adm = (SuperAdmDTO) request.getAttribute("superAdm");
   String erro = (String) request.getAttribute("erro");
 %>
 <html>
@@ -13,7 +13,7 @@
   Editar Super Adm - ID: <%= adm.getId() %>
 </h1>
 
-<form action="${pageContext.request.contextPath}/area-restrita/superadms" method="post">
+<form action="${pageContext.request.contextPath}/superadms" method="post">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="id" value="<%= adm.getId() %>">
   <input type="text" name="nome" value="<%= adm.getNome() %>" placeholder="Novo nome">
