@@ -38,7 +38,7 @@
         <div class="login-box">
             <img src="${pageContext.request.contextPath}/assets/IARA - Imagens Landing/Logo/logo-iara.png" alt="Logo IARA" class="logo">
             <h2>Bem-Vindo de Volta!</h2>
-            <form id="loginForm" action="${pageContext.request.contextPath}/login-handler" method="post">
+            <form id="loginForm" action="${pageContext.request.contextPath}/login-handler?action=login" method="post">
                 <label for="email">E-mail</label>
                 <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
 
