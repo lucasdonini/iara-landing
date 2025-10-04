@@ -1,0 +1,296 @@
+/* INTRODUCTION */
+#introducao {
+    display: flex;
+    justify-content: space-between;
+    min-height: calc(507.4px - 102px);
+}
+
+.texto {
+    max-width: 35%;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin: auto;
+}
+
+#introducao h1 {
+    font-size: 3rem;
+    color: #12131A;
+    opacity: 0.82;
+}
+
+#introducao p {
+    font-size: 1.3rem;
+    color: #333333;
+    opacity: 0.5;
+    text-align: justify;
+}
+
+#introducao .imagem {
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#introducao .imagem img {
+    max-width: 78%;
+    height: auto;
+}
+
+
+/* MISSION */
+#missao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    padding: 60px 5%;
+}
+
+#missao .imagem {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+#missao .imagem img {
+    max-width: 70%;
+    height: auto;
+    border-radius: 20px;
+    border-color: #17396D;
+}
+
+
+#missao h2 {
+    font-size: 2.5rem;
+    color: #12131A;
+    margin-bottom: 0px;
+}
+
+#missao .texto {
+    flex: 1;
+}
+
+.texto p {
+    font-size: 1.3rem;
+    color: #333333;
+    opacity: 0.5;
+    text-align: justify;
+}
+
+#missao .subtitulo {
+    color: #5991B3;
+    font-size: 1.2rem;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+.topico {
+    margin-bottom: 0px;
+}
+
+/* SURGIMENTO */
+#como-surgiu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 80px 8%;
+    position: relative;
+}
+
+#como-surgiu .texto {
+    flex: 1;
+}
+
+#como-surgiu .imagem {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+#como-surgiu .imagem img {
+    max-width: 120%;
+    height: auto;
+}
+
+
+#como-surgiu .subtitulo {
+    color: #5991B3;
+    font-size: 1.2rem;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+#como-surgiu h2 {
+    font-size: 2.2rem;
+    color: #12131A;
+    margin-bottom: 0px;
+}
+
+/* CONTACT */
+#contato {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+}
+
+
+#contato .imagem img {
+    max-width: 80%;
+    height: auto;
+}
+
+
+#contato h2 {
+    font-size: 2.5rem;
+    color: #12131A;
+    margin-bottom: 0px;
+}
+
+
+.texto p {
+    font-size: 1.3rem;
+    color: #333333;
+    opacity: 0.5;
+    text-align: justify;
+}
+
+#contato .subtitulo {
+    color: #5991B3;
+    font-size: 1.2rem;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+/* CTA */
+#cta {
+    display: flex;
+    justify-content: space-around;
+    background-color: #313131;
+    border-radius: 10px;
+    max-width: 70%;
+    min-height: 500px;
+    margin: auto;
+    margin-top: 15%;
+    margin-bottom: 15%;
+}
+
+#cta img {
+    width: 500px;
+    height: auto;
+}
+
+#texto {
+    color: white;
+    font-size: 1.5rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px;
+}
+
+#cta .btn-principal {
+    background-color: #FAFAFA;
+    color: #000000;
+    cursor: pointer;
+    min-width: 34%;
+    height: 60px;
+    margin-top: 20px;
+}
+
+
+/* REPONSIVITY */
+@media screen and (max-width: 1170px) {
+    #introducao {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    #introducao h1 {
+        font-size: 1.8rem;
+    }
+
+    #introducao p {
+        font-size: 1rem;
+    }
+
+    #btn-principal {
+        width: 100%;
+        max-width: 300px;
+        height: 50px;
+        margin: 20px auto 0;
+    }
+
+    #missao {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        padding: 40px 20px;
+    }
+    
+    #como-surgiu{
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        padding: 40px 20px;
+    }
+
+    #contato{
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        padding: 40px 20px;
+    }
+
+    section {
+        width: 100%;
+    }
+
+    .subtitulo{
+        margin: auto;
+    }
+
+    #cta {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 40px 20px;
+        max-width: 80%;
+        min-height: auto;
+        margin-top: -5%;
+        margin-bottom: 20%;
+    }
+
+    #cta h2{
+        text-align: center;
+    }
+
+    #texto {
+        padding: 20px;
+        align-items: center;
+    }
+
+    #cta .btn-principal{
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    .texto_responsivo {
+        max-width: 100%;
+        padding: 15px;
+        text-align: center;
+    }
+    
+}
