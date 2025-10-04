@@ -3,16 +3,45 @@ package com.dao;
 import com.dto.AtualizacaoUsuarioDTO;
 import com.dto.CadastroUsuarioDTO;
 import com.dto.UsuarioDTO;
-import com.model.NivelAcesso;
+import com.model.Permissao;
 
-import java.sql.*;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class UsuarioDAO extends DAO {
+  public static final Map<String, String> camposFiltraveis = Map.of(
+      "id", "Id",
+      "nome", "Nome",
+      "email", "Email",
+      "id_fabrica", "Fábrica",
+      "tipo_acesso", "Tipo de Acesso",
+      "status", "Status",
+      "data_criacao", "Data de Registro"
+  );
+
+
   public UsuarioDAO() throws SQLException, ClassNotFoundException {
     super();
+  }
+
+  public Object converterValor(String campo, String valor) {
+    if (campo == null) {
+      return null;
+    }
+
+    return switch (campo) {
+      case "id", "id_fabrica", "tipo_acesso" -> Integer.parseInt(valor);
+      case "status" -> Boolean.parseBoolean(valor);
+      case "data_criacao" -> LocalDate.parse(valor);
+      case "nome", "email" -> valor;
+      default -> throw new IllegalArgumentException("Campo inválido: " + campo);
+    };
   }
 
   public void cadastrar(CadastroUsuarioDTO credenciais) throws SQLException {
@@ -22,12 +51,12 @@ public class UsuarioDAO extends DAO {
     String senha = credenciais.getSenha();
     String nome = credenciais.getNome();
     int fkFabrica = credenciais.getFkFabrica();
-    int nivelAcesso = NivelAcesso.ADMIN.nivel();
+    int nivelAcesso = Permissao.GERENCIAMENTO.nivel();
     boolean status = true;
 
     // Prepara o comando
     String sql = """
-        INSERT INTO usuario(nome, email, senha, nivel_acesso, status, fk_fabrica)
+        INSERT INTO usuario(nome, email, senha, tipo_acesso, status, id_fabrica)
         VALUES (?, ?, ?, ?, ?, ?)
         """;
 
@@ -83,62 +112,39 @@ public class UsuarioDAO extends DAO {
   public List<UsuarioDTO> listarUsuarios(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     List<UsuarioDTO> usuarios = new ArrayList<>();
 
-        // Prepara o comado e executa
-        StringBuilder sql = new StringBuilder("SELECT * FROM usuario");
+    // Prepara o comado e executa
+    String sql = "SELECT id, id_fabrica, email, nome, tipo_acesso, status, data_criacao FROM usuario";
 
-        // Verificando campo do filtro
-        if (campoFiltro != null) {
-            switch (campoFiltro) {
-                case "id" -> sql.append(" WHERE id = ?");
-                case "nome" -> sql.append(" WHERE nome = ?");
-                case "email" -> sql.append(" WHERE email = ?");
-                case "tipo_acesso" -> sql.append(" WHERE nivel_acesso = ?");
-                case "data_criacao" -> sql.append(" WHERE data_criacao = ?");
-                case "status" -> sql.append(" WHERE status = ?");
-                default -> sql.append(" WHERE fk_fabrica = ?");
-            }
-        }
+    if (campoFiltro != null && camposFiltraveis.containsValue(campoFiltro)) {
+      sql += " WHERE %s = ?".formatted(campoFiltro);
+    }
 
-        //Verificando campo para ordenar a consulta
-        if (campoSequencia != null) {
-            switch (campoSequencia) {
-                case "id" -> sql.append(" ORDER BY id");
-                case "nome" -> sql.append(" ORDER BY nome");
-                case "email" -> sql.append(" ORDER BY email");
-                case "nivel_acesso" -> sql.append(" ORDER BY nivel_acesso");
-                case "data_criacao" -> sql.append(" ORDER BY data_criacao");
-                case "status" -> sql.append(" ORDER BY status");
-                default -> sql.append(" ORDER BY fk_fabrica");
-            }
+    //Verificando campo para ordenar a consulta
+    if (campoSequencia != null && camposFiltraveis.containsValue(campoSequencia)) {
+      sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
+    }
 
-            //Verificando direção da sequencia
-            switch (direcaoSequencia) {
-                case "crescente" -> sql.append(" ASC");
-                case "decrescente" -> sql.append(" DESC");
-            }
-        }
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      //Definindo parâmetro vazio
+      if (campoFiltro != null) {
+        pstmt.setObject(1, valorFiltro);
+      }
 
-        try (PreparedStatement pstmt = conn.prepareStatement(String.valueOf(sql))) {
-            //Definindo parâmetro vazio
-            if (campoFiltro != null) {
-                pstmt.setObject(1, valorFiltro);
-            }
+      //Instanciando um ResultSet
+      ResultSet rs = pstmt.executeQuery();
+      while (rs.next()) {
+        // Armazenamento do resultado em variáveis
+        int id = rs.getInt("id");
+        String nome = rs.getString("nome");
+        String email = rs.getString("email");
+        Permissao nivelAcesso = Permissao.fromInteger(rs.getInt("tipo_acesso"));
 
-            //Instanciando um ResultSet
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                // Armazenamento do resultado em variáveis
-                int id = rs.getInt("id");
-                String nome = rs.getString("nome");
-                String email = rs.getString("email");
-                NivelAcesso nivelAcesso = NivelAcesso.fromInteger(rs.getInt("nivel_acesso"));
-
-                // Conversão da data
-                Date temp = rs.getDate("data_criacao");
-                LocalDate dtCriacao = (temp == null ? null : temp.toLocalDate());
+        // Conversão da data
+        Date temp = rs.getDate("data_criacao");
+        LocalDate dtCriacao = (temp == null ? null : temp.toLocalDate());
 
         boolean status = rs.getBoolean("status");
-        int fkFabrica = rs.getInt("fk_fabrica");
+        int fkFabrica = rs.getInt("id_fabrica");
 
         // Adição na lista
         usuarios.add(new UsuarioDTO(id, nome, email, nivelAcesso, dtCriacao, status, fkFabrica));
@@ -154,7 +160,7 @@ public class UsuarioDAO extends DAO {
     int id = alterado.getId();
     String nome = alterado.getNome();
     String email = alterado.getEmail();
-    NivelAcesso nivelAcesso = alterado.getNivelAcesso();
+    Permissao permissao = alterado.getPermissao();
     boolean status = alterado.getStatus();
     int fkFabrica = alterado.getFkFabrica();
 
@@ -172,9 +178,9 @@ public class UsuarioDAO extends DAO {
       valores.add(email);
     }
 
-    if (!nivelAcesso.equals(original.getNivelAcesso())) {
-      sql.append("nivel_acesso = ?, ");
-      valores.add(nivelAcesso.nivel());
+    if (!permissao.equals(original.getPermissao())) {
+      sql.append("tipo_acesso = ?, ");
+      valores.add(permissao.nivel());
     }
 
     if (status != original.getStatus()) {
@@ -183,7 +189,7 @@ public class UsuarioDAO extends DAO {
     }
 
     if (fkFabrica != original.getFkFabrica()) {
-      sql.append("fk_fabrica = ?, ");
+      sql.append("id_fabrica = ?, ");
       valores.add(fkFabrica);
     }
 
@@ -222,10 +228,10 @@ public class UsuarioDAO extends DAO {
         if (rs.next()) {
           String nome = rs.getString("nome");
           String email = rs.getString("email");
-          int temp = rs.getInt("nivel_acesso");
-          NivelAcesso nivelAcesso = NivelAcesso.fromInteger(temp);
+          int temp = rs.getInt("tipo_acesso");
+          Permissao nivelAcesso = Permissao.fromInteger(temp);
           boolean status = rs.getBoolean("status");
-          int fkFabrica = rs.getInt("fk_fabrica");
+          int fkFabrica = rs.getInt("id_fabrica");
 
           return new AtualizacaoUsuarioDTO(id, nome, email, nivelAcesso, status, fkFabrica);
         } else {
@@ -250,14 +256,14 @@ public class UsuarioDAO extends DAO {
         int id = rs.getInt("id");
         String nome = rs.getString("nome");
 
-        int nivelAcessoInt = rs.getInt("nivel_acesso");
-        NivelAcesso nivelAcesso = NivelAcesso.fromInteger(nivelAcessoInt);
+        int nivelAcessoInt = rs.getInt("tipo_acesso");
+        Permissao nivelAcesso = Permissao.fromInteger(nivelAcessoInt);
 
         Date dtCriacaoDate = rs.getDate("data_criacao");
         LocalDate dtCriacao = dtCriacaoDate == null ? null : dtCriacaoDate.toLocalDate();
 
         boolean status = rs.getBoolean("status");
-        int fkFabrica = rs.getInt("fk_fabrica");
+        int fkFabrica = rs.getInt("id_fabrica");
 
         return new UsuarioDTO(id, nome, email, nivelAcesso, dtCriacao, status, fkFabrica);
       }
