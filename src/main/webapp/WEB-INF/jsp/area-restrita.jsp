@@ -22,7 +22,7 @@
     <li><a href="${pageContext.request.contextPath}/area-restrita/superadms?action=read">Super Administradores</a></li>
     <li><a href="${pageContext.request.contextPath}/area-restrita/planos?action=read">Planos</a></li>
     <li><a href="${pageContext.request.contextPath}/fabricas?action=read">Fábricas</a></li>
-    <li><a href="${pageContext.request.contextPath}/area-restrita/pagamentos?action=read">Pagamentos</a></li>
+    <li><a href="${pageContext.request.contextPath}/pagamentos?action=read">Pagamentos</a></li>
   </ul>
 </nav>
 <form action="${pageContext.request.contextPath}/login-handler" method="post">
