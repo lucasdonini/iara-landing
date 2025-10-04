@@ -7,7 +7,9 @@ import com.model.Fabrica;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -282,5 +284,21 @@ public class FabricaDAO extends DAO {
         }
       }
     }
+  }
+
+  public Map<Integer, String> getMapIdNome() throws SQLException {
+    String sql = "SELECT id, nome_unidade FROM fabrica";
+    Map<Integer, String> map = new HashMap<>();
+
+    try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+      while (rs.next()) {
+        int id = rs.getInt("id");
+        String nome = rs.getString("nome_unidade");
+
+        map.put(id, nome);
+      }
+    }
+
+    return map;
   }
 }
