@@ -33,10 +33,10 @@
     <option value="false" <%= !pagamento.getStatus() ? "selected" : "" %>>Pagamento pendente ❌</option>
   </select>
   
-  <label>Nova data de vencimento:</label>
+  <label>Data de vencimento:</label>
   <input type="date" name="dataVencimento" value="<%= pagamento.getDataVencimento() %>">
   
-  <label>Nova data de pagamento:</label>
+  <label>Data de pagamento:</label>
   <input type="date" name="dataPagamento" value="<%= pagamento.getDataPagamento() %>">
   
   <select name="tipoPagamento">
@@ -44,9 +44,16 @@
     <option value="<%= key %>" <%= pagamento.getTipoPagamento().equals(key) ? "selected" : "" %>>
       <%= Pagamento.tiposPagamento.get(key) %>
     </option>
+    <% } %>
   </select>
   
-  <input type="number" name="fkFabrica" value="<%= pagamento.getFkFabrica() %>" placeholder="Novo ID de Fábrica">
+  <select name="fkFabrica">
+    <% for (int id : fabricas.keySet()) { %>
+    <option value="<%= id %>" <%= id == pagamento.getFkFabrica() ? "selected" : "" %>>
+      <%= fabricas.get(id) %>
+    </option>
+    <% } %>
+  </select>
   <button type="submit">Salvar</button>
 </form>
 </body>

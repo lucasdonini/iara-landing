@@ -1,5 +1,4 @@
 <%@ page import="java.util.Map" %>
-<%@ page import="java.util.HashMap" %>
 <%@page contentType="text/html; charset=UTF-8" language="java" %>
 <%
   Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas"); 
@@ -11,7 +10,7 @@
   <title>Landing Teste</title>
 </head>
 <body>
-<h1>Cadastro - Super Administrador</h1>
+<h1>Cadastro - Pagamento</h1>
 <form action="${pageContext.request.contextPath}/pagamentos" method="post">
   <input type="hidden" name="action" value="create">
   <label>Status:</label>

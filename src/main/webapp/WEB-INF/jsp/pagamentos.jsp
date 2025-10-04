@@ -3,10 +3,13 @@
 <%@ page import="com.dao.PagamentoDAO" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="com.model.DirecaoOrdenacao" %>
+<%@ page import="java.time.LocalDate" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
   List<Pagamento> pagamentos = (List<Pagamento>) request.getAttribute("pagamentos");
+  Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
+  Map<String, String> tiposPagamentos = Pagamento.tiposPagamento;
   Map<String, String> camposFiltraveis = PagamentoDAO.camposFiltraveis;
 %>
 
@@ -64,9 +67,12 @@
     <th>Data de Vencimento</th>
     <th>Data de Pagamento</th>
     <th>Tipo de Pagamento</th>
-    <th>ID da Fabrica</th>
+    <th>Fábrica</th>
   </tr>
-  <% for (Pagamento pagamento : pagamentos) { %>
+  <%
+    for (Pagamento pagamento : pagamentos) {
+      LocalDate dtPagto = pagamento.getDataPagamento();
+  %>
   <tr>
     <td>
       <%= pagamento.getId() %>
@@ -75,19 +81,19 @@
       <%= pagamento.getValorPago() %>
     </td>
     <td>
-      <%= pagamento.getStatus() %>
+      <%= pagamento.getStatus() ? "Pago" : "Pendente" %>
     </td>
     <td>
       <%= pagamento.getDataVencimento() %>
     </td>
     <td>
-      <%= pagamento.getDataPagamento() %>
+      <%= dtPagto == null ? "Pagamento Pendente" : dtPagto %>
     </td>
     <td>
-      <%= pagamento.getTipoPagamento() %>
+      <%= tiposPagamentos.get(pagamento.getTipoPagamento()) %>
     </td>
     <td>
-      <%= pagamento.getFkFabrica() %>
+      <%= fabricas.get(pagamento.getFkFabrica()) %>
     </td>
     <td>
       <form action="${pageContext.request.contextPath}/pagamentos" method="get">
@@ -104,6 +110,6 @@
   </tr>
   <% } %>
 </table>
-<a href="${pageContext.request.contextPath}/pagamentos?action=create">Cadastrar novo Plano</a>
+<a href="${pageContext.request.contextPath}/pagamentos?action=create">Cadastrar novo Pagamento</a>
 </body>
 </html>
