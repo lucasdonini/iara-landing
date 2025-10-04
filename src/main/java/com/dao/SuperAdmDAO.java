@@ -9,8 +9,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SuperAdmDAO extends DAO {
+  public static final Map<String, String> camposFiltraveis = Map.of(
+      "id", "Id",
+      "nome", "Nome",
+      "cargo", "Cargo",
+      "email", "Email"
+  );
+
   public SuperAdmDAO() throws SQLException, ClassNotFoundException {
     super();
   }
@@ -84,7 +92,7 @@ public class SuperAdmDAO extends DAO {
         }
 
         return new SuperAdmDTO(
-            rs.getInt("int"),
+            rs.getInt("id"),
             rs.getString("nome"),
             rs.getString("cargo"),
             email
@@ -177,37 +185,35 @@ public class SuperAdmDAO extends DAO {
     }
   }
 
+  public Object converterValor(String campo, String valor) {
+    if (campo == null) {
+      return null;
+    }
+
+    return switch (campo) {
+      case "id" -> Integer.parseInt(valor);
+      case "nome", "email", "cargo" -> valor;
+      default -> throw new IllegalArgumentException("Campo inválido: " + campo);
+    };
+  }
+
   public List<SuperAdmDTO> listarSuperAdms(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     List<SuperAdmDTO> superAdms = new ArrayList<>();
 
     // Prepara o comando
-    StringBuilder sql = new StringBuilder("SELECT * FROM super_adm");
+    String sql = "SELECT * FROM super_adm";
 
     // Verificando campo do filtro
-    if (campoFiltro != null) {
-      switch (campoFiltro) {
-        case "id" -> sql.append(" WHERE id = ?");
-        case "cargo" -> sql.append(" WHERE nome = ?");
-        default -> sql.append(" WHERE email = ?");
-      }
+    if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
+      sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
     //Verificando campo para ordenar a consulta
-    if (campoSequencia != null) {
-      switch (campoSequencia) {
-        case "id" -> sql.append(" ORDER BY id");
-        case "nome" -> sql.append(" ORDER BY nome");
-        case "email" -> sql.append(" ORDER BY email");
-      }
-
-      //Verificando direção da sequencia
-      switch (direcaoSequencia) {
-        case "crescente" -> sql.append(" ASC");
-        case "decrescente" -> sql.append(" DESC");
-      }
+    if (campoSequencia != null && camposFiltraveis.containsKey((campoSequencia))) {
+      sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
     }
 
-    try (PreparedStatement pstmt = conn.prepareStatement(String.valueOf(sql))) {
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       //Definindo parâmetro vazio
       if (campoFiltro != null) {
         pstmt.setObject(1, valorFiltro);
