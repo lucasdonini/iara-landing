@@ -6,8 +6,7 @@ import com.dto.AtualizacaoUsuarioDTO;
 import com.dto.CadastroUsuarioDTO;
 import com.dto.UsuarioDTO;
 import com.exception.ExcecaoDePagina;
-import com.model.Fabrica;
-import com.model.NivelAcesso;
+import com.model.Permissao;
 import com.utils.PasswordUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -18,22 +17,25 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/area-restrita/usuarios")
+@WebServlet("/usuarios")
 public class UsuarioServlet extends HttpServlet {
-  private static final String PAGINA_PRINCIPAL = "jsp/usuarios.jsp";
-  private static final String PAGINA_CADASTRO = "jsp/cadastro-usuario.jsp";
-  private static final String PAGINA_EDICAO = "jsp/editar-usuario.jsp";
+  private static final String PAGINA_PRINCIPAL = "WEB-INF/jsp/usuarios.jsp";
+  private static final String PAGINA_CADASTRO = "WEB-INF/jsp/cadastro-usuario.jsp";
+  private static final String PAGINA_EDICAO = "WEB-INF/jsp/editar-usuario.jsp";
   private static final String PAGINA_ERRO = "html/erro.html";
-  private static final String ESSE_ENDPOINT = "area-restrita/usuarios";
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     // Dados da requisição
     String action = req.getParameter("action").trim();
+    Object origem = req.getAttribute("origem");
+
+    if ("post".equals(origem)) {
+      action = "read";
+    }
 
     // Dados da resposta
     boolean erro = true;
@@ -42,27 +44,27 @@ public class UsuarioServlet extends HttpServlet {
     try {
       switch (action) {
         case "read" -> {
-          List<UsuarioDTO> usuarios = getListaUsuarios();
-          Map<Integer, String> fabricasPorFk = getMapFabricaPorFk();
+          List<UsuarioDTO> usuarios = getListaUsuarios(req);
+          Map<Integer, String> fabricas = getMapFabricas();
 
           req.setAttribute("usuarios", usuarios);
-          req.setAttribute("fabricasPorFk", fabricasPorFk);
+          req.setAttribute("fabricas", fabricas);
           destino = PAGINA_PRINCIPAL;
         }
 
         case "update" -> {
           AtualizacaoUsuarioDTO usuario = getInformacoesAlteraveis(req);
-          Map<Integer, String> fabricasPorFk = getMapFabricaPorFk();
+          Map<Integer, String> fabricas = getMapFabricas();
 
-          req.setAttribute("infosUsuario", usuario);
-          req.setAttribute("fabricasPorFk", fabricasPorFk);
+          req.setAttribute("usuario", usuario);
+          req.setAttribute("fabricas", fabricas);
           destino = PAGINA_EDICAO;
         }
 
         case "create" -> {
-          Map<Integer, String> nomesFabricas = getMapFabricaPorFk();
+          Map<Integer, String> fabricas = getMapFabricas();
 
-          req.setAttribute("nomesFabricas", nomesFabricas);
+          req.setAttribute("fabricas", fabricas);
           destino = PAGINA_CADASTRO;
         }
 
@@ -88,6 +90,7 @@ public class UsuarioServlet extends HttpServlet {
     // Redireciona a request par a página jsp
     if (erro) {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
+
     } else {
       RequestDispatcher rd = req.getRequestDispatcher(destino);
       rd.forward(req, resp);
@@ -100,7 +103,7 @@ public class UsuarioServlet extends HttpServlet {
     String action = req.getParameter("action").trim();
 
     // Dados da resposta
-    String destino = PAGINA_ERRO;
+    boolean erro = true;
 
     try {
       switch (action) {
@@ -110,7 +113,7 @@ public class UsuarioServlet extends HttpServlet {
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
-      destino = ESSE_ENDPOINT + "?action=read";
+      erro = false;
 
     } catch (ExcecaoDePagina e) {
       req.setAttribute("erro", e.getMessage());
@@ -132,28 +135,35 @@ public class UsuarioServlet extends HttpServlet {
     }
 
     // Redireciona para a página de destino
-    resp.sendRedirect(req.getContextPath() + '/' + destino);
-  }
+    if (erro) {
+      resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
-  private List<UsuarioDTO> getListaUsuarios() throws SQLException, ClassNotFoundException {
-    try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Recupera os usuários do banco e armazena na lista
-      return dao.listarUsuarios();
+    } else {
+      req.setAttribute("origem", "post");
+      doGet(req, resp);
     }
   }
 
-  private Map<Integer, String> getMapFabricaPorFk() throws SQLException, ClassNotFoundException {
-    // Dados da resposta
-    Map<Integer, String> fabricasPorFk = new HashMap<>();
+  private List<UsuarioDTO> getListaUsuarios(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    // Dados da requisição
+    String campoFiltro = req.getParameter("campo_filtro");
+    String valorFiltroStr = req.getParameter("valor_filtro");
+    String campoSequencia = req.getParameter("campo_sequencia");
+    String direcaoSequencia = req.getParameter("direcao_sequencia");
 
+    try (UsuarioDAO dao = new UsuarioDAO()) {
+      Object valorFiltro = dao.converterValor(campoFiltro, valorFiltroStr);
+      // Recupera os usuários do banco e armazena na lista
+      return dao.listarUsuarios(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+
+    } catch (IllegalArgumentException e) {
+      throw ExcecaoDePagina.valorInvalido(UsuarioDAO.camposFiltraveis.get(campoFiltro));
+    }
+  }
+
+  private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
     try (FabricaDAO dao = new FabricaDAO()) {
-      // Percorre os usuários e armazena a visualização de suas fábricas
-      for (Fabrica f : dao.listarFabricas()) {
-        fabricasPorFk.put(f.getId(), f.toString());
-      }
-
-      // Retorna o HashMap com os dados
-      return fabricasPorFk;
+      return dao.getMapIdNome();
     }
   }
 
@@ -214,12 +224,12 @@ public class UsuarioServlet extends HttpServlet {
 
     temp = req.getParameter("nivel_acesso").trim();
     int nivelAcessoInt = Integer.parseInt(temp);
-    NivelAcesso nivelAcesso = NivelAcesso.fromInteger(nivelAcessoInt);
+    Permissao permissao = Permissao.fromInteger(nivelAcessoInt);
 
     String email = req.getParameter("email").trim();
     String nome = req.getParameter("nome").trim();
 
-    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, email, nivelAcesso, status, fkFabrica);
+    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, email, permissao, status, fkFabrica);
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
       // Busca no banco o usuário original

@@ -1,11 +1,11 @@
 <%@ page import="com.dto.AtualizacaoUsuarioDTO" %>
-<%@ page import="com.model.NivelAcesso" %>
+<%@ page import="com.model.Permissao" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
-  AtualizacaoUsuarioDTO usuario = (AtualizacaoUsuarioDTO) request.getAttribute("infosUsuario");
-  Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricasPorFk");
+  AtualizacaoUsuarioDTO usuario = (AtualizacaoUsuarioDTO) request.getAttribute("usuario");
+  Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
   String erro = (String) request.getAttribute("erro");
 %>
 <html>
@@ -16,16 +16,16 @@
 <h1>
   Editar usuário - ID: <%= usuario.getId() %>
 </h1>
-<form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="post">
+<form action="${pageContext.request.contextPath}/usuarios" method="post">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="id" value="<%= usuario.getId() %>">
   <input type="text" name="nome" value="<%= usuario.getNome() %>" placeholder="Novo nome">
   <input type="text" name="email" value="<%= usuario.getEmail() %>" placeholder="Novo email">
   
   <select name="nivel_acesso">
-    <% for (NivelAcesso n : NivelAcesso.values()) { %>
-    <option value="<%= n.nivel() %>" <%= n == usuario.getNivelAcesso() ? "selected" : "" %>>
-      <%= n.toString() %>
+    <% for (Permissao p : Permissao.values()) { %>
+    <option value="<%= p.nivel() %>" <%= p == usuario.getPermissao() ? "selected" : "" %>>
+      <%= p.toString() %>
     </option>
     <% } %>
   </select>
@@ -48,6 +48,7 @@
   
   <button type="submit">Salvar</button>
 </form>
+<a href="${pageContext.request.contextPath}/usuarios?action=read">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

@@ -1,12 +1,11 @@
 <%@ page import="com.dto.UsuarioDTO" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="com.utils.DateUtils" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
   List<UsuarioDTO> usuarios = (List<UsuarioDTO>) request.getAttribute("usuarios");
-  Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricasPorFk");
-  DateTimeFormatter isoDmy = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
   String erro = (String) request.getAttribute("erro");
 %>
 <html lang="pt-BR">
@@ -15,7 +14,7 @@
 </head>
 <body>
 <h1>Usuários</h1>
-<a href="${pageContext.request.contextPath}/area-restrita/index"> Voltar à área restrita</a>
+<a href="${pageContext.request.contextPath}/area-restrita"> Voltar à área restrita</a>
 <table border="1">
   <tr>
     <th>ID</th>
@@ -39,10 +38,10 @@
       <%= u.getEmail() %>
     </td>
     <td>
-      <%= u.getNivelAcesso().toString() %>
+      <%= u.getPermissao().toString() %>
     </td>
     <td>
-      <%= u.getDtCriacao().format(isoDmy) %>
+      <%= u.getDtCriacao().format(DateUtils.isoDmy) %>
     </td>
     <td>
       <%= u.getStatus() ? "Ativo" : "Inativo" %>
@@ -51,13 +50,13 @@
       <%= fabricas.get(u.getFkFabrica()) %>
     </td>
     <td>
-      <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="get">
+      <form action="${pageContext.request.contextPath}/usuarios" method="get">
         <input type="hidden" name="id" value="<%= u.getId() %>">
         <input type="hidden" name="action" value="update">
         <button type="submit">Editar</button>
       </form>
       
-      <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="post">
+      <form action="${pageContext.request.contextPath}/usuarios" method="post">
         <input type="hidden" name="id" value="<%= u.getId() %>">
         <input type="hidden" name="action" value="delete">
         <button type="submit">Deletar</button>
@@ -66,7 +65,7 @@
   </tr>
   <% } %>
 </table>
-<a href="${pageContext.request.contextPath}/area-restrita/usuarios?action=create">Cadastrar novo Administrador</a>
+<a href="${pageContext.request.contextPath}/usuarios?action=create">Cadastrar novo Administrador</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

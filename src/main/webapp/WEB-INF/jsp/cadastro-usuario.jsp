@@ -1,7 +1,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%
-  Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("nomesFabricas");
+  Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
   String erro = (String) request.getAttribute("erro");
 %>
 
@@ -12,7 +12,7 @@
 </head>
 <body>
 <h1>Cadastro - Administrador</h1>
-<form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="post">
+<form action="${pageContext.request.contextPath}/usuarios" method="post">
   <input type="hidden" name="action" value="create">
   <input type="text" name="nome" placeholder="Nome">
   <input type="email" name="email" placeholder="Email">
@@ -29,7 +29,7 @@
   
   <button type="submit">Cadastrar</button>
 </form>
-<a href="${pageContext.request.contextPath}/area-restrita/usuarios?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/usuarios?action=read">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>
