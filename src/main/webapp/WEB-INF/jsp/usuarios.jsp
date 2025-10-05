@@ -38,7 +38,7 @@
       <%= u.getEmail() %>
     </td>
     <td>
-      <%= u.getPermissao().toString() %>
+      <%= u.getPermissao().descricao() %>
     </td>
     <td>
       <%= u.getDtCriacao().format(DataUtils.DMY) %>

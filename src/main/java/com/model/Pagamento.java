@@ -3,36 +3,33 @@ package com.model;
 import java.time.LocalDate;
 import java.util.Map;
 
+// tabela: pagamento
 public class Pagamento {
+  // Constantes
   public static final Map<String, String> tiposPagamento = Map.of(
       "debito", "Débito",
       "credito", "Crédito",
       "pix", "Pix"
   );
 
-  //Atributos
-  private Integer id;
-  private Double valorPago;
-  private Boolean status;
-  private LocalDate dataVencimento;
-  private LocalDate dataPagamento;
-  private String tipoPagamento;
-  private Integer fkFabrica;
+  // Atributos
+  private Integer id; // coluna: id
+  private Double valor; // coluna: valor
+  private Boolean status; // coluna: status
+  private LocalDate dataVencimento; // coluna: data_vencimento
+  private LocalDate dataPagamento; // coluna data_pagamento
+  private String tipoPagamento; // coluna: tipo_pagamento
+  private Integer idFabrica; // coluna: id_fabrica
 
-  //Construtor
-  public Pagamento(Integer id, Double valorPago, Boolean status, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamnto, Integer fkFabrica) {
+  // Construtor
+  public Pagamento(Integer id, Double valor, Boolean status, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamnto, Integer idFabrica) {
     this.id = id;
-    this.valorPago = valorPago;
+    this.valor = valor;
     this.status = status;
     this.dataVencimento = dataVencimento;
     this.dataPagamento = dataPagamento;
     this.tipoPagamento = tipoPagamnto;
-    this.fkFabrica = fkFabrica;
-  }
-
-  //toString
-  public String toString() {
-    return String.format("ID: %d\nValor: R$%.2f\nStatus: %b\nData de Vencimento: %s\nData do Pagamento: %s\nTipo de Pagamento: %s\n", this.id, this.valorPago, this.status, this.dataVencimento, this.dataPagamento, this.tipoPagamento);
+    this.idFabrica = idFabrica;
   }
 
   // Getters e Setters
@@ -44,12 +41,12 @@ public class Pagamento {
     this.id = id;
   }
 
-  public Double getValorPago() {
-    return this.valorPago;
+  public Double getValor() {
+    return this.valor;
   }
 
-  public void setValorPago(Double valorPago) {
-    this.valorPago = valorPago;
+  public void setValor(Double valor) {
+    this.valor = valor;
   }
 
   public Boolean getStatus() {
@@ -84,11 +81,18 @@ public class Pagamento {
     this.tipoPagamento = tipoPagamento;
   }
 
-  public Integer getFkFabrica() {
-    return this.fkFabrica;
+  public Integer getIdFabrica() {
+    return this.idFabrica;
   }
 
-  public void setFkFabrica(Integer fkFabrica) {
-    this.fkFabrica = fkFabrica;
+  public void setIdFabrica(Integer idFabrica) {
+    this.idFabrica = idFabrica;
+  }
+
+  // toString
+  @Override
+  public String toString() {
+    return "Pagamento{id=%d, valor=%.2f, status=%b, dataVencimento=%s, dataPagamento=%s, tipoPagamento='%s', idFabrica=%d}"
+        .formatted(id, valor, status, dataVencimento, dataPagamento, tipoPagamento, idFabrica);
   }
 }

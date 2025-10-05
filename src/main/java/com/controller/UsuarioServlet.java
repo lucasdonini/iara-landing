@@ -6,7 +6,7 @@ import com.dto.AtualizacaoUsuarioDTO;
 import com.dto.CadastroUsuarioDTO;
 import com.dto.UsuarioDTO;
 import com.exception.ExcecaoDePagina;
-import com.model.Permissao;
+import com.model.TipoAcesso;
 import com.utils.SenhaUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -224,12 +224,12 @@ public class UsuarioServlet extends HttpServlet {
 
     temp = req.getParameter("nivel_acesso").trim();
     int nivelAcessoInt = Integer.parseInt(temp);
-    Permissao permissao = Permissao.fromInteger(nivelAcessoInt);
+    TipoAcesso tipoAcesso = TipoAcesso.deNivel(nivelAcessoInt);
 
     String email = req.getParameter("email").trim();
     String nome = req.getParameter("nome").trim();
 
-    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, email, permissao, status, fkFabrica);
+    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, email, tipoAcesso, status, fkFabrica);
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
       // Busca no banco o usuário original

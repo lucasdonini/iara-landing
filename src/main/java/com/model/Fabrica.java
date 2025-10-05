@@ -2,41 +2,43 @@ package com.model;
 
 // tabela: fabrica
 public class Fabrica {
-  private int id;
-  private String nome;
-  private String cnpj;
-  private Boolean status;
-  private String email;
-  private String nomeEmpresa;
-  private String ramo;
-  private int idPlano;
+  // Atributos
+  private Integer id; // coluna: id
+  private String nomeUnidade; // coluna: nome_unidade
+  private String cnpj; // coluna: cnpj
+  private Boolean status; // coluna: status
+  private String emailCorporativo; // coluna: email_corporativo
+  private String nomeIndustria; // coluna: nome_industria
+  private String ramo; // coluna: ramo
+  private Integer idPlano; // coluna: id_plano
 
-  public Fabrica(int id, String nome, String cnpj, Boolean status, String email, String nomeEmpresa, String ramo, int idPlano) {
+  // Construtor
+  public Fabrica(Integer id, String nomeUnidade, String cnpj, Boolean status, String emailCorporativo, String nomeIndustria, String ramo, Integer idPlano) {
     this.id = id;
-    this.nome = nome;
+    this.nomeUnidade = nomeUnidade;
     this.cnpj = cnpj;
     this.status = status;
-    this.email = email;
-    this.nomeEmpresa = nomeEmpresa;
+    this.emailCorporativo = emailCorporativo;
+    this.nomeIndustria = nomeIndustria;
     this.ramo = ramo;
     this.idPlano = idPlano;
   }
 
   // Getters e Setters
-  public int getId() {
+  public Integer getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(Integer id) {
     this.id = id;
   }
 
-  public String getNome() {
-    return nome;
+  public String getNomeUnidade() {
+    return nomeUnidade;
   }
 
-  public void setNome(String nome) {
-    this.nome = nome;
+  public void setNomeUnidade(String nomeUnidade) {
+    this.nomeUnidade = nomeUnidade;
   }
 
   public String getCnpj() {
@@ -55,35 +57,42 @@ public class Fabrica {
     this.status = status;
   }
 
-  public String getEmail() {
-    return email;
+  public String getEmailCorporativo() {
+    return emailCorporativo;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
+  public void setEmailCorporativo(String emailCorporativo) {
+    this.emailCorporativo = emailCorporativo;
   }
 
-  public String getNomeEmpresa() {
-    return nomeEmpresa;
+  public String getNomeIndustria() {
+    return nomeIndustria;
   }
 
-  public void setNomeEmpresa(String factory_name) {
-    this.nomeEmpresa = factory_name;
+  public void setNomeIndustria(String nomeIndustria) {
+    this.nomeIndustria = nomeIndustria;
   }
 
   public String getRamo() {
     return ramo;
   }
 
-  public void setRamo(String sector) {
-    this.ramo = sector;
+  public void setRamo(String ramo) {
+    this.ramo = ramo;
   }
 
-  public int getIdPlano() {
+  public Integer getIdPlano() {
     return idPlano;
   }
 
-  public void setIdPlano(int idPlano) {
+  public void setIdPlano(Integer idPlano) {
     this.idPlano = idPlano;
+  }
+
+  // toString
+  @Override
+  public String toString() {
+    return "Fabrica{id=%s, nomeUnidade='%s', cnpj='%s', status=%b, emailCorporativo='%s', nomeIndustria='%s', ramo='%s', idPlano=%d}"
+        .formatted(id, nomeUnidade, cnpj, status, emailCorporativo, nomeIndustria, ramo, idPlano);
   }
 }

@@ -1,29 +1,23 @@
 package com.model;
 
-//tabela: Endereco
+// tabela: endereco
 public class Endereco {
-  //    Atributos
+  // Atributos
   private Integer id; // coluna: id
   private String cep; // coluna: cep
-  private int numero; // coluna: numero
+  private Integer numero; // coluna: numero
   private String rua; // coluna: rua
   private String complemento; //coluna: complemento
   private Integer idFabrica; // coluna: id_fabrica
 
   // Construtor
-  public Endereco(Integer id, String cep, int numero, String rua, String complemento, Integer idFabrica) {
+  public Endereco(Integer id, String cep, Integer numero, String rua, String complemento, Integer idFabrica) {
     this.id = id;
     this.cep = cep;
     this.numero = numero;
     this.rua = rua;
     this.complemento = complemento;
     this.idFabrica = idFabrica;
-  }
-
-  // toString
-  public String toString() {
-    String complemento = this.complemento == null ? "" : " - " + this.complemento;
-    return "%s, nº %d %s".formatted(rua, numero, complemento);
   }
 
   // Getters e Setters
@@ -43,11 +37,11 @@ public class Endereco {
     this.cep = cep;
   }
 
-  public int getNumero() {
+  public Integer getNumero() {
     return numero;
   }
 
-  public void setNumero(int numero) {
+  public void setNumero(Integer numero) {
     this.numero = numero;
   }
 
@@ -73,5 +67,12 @@ public class Endereco {
 
   public void setIdFabrica(Integer idFabrica) {
     this.idFabrica = idFabrica;
+  }
+
+  // toString
+  @Override
+  public String toString() {
+    return "Endereco{id=%d, cep='%s', numero=%d, rua='%s', complemento='%s', idFabrica=%d}"
+        .formatted(id, cep, numero, rua, complemento, idFabrica);
   }
 }

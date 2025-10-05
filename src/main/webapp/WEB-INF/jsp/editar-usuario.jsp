@@ -1,5 +1,5 @@
 <%@ page import="com.dto.AtualizacaoUsuarioDTO" %>
-<%@ page import="com.model.Permissao" %>
+<%@ page import="com.model.TipoAcesso" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -23,9 +23,9 @@
   <input type="text" name="email" value="<%= usuario.getEmail() %>" placeholder="Novo email">
   
   <select name="nivel_acesso">
-    <% for (Permissao p : Permissao.values()) { %>
-    <option value="<%= p.nivel() %>" <%= p == usuario.getPermissao() ? "selected" : "" %>>
-      <%= p.toString() %>
+    <% for (TipoAcesso t : TipoAcesso.values()) { %>
+    <option value="<%= t.nivel() %>" <%= t == usuario.getPermissao() ? "selected" : "" %>>
+      <%= t.descricao() %>
     </option>
     <% } %>
   </select>

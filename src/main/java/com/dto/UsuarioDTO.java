@@ -1,6 +1,6 @@
 package com.dto;
 
-import com.model.Permissao;
+import com.model.TipoAcesso;
 
 import java.time.LocalDate;
 
@@ -8,18 +8,18 @@ public class UsuarioDTO {
   private int id;
   private String nome;
   private String email;
-  private Permissao permissao;
+  private TipoAcesso tipoAcesso;
   private LocalDate dtCriacao;
   private boolean status;
   private int fkFabrica;
 
-  public UsuarioDTO(int id, String nome, String email, Permissao permissao, LocalDate dtCriacao,
+  public UsuarioDTO(int id, String nome, String email, TipoAcesso tipoAcesso, LocalDate dtCriacao,
                     boolean status, int fkFabrica) {
 
     this.id = id;
     this.nome = nome;
     this.email = email;
-    this.permissao = permissao;
+    this.tipoAcesso = tipoAcesso;
     this.dtCriacao = dtCriacao;
     this.status = status;
     this.fkFabrica = fkFabrica;
@@ -50,12 +50,12 @@ public class UsuarioDTO {
     this.email = email;
   }
 
-  public Permissao getPermissao() {
-    return permissao;
+  public TipoAcesso getPermissao() {
+    return tipoAcesso;
   }
 
-  public void setPermissao(Permissao accessLevel) {
-    this.permissao = accessLevel;
+  public void setPermissao(TipoAcesso accessLevel) {
+    this.tipoAcesso = accessLevel;
   }
 
   public LocalDate getDtCriacao() {

@@ -3,7 +3,7 @@ package com.dao;
 import com.dto.AtualizacaoUsuarioDTO;
 import com.dto.CadastroUsuarioDTO;
 import com.dto.UsuarioDTO;
-import com.model.Permissao;
+import com.model.TipoAcesso;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -51,7 +51,7 @@ public class UsuarioDAO extends DAO {
     String senha = credenciais.getSenha();
     String nome = credenciais.getNome();
     int fkFabrica = credenciais.getFkFabrica();
-    int nivelAcesso = Permissao.GERENCIAMENTO.nivel();
+    int nivelAcesso = TipoAcesso.GERENCIAMENTO.nivel();
     boolean status = true;
 
     // Prepara o comando
@@ -137,7 +137,7 @@ public class UsuarioDAO extends DAO {
         int id = rs.getInt("id");
         String nome = rs.getString("nome");
         String email = rs.getString("email");
-        Permissao nivelAcesso = Permissao.fromInteger(rs.getInt("tipo_acesso"));
+        TipoAcesso nivelAcesso = TipoAcesso.deNivel(rs.getInt("tipo_acesso"));
 
         // Conversão da data
         Date temp = rs.getDate("data_criacao");
@@ -160,7 +160,7 @@ public class UsuarioDAO extends DAO {
     int id = alterado.getId();
     String nome = alterado.getNome();
     String email = alterado.getEmail();
-    Permissao permissao = alterado.getPermissao();
+    TipoAcesso tipoAcesso = alterado.getPermissao();
     boolean status = alterado.getStatus();
     int fkFabrica = alterado.getFkFabrica();
 
@@ -178,9 +178,9 @@ public class UsuarioDAO extends DAO {
       valores.add(email);
     }
 
-    if (!permissao.equals(original.getPermissao())) {
+    if (!tipoAcesso.equals(original.getPermissao())) {
       sql.append("tipo_acesso = ?, ");
-      valores.add(permissao.nivel());
+      valores.add(tipoAcesso.nivel());
     }
 
     if (status != original.getStatus()) {
@@ -229,7 +229,7 @@ public class UsuarioDAO extends DAO {
           String nome = rs.getString("nome");
           String email = rs.getString("email");
           int temp = rs.getInt("tipo_acesso");
-          Permissao nivelAcesso = Permissao.fromInteger(temp);
+          TipoAcesso nivelAcesso = TipoAcesso.deNivel(temp);
           boolean status = rs.getBoolean("status");
           int fkFabrica = rs.getInt("id_fabrica");
 
@@ -257,7 +257,7 @@ public class UsuarioDAO extends DAO {
         String nome = rs.getString("nome");
 
         int nivelAcessoInt = rs.getInt("tipo_acesso");
-        Permissao nivelAcesso = Permissao.fromInteger(nivelAcessoInt);
+        TipoAcesso nivelAcesso = TipoAcesso.deNivel(nivelAcessoInt);
 
         Date dtCriacaoDate = rs.getDate("data_criacao");
         LocalDate dtCriacao = dtCriacaoDate == null ? null : dtCriacaoDate.toLocalDate();

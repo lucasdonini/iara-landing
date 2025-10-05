@@ -4,34 +4,34 @@ import java.time.LocalDate;
 
 // tabela: usuario
 public class Usuario {
-  private int id;
-  private String nome;
-  private String email;
-  private String senha;
-  private Permissao permissao;
-  private LocalDate dtCriacao;
-  private boolean status;
-  private int fkFabrica;
+  // Atributos
+  private Integer id; // coluna: id
+  private String nome; // coluna: nome
+  private String email; // coluna: email
+  private String senha; // coluna: senha
+  private TipoAcesso tipoAcesso; // coluna: tipo_acesso
+  private LocalDate dataCriacao; // coluna: data_criacao
+  private Boolean status; // coluna: status
+  private Integer idFabrica; // coluna: id_fabrica
 
-  public Usuario(int id, String nome, String email, String senha, Permissao permissao, LocalDate dtCriacao,
-                 boolean status, int fkFabrica) {
-
+  // Construtor
+  public Usuario(Integer id, String nome, String email, String senha, TipoAcesso tipoAcesso, LocalDate dataCriacao, Boolean status, Integer idFabrica) {
     this.id = id;
     this.nome = nome;
     this.email = email;
     this.senha = senha;
-    this.permissao = permissao;
-    this.dtCriacao = dtCriacao;
+    this.tipoAcesso = tipoAcesso;
+    this.dataCriacao = dataCriacao;
     this.status = status;
-    this.fkFabrica = fkFabrica;
+    this.idFabrica = idFabrica;
   }
 
   // Getters e Setters
-  public int getId() {
+  public Integer getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(Integer id) {
     this.id = id;
   }
 
@@ -59,35 +59,42 @@ public class Usuario {
     this.senha = password;
   }
 
-  public Permissao getPermissao() {
-    return permissao;
+  public TipoAcesso getTipoAcesso() {
+    return tipoAcesso;
   }
 
-  public void setPermissao(Permissao accessLevel) {
-    this.permissao = accessLevel;
+  public void setTipoAcesso(TipoAcesso tipoAcesso) {
+    this.tipoAcesso = tipoAcesso;
   }
 
-  public LocalDate getDtCriacao() {
-    return dtCriacao;
+  public LocalDate getDataCriacao() {
+    return dataCriacao;
   }
 
-  public void setDtCriacao(LocalDate creationDate) {
-    this.dtCriacao = creationDate;
+  public void setDataCriacao(LocalDate dataCriacao) {
+    this.dataCriacao = dataCriacao;
   }
 
-  public boolean getStatus() {
+  public Boolean getStatus() {
     return status;
   }
 
-  public void setStatus(boolean status) {
+  public void setStatus(Boolean status) {
     this.status = status;
   }
 
-  public int getFkFabrica() {
-    return fkFabrica;
+  public Integer getIdFabrica() {
+    return idFabrica;
   }
 
-  public void setFkFabrica(int fkFabrica) {
-    this.fkFabrica = fkFabrica;
+  public void setIdFabrica(Integer idFabrica) {
+    this.idFabrica = idFabrica;
+  }
+
+  // toString
+  @Override
+  public String toString() {
+    return "Usuario{id=%d, nome='%s', email='%s', senha='%s', tipoAcesso=%s, dataCriacao=%s, status=%b, idFabrica=%d}"
+        .formatted(id, nome, email, senha, tipoAcesso, dataCriacao, status, idFabrica);
   }
 }

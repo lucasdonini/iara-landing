@@ -142,18 +142,18 @@ public class FabricaDAO extends DAO {
   public void atualizar(Fabrica original, Fabrica alteracoes) throws SQLException {
     // Desempacotamento do model
     int id = alteracoes.getId();
-    String nome = alteracoes.getNome();
+    String nome = alteracoes.getNomeUnidade();
     String cnpj = alteracoes.getCnpj();
     Boolean status = alteracoes.getStatus();
-    String email = alteracoes.getEmail();
-    String nomeEmpresa = alteracoes.getNomeEmpresa();
+    String email = alteracoes.getEmailCorporativo();
+    String nomeEmpresa = alteracoes.getNomeIndustria();
     String ramo = alteracoes.getRamo();
 
     // Contrução do script dinâmico
     StringBuilder sql = new StringBuilder("UPDATE fabrica SET ");
     List<Object> valores = new ArrayList<>();
 
-    if (!original.getNome().equals(nome)) {
+    if (!original.getNomeUnidade().equals(nome)) {
       sql.append("nome = ?, ");
       valores.add(nome);
     }
@@ -168,12 +168,12 @@ public class FabricaDAO extends DAO {
       valores.add(status);
     }
 
-    if (!original.getEmail().equals(email)) {
+    if (!original.getEmailCorporativo().equals(email)) {
       sql.append("email_corporativo = ?, ");
       valores.add(email);
     }
 
-    if (!original.getNomeEmpresa().equals(nomeEmpresa)) {
+    if (!original.getNomeIndustria().equals(nomeEmpresa)) {
       sql.append("nome_industria = ?, ");
       valores.add(nomeEmpresa);
     }

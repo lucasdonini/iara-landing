@@ -39,7 +39,7 @@ public class PagamentoDAO extends DAO {
       //Preparando comando SQL
       PreparedStatement pstmtValor = conn.prepareStatement(valorPagoSQL);
       //Definindo variável relacionada a FK da fabrica
-      pstmtValor.setInt(1, pagamento.getFkFabrica());
+      pstmtValor.setInt(1, pagamento.getIdFabrica());
       //Executando a Query
       ResultSet rs = pstmtValor.executeQuery();
 
@@ -55,7 +55,7 @@ public class PagamentoDAO extends DAO {
       pstmt.setDate(3, Date.valueOf(pagamento.getDataVencimento()));
       pstmt.setDate(4, dtPagamento == null ? null : Date.valueOf(dtPagamento));
       pstmt.setString(5, pagamento.getTipoPagamento());
-      pstmt.setInt(6, pagamento.getFkFabrica());
+      pstmt.setInt(6, pagamento.getIdFabrica());
       //Salvando alterações no banco
       pstmt.execute();
       //Confirmando transações
@@ -138,18 +138,18 @@ public class PagamentoDAO extends DAO {
   public void atualizar(Pagamento original, Pagamento alterado) throws SQLException {
     // Desempacotamento do model alterado
     int id = alterado.getId();
-    double valorPago = alterado.getValorPago();
+    double valorPago = alterado.getValor();
     boolean status = alterado.getStatus();
     LocalDate dataVencimento = alterado.getDataVencimento();
     LocalDate dataPagamento = alterado.getDataPagamento();
     String tipoPagamento = alterado.getTipoPagamento();
-    Integer fkFabrica = alterado.getFkFabrica();
+    Integer fkFabrica = alterado.getIdFabrica();
 
     // Monta o comando de acordo com os campos alterados
     StringBuilder sql = new StringBuilder("UPDATE pagamento SET ");
     List<Object> valores = new ArrayList<>();
 
-    if (original.getValorPago() != valorPago) {
+    if (original.getValor() != valorPago) {
       sql.append("valor = ?, ");
       valores.add(valorPago);
     }
@@ -174,7 +174,7 @@ public class PagamentoDAO extends DAO {
       valores.add(tipoPagamento);
     }
 
-    if (!original.getFkFabrica().equals(fkFabrica)) {
+    if (!original.getIdFabrica().equals(fkFabrica)) {
       sql.append("id_fabrica = ?, ");
       valores.add(fkFabrica);
     }

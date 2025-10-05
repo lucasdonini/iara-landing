@@ -19,11 +19,11 @@
 </h1>
 <form action="${pageContext.request.contextPath}/fabricas?action=update" method="post">
   <h2>Dados da fábrica</h2>
-  <input type="text" name="nome" value="<%= f.getNome() %>" placeholder="Nome">
+  <input type="text" name="nome" value="<%= f.getNomeUnidade() %>" placeholder="Nome">
   <input type="text" name="cnpj" value="<%= f.getCnpj() %>" pattern="\d{14}" title="CNPJ inválido" placeholder="CNPJ">
-  <input type="email" name="email" value="<%= f.getEmail() %>" placeholder="Email para contato">
+  <input type="email" name="email" value="<%= f.getEmailCorporativo() %>" placeholder="Email para contato">
   <input type="text" name="ramo" value="<%= f.getRamo() %>" placeholder="Ramo">
-  <input type="text" name="nome_empresa" value="<%= f.getNomeEmpresa() %>" placeholder="Nome da empresa">
+  <input type="text" name="nome_empresa" value="<%= f.getNomeIndustria() %>" placeholder="Nome da empresa">
   
   <select name="status">
     <% for (Boolean b : List.of(true, false)) { %>

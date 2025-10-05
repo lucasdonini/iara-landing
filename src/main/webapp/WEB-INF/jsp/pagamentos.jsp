@@ -78,7 +78,7 @@
       <%= pagamento.getId() %>
     </td>
     <td>
-      <%= pagamento.getValorPago() %>
+      <%= pagamento.getValor() %>
     </td>
     <td>
       <%= pagamento.getStatus() ? "Pago" : "Pendente" %>
@@ -93,7 +93,7 @@
       <%= tiposPagamentos.get(pagamento.getTipoPagamento()) %>
     </td>
     <td>
-      <%= fabricas.get(pagamento.getFkFabrica()) %>
+      <%= fabricas.get(pagamento.getIdFabrica()) %>
     </td>
     <td>
       <form action="${pageContext.request.contextPath}/pagamentos" method="get">

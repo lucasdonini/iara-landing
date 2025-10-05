@@ -1,20 +1,20 @@
 package com.dto;
 
-import com.model.Permissao;
+import com.model.TipoAcesso;
 
 public class AtualizacaoUsuarioDTO {
   private int id;
   private String nome;
   private String email;
-  private Permissao permissao;
+  private TipoAcesso tipoAcesso;
   private boolean status;
   private int fkFabrica;
 
-  public AtualizacaoUsuarioDTO(int id, String nome, String email, Permissao permissao, boolean status, int fkFabrica) {
+  public AtualizacaoUsuarioDTO(int id, String nome, String email, TipoAcesso tipoAcesso, boolean status, int fkFabrica) {
     this.id = id;
     this.nome = nome;
     this.email = email;
-    this.permissao = permissao;
+    this.tipoAcesso = tipoAcesso;
     this.status = status;
     this.fkFabrica = fkFabrica;
   }
@@ -44,12 +44,12 @@ public class AtualizacaoUsuarioDTO {
     this.email = email;
   }
 
-  public Permissao getPermissao() {
-    return permissao;
+  public TipoAcesso getPermissao() {
+    return tipoAcesso;
   }
 
-  public void setPermissao(Permissao accessLevel) {
-    this.permissao = accessLevel;
+  public void setPermissao(TipoAcesso accessLevel) {
+    this.tipoAcesso = accessLevel;
   }
 
   public boolean getStatus() {

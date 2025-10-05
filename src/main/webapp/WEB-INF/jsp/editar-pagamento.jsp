@@ -25,7 +25,7 @@
   <input type="hidden" name="action" value="update">
   
   <label>Valor pago: R$</label>
-  <input type="number" placeholder="Novo valor" name="valorPago" value="<%= pagamento.getValorPago() %>">
+  <input type="number" placeholder="Novo valor" name="valorPago" value="<%= pagamento.getValor() %>">
   
   <label>Status:</label>
   <select name="status">
@@ -49,7 +49,7 @@
   
   <select name="fkFabrica">
     <% for (int id : fabricas.keySet()) { %>
-    <option value="<%= id %>" <%= id == pagamento.getFkFabrica() ? "selected" : "" %>>
+    <option value="<%= id %>" <%= id == pagamento.getIdFabrica() ? "selected" : "" %>>
       <%= fabricas.get(id) %>
     </option>
     <% } %>
