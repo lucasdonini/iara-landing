@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.Map;
 
 public class PlanoDAO extends DAO {
-    //Map
-    public static final Map<String, String> camposFiltraveis = Map.of(
-            "ID", "id",
-            "Nome", "nome",
-            "Valor", "valor",
-            "Descrição", "descricao"
-    );
+  //Map
+  public static final Map<String, String> camposFiltraveis = Map.of(
+      "id", "Id",
+      "nome", "Nome",
+      "valor", "Valor",
+      "descricao", "Descrição"
+  );
 
-    //Construtor
+  //Construtor
   public PlanoDAO() throws SQLException, ClassNotFoundException {
     super();
   }
@@ -47,7 +47,7 @@ public class PlanoDAO extends DAO {
       throw e;
     }
 
-    }
+  }
 
   public Plano getPlanoById(int id) throws SQLException {
     // Prepara o comando
@@ -117,11 +117,11 @@ public class PlanoDAO extends DAO {
     // Desempacotamento do model alterado
     int id = alterado.getId();
     String nome = alterado.getNome();
-    Double valor = alterado.getValor();
+    double valor = alterado.getValor();
     String descricao = alterado.getDescricao();
 
     // Monta o comando de acordo com os campos alterados
-    StringBuilder sql = new StringBuilder("UPDATE planos SET ");
+    StringBuilder sql = new StringBuilder("UPDATE plano SET ");
     List<Object> valores = new ArrayList<>();
 
     if (!original.getNome().equals(nome)) {
@@ -171,53 +171,52 @@ public class PlanoDAO extends DAO {
   }
 
   //Converter valor
-    public Object converterValor(String campo, String valor) throws DateTimeParseException {
-        return switch(campo){
-            case "id" -> Integer.parseInt(valor);
-            case "valor" -> Double.parseDouble(valor);
-            case "nome", "descricao" -> String.valueOf(valor);
-            default -> throw new IllegalArgumentException();
-        };
+  public Object converterValor(String campo, String valor) throws DateTimeParseException {
+    if (campo == null || campo.isBlank()) {
+      return null;
     }
+
+    return switch (campo) {
+      case "id" -> Integer.parseInt(valor);
+      case "valor" -> Double.parseDouble(valor);
+      case "nome", "descricao" -> String.valueOf(valor);
+      default -> throw new IllegalArgumentException();
+    };
+  }
 
   //Listar planos
   public List<Plano> listarPlanos(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     List<Plano> planos = new ArrayList<>();
 
-        // Prepara o comando
-        StringBuilder sql = new StringBuilder("SELECT * FROM planos");
+    // Prepara o comando
+    String sql = "SELECT * FROM plano";
 
-      //Verificando o campo do filtro
-      if (!campoFiltro.isBlank()){
-          sql.append(" WHERE ");
-          sql.append(campoFiltro);
-          sql.append(" = ?");
+    // Verificando campo do filtro
+    if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
+      sql += " WHERE %s = ?".formatted(campoFiltro);
+    }
+
+    //Verificando campo para ordenar a consulta
+    if (campoSequencia != null && camposFiltraveis.containsKey((campoSequencia))) {
+      sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
+
+    } else {
+      sql += " ORDER BY id ASC";
+    }
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      //Definindo parâmetro vazio
+      if (campoFiltro != null && !campoFiltro.isBlank()) {
+        pstmt.setObject(1, valorFiltro);
       }
 
-      //Verificando campo e direcao para ordernar a consulta
-      if (!campoSequencia.isBlank()){
-          sql.append(" ORDER BY ");
-          sql.append(campoSequencia);
-          //Verificando direção da sequência
-          switch(direcaoSequencia){
-              case "crescente" -> sql.append(" ASC");
-              case "decrescente" -> sql.append(" DESC");
-          }
-      }
-
-        try (PreparedStatement pstmt = conn.prepareStatement(String.valueOf(sql))) {
-            //Definindo parâmetro vazio
-            if (!campoFiltro.isBlank()) {
-                pstmt.setObject(1, valorFiltro);
-            }
-
-            //Instanciando um ResultSet
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String nome = rs.getString("nome");
-                double valor = rs.getDouble("valor");
-                String descricao = rs.getString("descricao");
+      //Instanciando um ResultSet
+      ResultSet rs = pstmt.executeQuery();
+      while (rs.next()) {
+        int id = rs.getInt("id");
+        String nome = rs.getString("nome");
+        double valor = rs.getDouble("valor");
+        String descricao = rs.getString("descricao");
 
         planos.add(new Plano(id, nome, valor, descricao));
       }
@@ -237,7 +236,7 @@ public class PlanoDAO extends DAO {
       try (ResultSet rs = pstmt.executeQuery()) {
         if (rs.next()) {
           String nome = rs.getString("nome");
-          Double valor = rs.getDouble("valor");
+          double valor = rs.getDouble("valor");
           String descricao = rs.getString("descricao");
 
           return new Plano(id, nome, valor, descricao);
