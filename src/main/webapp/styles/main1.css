@@ -1,0 +1,406 @@
+/* INTRODUCTION */
+#introducao {
+    display: flex;
+    justify-content: space-between;
+    min-height: calc(507.4px - 102px);
+}
+
+.texto {
+    max-width: 35%;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin: auto;
+}
+
+#introducao h1 {
+    font-size: 3rem;
+    color: #12131A;
+    opacity: 0.82;
+}
+
+#introducao p {
+    font-size: 1.3rem;
+    color: #333333;
+    opacity: 0.5;
+    text-align: justify;
+}
+
+#introducao .imagem img {
+    max-width: 80%;
+    height: auto;
+}
+
+
+
+/* FEATURES */
+#funcionalidades {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    padding: 10px 5%;
+}
+
+#funcionalidades .imagem {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+#funcionalidades .imagem img {
+    max-width: 100%;
+    height: auto;
+}
+
+#funcionalidades .conteudo {
+    flex: 1;
+}
+
+#funcionalidades .subtitulo {
+    color: #5991B3;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+#funcionalidades h2 {
+    font-size: 2.5rem;
+    color: #12131A;
+    margin-bottom: 30px;
+}
+
+.titulo-topico {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.titulo-topico img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.titulo-topico h3 {
+    font-size: 1.5rem;
+    color: #12131A;
+    margin: 0;
+}
+
+.texto-funcionalidade {
+    font-size: 1.3rem;
+    color: #333333;
+    opacity: 0.5;
+    text-align: justify;
+}
+
+.topico {
+    margin-bottom: 30px;
+}
+
+/* FAQ */
+.subtitulo {
+    color: #5991B3;
+    font-size: 1.2rem;
+}
+
+#faq h2 {
+    color: #12131A;
+    font-size: 2.5rem;
+}
+
+#faq {
+    width: 70%;
+    margin: auto;
+}
+
+#colunas {
+    display: flex;
+    justify-content: space-around;
+}
+
+#primeiraColuna,
+#segundaColuna {
+    display: flex;
+    flex-direction: column;
+}
+
+.pergunta {
+    background-color: #1a1f5f;
+    border-radius: 5px;
+    margin: 20px 20px 0px 0px;
+    min-height: 170px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    box-shadow: 2px 2px 5px grey;
+}
+
+.branco {
+    background-color: #FAFAFA;
+}
+
+.branco h3 {
+    color: #12131A;
+    font-size: 1.6rem;
+}
+
+.branco p {
+    color: #000000;
+    opacity: 0.5;
+}
+
+.azul {
+    background-color: #5991B3;
+}
+
+.azul h3 {
+    font-size: 1.6rem;
+    color: #FAFAFA;
+}
+
+.azul p {
+    color: #FAFAFA;
+}
+
+/* ADVANTAGES */
+
+#vantagens{
+    margin-bottom: 80px;
+}
+
+#agilidade,
+#precisao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 80px 8%;
+    gap: 0px;
+    position: relative;
+}
+
+#precisao{
+    margin-top: -20%;
+}
+
+#vantagens .conteudo-vantagens {
+    flex: 1;
+}
+
+#vantagens .imagem-agilidade {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+#vantagens .imagem img {
+    max-width: 100%;
+    height: auto;
+}
+
+#vantagens .topicos-vantagens {
+    flex: 1;
+}
+
+#vantagens .subtitulo {
+    color: #5991B3;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+#vantagens h2 {
+    font-size: 2.2rem;
+    color: #12131A;
+    margin-bottom: 30px;
+}
+
+#vantagens .topico {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+#vantagens .topico img {
+    width: 28px;
+    height: 28px;
+}
+
+#vantagens .topico h3 {
+    font-size: 1.4rem;
+    color: #12131A;
+    margin: 0;
+}
+
+#vantagens .texto-vantagens {
+    font-size: 1.3rem;
+    color: #333333;
+    opacity: 0.5;
+    text-align: justify;
+}
+
+#vantagens .imagem-vantagens {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#vantagens .titulo-topico {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+#vantagens .titulo-topico img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+#vantagens .titulo-topico h3 {
+    font-size: 1.5rem;
+    color: #12131A;
+    margin: 0;
+}
+
+.texto-vantagens {
+    font-size: 1.3rem;
+    color: #333333;
+    opacity: 0.5;
+}
+
+/* CTA */
+#cta {
+    display: flex;
+    justify-content: space-around;
+    background-color: #313131;
+    border-radius: 10px;
+    max-width: 70%;
+    min-height: 500px;
+    margin: auto;
+    margin-top: 15%;
+    margin-bottom: 15%;
+}
+
+#cta img {
+    width: 500px;
+    height: auto;
+}
+
+#texto {
+    color: white;
+    font-size: 1.5rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px;
+}
+
+#cta .btn-principal {
+    background-color: #FAFAFA;
+    color: #000000;
+    cursor: pointer;
+    min-width: 34%;
+    height: 60px;
+    margin-top: 20px;
+}
+
+
+/* RESPONSIVITY */
+@media screen and (max-width: 1170px) {
+    #introducao {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    #btn-principal {
+        width: 100%;
+        max-width: 300px;
+        height: 50px;
+        margin: 20px auto 0;
+    }
+
+    #colunas {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    #funcionalidades {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        padding: 40px 20px;
+    }
+
+    #agilidade{
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        padding: 40px 20px;
+    }
+
+    #precisao{
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        padding: 40px 20px;
+    }
+
+    section {
+        width: 100%;
+    }
+
+    #primeiraColuna{
+        margin-bottom: -15px;
+    }
+
+    .texto_responsivo {
+        max-width: 100%;
+        padding: 15px;
+        text-align: center;
+    }
+
+    #cta {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 40px 20px;
+        max-width: 80%;
+        min-height: auto;
+        margin-top: 20%;
+        margin-bottom: 20%;
+    }
+
+    #cta h2{
+        text-align: center;
+    }
+
+    #texto {
+        padding: 20px;
+        align-items: center;
+    }
+
+    button{
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    #precisao{
+        margin-top: 5%;
+    }
+}
