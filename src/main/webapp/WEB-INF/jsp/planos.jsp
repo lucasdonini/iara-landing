@@ -2,7 +2,7 @@
 <%@ page import="com.model.Plano" %>
 <%@ page import="static com.dao.PlanoDAO.camposFiltraveis" %>
 <%@ page import="com.model.DirecaoOrdenacao" %>
-<%@ page import="com.utils.NumberUtils" %>
+<%@ page import="com.utils.NumerosUtils" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
   List<Plano> planos = (List<Plano>) request.getAttribute("planos");
@@ -70,7 +70,7 @@
     </td>
     <td><%= plano.getNome() %>
     </td>
-    <td><%= NumberUtils.reais.format(plano.getValor()) %>
+    <td><%= NumerosUtils.reais.format(plano.getValor()) %>
     </td>
     <td><%= plano.getDescricao() %>
     </td>

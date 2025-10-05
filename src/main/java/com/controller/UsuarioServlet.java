@@ -7,7 +7,7 @@ import com.dto.CadastroUsuarioDTO;
 import com.dto.UsuarioDTO;
 import com.exception.ExcecaoDePagina;
 import com.model.Permissao;
-import com.utils.PasswordUtils;
+import com.utils.SenhaUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -178,7 +178,7 @@ public class UsuarioServlet extends HttpServlet {
     int fkFabrica = Integer.parseInt(temp);
 
     String senhaOriginal = req.getParameter("senha");
-    String hashSenha = PasswordUtils.hashed(temp);
+    String hashSenha = SenhaUtils.hashear(temp);
 
     String email = req.getParameter("email").trim();
     String nome = req.getParameter("nome").trim();

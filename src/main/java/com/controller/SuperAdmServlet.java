@@ -5,7 +5,7 @@ import com.dto.CadastroSuperAdmDTO;
 import com.dto.SuperAdmDTO;
 import com.exception.ExcecaoDePagina;
 import com.model.SuperAdm;
-import com.utils.PasswordUtils;
+import com.utils.SenhaUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -157,7 +157,7 @@ public class SuperAdmServlet extends HttpServlet {
   private void registrarSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da request
     String senhaOriginal = req.getParameter("senha");
-    String senhaHash = PasswordUtils.hashed(senhaOriginal);
+    String senhaHash = SenhaUtils.hashear(senhaOriginal);
 
     String nome = req.getParameter("nome").trim();
     String cargo = req.getParameter("cargo").trim();
@@ -222,12 +222,12 @@ public class SuperAdmServlet extends HttpServlet {
           throw ExcecaoDePagina.senhaCurta(8);
         }
 
-        if (!PasswordUtils.comparar(senhaAtual, original.getSenha())) {
+        if (!SenhaUtils.comparar(senhaAtual, original.getSenha())) {
           throw ExcecaoDePagina.falhaAutenticacao();
         }
 
         // Faz o hash da senha antes de salvar no banco
-        String novaSenhaHash = PasswordUtils.hashed(alterado.getSenha());
+        String novaSenhaHash = SenhaUtils.hashear(alterado.getSenha());
         alterado.setSenha(novaSenhaHash);
       }
 

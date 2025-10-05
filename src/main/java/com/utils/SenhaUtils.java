@@ -3,8 +3,8 @@ package com.utils;
 import org.mindrot.jbcrypt.BCrypt;
 
 // Classe utilitária para lidar com a criptografia da senha antes de salvar no banco
-public class PasswordUtils {
-  public static String hashed(String senha) {
+public class SenhaUtils {
+  public static String hashear(String senha) {
     // Usa o esquema bcrypt da OpenBSD para criptografar a senha usando o salt gerado
     return BCrypt.hashpw(senha, BCrypt.gensalt(15));
   }

@@ -1,5 +1,5 @@
 <%@ page import="com.dto.UsuarioDTO" %>
-<%@ page import="com.utils.DateUtils" %>
+<%@ page import="com.utils.DataUtils" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -41,7 +41,7 @@
       <%= u.getPermissao().toString() %>
     </td>
     <td>
-      <%= u.getDtCriacao().format(DateUtils.isoDmy) %>
+      <%= u.getDtCriacao().format(DataUtils.DMY) %>
     </td>
     <td>
       <%= u.getStatus() ? "Ativo" : "Inativo" %>
