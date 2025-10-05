@@ -19,7 +19,6 @@ import java.sql.SQLException;
 public class LoginServlet extends HttpServlet {
   private static final String PAGINA_ERRO = "html/erro.html";
   private static final String AREA_RESTRITA = "WEB-INF/jsp/area-restrita.jsp";
-  private static final String PAGINA_INICIAL = "index.html";
   private static final String PAGINA_LOGIN = "WEB-INF/jsp/login.jsp";
 
   @Override
@@ -49,7 +48,8 @@ public class LoginServlet extends HttpServlet {
 
         case "logout" -> {
           logout(req);
-          destino = PAGINA_INICIAL;
+          doGet(req, resp);
+          return;
         }
 
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
