@@ -3,7 +3,7 @@ package com.controller;
 import com.dao.LoginDAO;
 import com.dto.LoginDTO;
 import com.dto.SuperAdmDTO;
-import com.exception.ExcecaoDePagina;
+import com.exception.ExcecaoDeJSP;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -55,7 +55,7 @@ public class LoginServlet extends HttpServlet {
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
-    } catch (ExcecaoDePagina e) {
+    } catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
       doGet(req, resp);
       return;
@@ -83,7 +83,7 @@ public class LoginServlet extends HttpServlet {
     }
   }
 
-  private SuperAdmDTO login(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private SuperAdmDTO login(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
     String email = req.getParameter("email").trim();
     String senha = req.getParameter("senha").trim();
@@ -95,7 +95,7 @@ public class LoginServlet extends HttpServlet {
 
       // Verifica se o login deu certo
       if (usuario == null) {
-        throw ExcecaoDePagina.falhaAutenticacao();
+        throw ExcecaoDeJSP.falhaLogin();
       }
 
       return usuario;

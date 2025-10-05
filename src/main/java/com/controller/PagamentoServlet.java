@@ -2,7 +2,7 @@ package com.controller;
 
 import com.dao.FabricaDAO;
 import com.dao.PagamentoDAO;
-import com.exception.ExcecaoDePagina;
+import com.exception.ExcecaoDeJSP;
 import com.model.Pagamento;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -113,7 +113,7 @@ public class PagamentoServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (ExcecaoDePagina e) {
+    } catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
       doGet(req, resp);
       return;
@@ -167,7 +167,7 @@ public class PagamentoServlet extends HttpServlet {
     }
   }
 
-  private void registrarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private void registrarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
     String temp = req.getParameter("status").trim();
     boolean status = Boolean.parseBoolean(temp);
@@ -179,7 +179,7 @@ public class PagamentoServlet extends HttpServlet {
     if (status) {
       temp = req.getParameter("dataPagamento").trim();
       if (temp.isBlank()) {
-        throw ExcecaoDePagina.campoNecessarioFaltante("Data do Pagamento");
+        throw ExcecaoDeJSP.campoNecessarioFaltante("Data do Pagamento");
       }
 
       dataPagamento = LocalDate.parse(temp);

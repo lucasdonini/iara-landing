@@ -5,7 +5,7 @@ import com.dao.FabricaDAO;
 import com.dao.PlanoDAO;
 import com.dto.CadastroFabricaDTO;
 import com.dto.FabricaDTO;
-import com.exception.ExcecaoDePagina;
+import com.exception.ExcecaoDeJSP;
 import com.model.Endereco;
 import com.model.Fabrica;
 import jakarta.servlet.RequestDispatcher;
@@ -116,7 +116,7 @@ public class FabricaServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (ExcecaoDePagina e) {
+    } catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
       doGet(req, resp);
       return;
@@ -145,7 +145,7 @@ public class FabricaServlet extends HttpServlet {
     }
   }
 
-  private void registrarFabrica(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private void registrarFabrica(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da request
     // --- Endereço ---
     String temp = req.getParameter("numero").trim();
@@ -172,7 +172,7 @@ public class FabricaServlet extends HttpServlet {
     try (FabricaDAO fDao = new FabricaDAO(); EnderecoDAO eDao = new EnderecoDAO()) {
       // Verifica se o cadastro não viola a chave UNIQUE de 'cnpj' em 'fabrica'
       if (fDao.pesquisarPorCnpj(cnpj) != null) {
-        throw ExcecaoDePagina.cnpjDuplicado();
+        throw ExcecaoDeJSP.cnpjDuplicado();
       }
 
       // Cadastra a fábrica e recupera o id gerado
@@ -186,7 +186,7 @@ public class FabricaServlet extends HttpServlet {
     }
   }
 
-  private void atualizarFabrica(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private void atualizarFabrica(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da request
     // --- Fabrica ---
     String temp = req.getParameter("id_fabrica").trim();
@@ -226,7 +226,7 @@ public class FabricaServlet extends HttpServlet {
       // Verifica se as alterações não violam a chave UNIQUE de cnpj
       Fabrica teste = fDao.pesquisarPorCnpj(cnpj);
       if (teste != null && teste.getId() != idFabrica) {
-        throw ExcecaoDePagina.cnpjDuplicado();
+        throw ExcecaoDeJSP.cnpjDuplicado();
       }
 
       // Salva as informações no banco

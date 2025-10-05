@@ -3,7 +3,7 @@ package com.controller;
 import com.dao.SuperAdmDAO;
 import com.dto.CadastroSuperAdmDTO;
 import com.dto.SuperAdmDTO;
-import com.exception.ExcecaoDePagina;
+import com.exception.ExcecaoDeJSP;
 import com.model.SuperAdm;
 import com.utils.SenhaUtils;
 import jakarta.servlet.RequestDispatcher;
@@ -99,7 +99,7 @@ public class SuperAdmServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (ExcecaoDePagina e) {
+    } catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
       doGet(req, resp);
       return;
@@ -154,7 +154,7 @@ public class SuperAdmServlet extends HttpServlet {
     }
   }
 
-  private void registrarSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private void registrarSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da request
     String senhaOriginal = req.getParameter("senha");
     String senhaHash = SenhaUtils.hashear(senhaOriginal);
@@ -166,14 +166,14 @@ public class SuperAdmServlet extends HttpServlet {
     CadastroSuperAdmDTO credenciais = new CadastroSuperAdmDTO(nome, cargo, email, senhaHash);
 
     if (!senhaOriginal.matches(".{8,}")) {
-      throw ExcecaoDePagina.senhaCurta(8);
+      throw ExcecaoDeJSP.senhaCurta(8);
     }
 
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
       // Verifica se o usuário não viola a chave UNIQUE de email
       SuperAdmDTO teste = dao.getSuperAdmByEmail(email);
       if (teste != null) {
-        throw ExcecaoDePagina.emailDuplicado("super administrador");
+        throw ExcecaoDeJSP.emailDuplicado();
       }
 
       // Cadastra o usuário e setta o destino para mostrar os usuários
@@ -192,7 +192,7 @@ public class SuperAdmServlet extends HttpServlet {
     }
   }
 
-  private void atualizarSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private void atualizarSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da request
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
@@ -212,18 +212,18 @@ public class SuperAdmServlet extends HttpServlet {
       // Verifica se o email alterado não viola a chave UNIQUE
       SuperAdmDTO teste = dao.getSuperAdmByEmail(email);
       if (teste != null && teste.getId() != id) {
-        throw ExcecaoDePagina.emailDuplicado("super administrador");
+        throw ExcecaoDeJSP.emailDuplicado();
       }
 
       // Se a senha foi alterada e a original estiver incorreta ou a nova for inválida, volta ao formulário
       if (!novaSenha.isBlank()) {
         // Verifica a validade das alterações
         if (!novaSenha.matches(".{8,}")) {
-          throw ExcecaoDePagina.senhaCurta(8);
+          throw ExcecaoDeJSP.senhaCurta(8);
         }
 
         if (!SenhaUtils.comparar(senhaAtual, original.getSenha())) {
-          throw ExcecaoDePagina.falhaAutenticacao();
+          throw ExcecaoDeJSP.senhaIncorreta();
         }
 
         // Faz o hash da senha antes de salvar no banco

@@ -5,7 +5,7 @@ import com.dao.UsuarioDAO;
 import com.dto.AtualizacaoUsuarioDTO;
 import com.dto.CadastroUsuarioDTO;
 import com.dto.UsuarioDTO;
-import com.exception.ExcecaoDePagina;
+import com.exception.ExcecaoDeJSP;
 import com.model.TipoAcesso;
 import com.utils.SenhaUtils;
 import jakarta.servlet.RequestDispatcher;
@@ -115,7 +115,7 @@ public class UsuarioServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (ExcecaoDePagina e) {
+    } catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
       doGet(req, resp);
       return;
@@ -144,7 +144,7 @@ public class UsuarioServlet extends HttpServlet {
     }
   }
 
-  private List<UsuarioDTO> getListaUsuarios(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private List<UsuarioDTO> getListaUsuarios(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
     String campoFiltro = req.getParameter("campo_filtro");
     String valorFiltroStr = req.getParameter("valor_filtro");
@@ -157,7 +157,7 @@ public class UsuarioServlet extends HttpServlet {
       return dao.listarUsuarios(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
 
     } catch (IllegalArgumentException e) {
-      throw ExcecaoDePagina.valorInvalido(UsuarioDAO.camposFiltraveis.get(campoFiltro));
+      throw ExcecaoDeJSP.valorInvalido(UsuarioDAO.camposFiltraveis.get(campoFiltro));
     }
   }
 
@@ -167,12 +167,12 @@ public class UsuarioServlet extends HttpServlet {
     }
   }
 
-  private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
     String temp = req.getParameter("fk_fabrica").trim();
 
     if (temp.isBlank()) {
-      throw ExcecaoDePagina.campoNecessarioFaltante("fabrica");
+      throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
     }
 
     int fkFabrica = Integer.parseInt(temp);
@@ -186,13 +186,13 @@ public class UsuarioServlet extends HttpServlet {
     CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(nome, email, hashSenha, fkFabrica);
 
     if (!senhaOriginal.matches(".{8,}")) {
-      throw ExcecaoDePagina.senhaCurta(8);
+      throw ExcecaoDeJSP.senhaCurta(8);
     }
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
       // Verifica se o cadastro viola a constraint UNIQUE de
       if (dao.getUsuarioByEmail(email) != null) {
-        throw ExcecaoDePagina.emailDuplicado("super administrador");
+        throw ExcecaoDeJSP.emailDuplicado();
       }
 
       // Cadastra o usuário
@@ -211,7 +211,7 @@ public class UsuarioServlet extends HttpServlet {
     }
   }
 
-  private void atualizarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private void atualizarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da request
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
@@ -238,7 +238,7 @@ public class UsuarioServlet extends HttpServlet {
       // Verifica se a atualização não viola a constraint UNIQUE de email
       UsuarioDTO teste = dao.getUsuarioByEmail(email);
       if (teste != null && teste.getId() != id) {
-        throw ExcecaoDePagina.emailDuplicado("usuário");
+        throw ExcecaoDeJSP.emailDuplicado();
       }
 
       // Atualiza o usuário

@@ -1,7 +1,7 @@
 package com.controller;
 
 import com.dao.PlanoDAO;
-import com.exception.ExcecaoDePagina;
+import com.exception.ExcecaoDeJSP;
 import com.model.Plano;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -96,7 +96,7 @@ public class PlanoServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (ExcecaoDePagina e) {
+    } catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
       doGet(req, resp);
       return;
@@ -150,11 +150,11 @@ public class PlanoServlet extends HttpServlet {
     }
   }
 
-  private void registrarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private void registrarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
     String temp = req.getParameter("valor").trim();
     if (temp.isBlank()) {
-      throw ExcecaoDePagina.campoNecessarioFaltante("valor");
+      throw ExcecaoDeJSP.campoNecessarioFaltante("valor");
     }
     double valor = Double.parseDouble(temp);
 
@@ -165,7 +165,7 @@ public class PlanoServlet extends HttpServlet {
     try (PlanoDAO dao = new PlanoDAO()) {
       // Verifica se o novo plano não viola a chave UNIQUE
       if (dao.getPlanoByNome(nome) != null) {
-        throw ExcecaoDePagina.nomeDuplicado();
+        throw ExcecaoDeJSP.nomeDuplicado();
       }
 
       // Cadastra o plano
@@ -184,7 +184,7 @@ public class PlanoServlet extends HttpServlet {
     }
   }
 
-  private void atualizarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  private void atualizarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da request
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
@@ -193,7 +193,7 @@ public class PlanoServlet extends HttpServlet {
 
     temp = req.getParameter("valor").trim();
     if (temp.isBlank()) {
-      throw ExcecaoDePagina.campoNecessarioFaltante("valor");
+      throw ExcecaoDeJSP.campoNecessarioFaltante("valor");
     }
     double valor = Double.parseDouble(temp);
 
@@ -207,7 +207,7 @@ public class PlanoServlet extends HttpServlet {
       // Verifica se o novo nome viola a chave UNIQUE
       Plano teste = dao.getPlanoByNome(nome);
       if (teste != null && id != teste.getId()) {
-        throw ExcecaoDePagina.nomeDuplicado();
+        throw ExcecaoDeJSP.nomeDuplicado();
       }
 
       // Salva as informações no banco
