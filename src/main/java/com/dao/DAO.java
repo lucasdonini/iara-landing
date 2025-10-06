@@ -1,22 +1,24 @@
 package com.dao;
 
-import com.database.ConnectionFactory;
+import com.database.FabricaDeConexoes;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-// Classe abstrata para facilitar o gerenciamento de conexões dos DAOs
 public abstract class DAO implements AutoCloseable {
-  protected static final ConnectionFactory connF = new ConnectionFactory();
+  // Atributos
+  protected static final FabricaDeConexoes fc = new FabricaDeConexoes();
   protected Connection conn;
 
+  // Construtor
   protected DAO() throws SQLException, ClassNotFoundException {
-    conn = connF.getConnection();
+    conn = fc.getConnection();
     conn.setAutoCommit(false);
   }
 
+  // Outros Métodos
   @Override
   public void close() throws SQLException {
-    connF.closeConnection(conn);
+    fc.closeConnection(conn);
   }
 }
