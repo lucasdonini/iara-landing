@@ -94,7 +94,7 @@ public class UsuarioDAO extends DAO {
     // Prepara o comado e executa
     String sql = "SELECT id, id_fabrica, email, nome, tipo_acesso, status, data_criacao FROM usuario";
 
-    if (campoFiltro != null && camposFiltraveis.containsValue(campoFiltro)) {
+    if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
       sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
