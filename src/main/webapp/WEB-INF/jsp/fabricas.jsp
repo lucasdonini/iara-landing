@@ -74,8 +74,8 @@
     <th>Status</th>
     <th>Email</th>
     <th>Empresa</th>
-    <th>Plano</th>
     <th>Ramo</th>
+    <th>Plano</th>
     <th>Endereço</th>
   </tr>
   <% for (FabricaDTO f : fabricas) { %>

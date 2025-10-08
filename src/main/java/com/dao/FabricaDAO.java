@@ -214,6 +214,7 @@ public class FabricaDAO extends DAO {
   public void atualizar(Fabrica original, Fabrica alteracoes) throws SQLException {
     // Desempacotamento do model
     int id = alteracoes.getId();
+    int idPlano = alteracoes.getIdPlano();
     String nomeUnidade = alteracoes.getNomeUnidade();
     String cnpj = alteracoes.getCnpj();
     Boolean status = alteracoes.getStatus();
@@ -253,6 +254,11 @@ public class FabricaDAO extends DAO {
     if (!Objects.equals(ramo, original.getRamo())) {
       sql.append("ramo = ?, ");
       valores.add(ramo);
+    }
+
+    if (original.getIdPlano() != idPlano) {
+      sql.append("id_plano = ?, ");
+      valores.add(idPlano);
     }
 
     // Retorno se nada foi alterado
