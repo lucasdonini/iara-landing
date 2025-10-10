@@ -31,10 +31,12 @@ public class FabricaDAO extends DAO {
 
   // Métodos Estáticos
   public static Object converterValor(String campo, String valor) {
+    // Se o campo está vazio, retorna null
     if (campo == null || campo.isBlank()) {
       return null;
     }
 
+    // Converte e retorna o valor de acordo com o nome do campo
     return switch (campo) {
       case "id" -> Integer.parseInt(valor);
       case "status" -> Boolean.parseBoolean(valor);
@@ -55,7 +57,7 @@ public class FabricaDAO extends DAO {
     int id, idPlano = credenciais.getIdPlano();
     boolean status = true;
 
-    // Preparação do comando
+    // Comando SQL
     String sql = """
         INSERT INTO fabrica (nome_unidade, cnpj, email_corporativo, nome_industria, status, ramo, id_plano)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -63,7 +65,7 @@ public class FabricaDAO extends DAO {
         """;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Preenchimento dos placeholders
+      // Definindo variáveis do comando SQL
       pstmt.setString(1, nome);
       pstmt.setString(2, cnpj);
       pstmt.setString(3, email);
@@ -72,7 +74,7 @@ public class FabricaDAO extends DAO {
       pstmt.setString(6, ramo);
       pstmt.setInt(7, idPlano);
 
-      // Cadastra a fábrica e recupera o id gerado
+      // Cadastra a fábrica no banco de dados e cria variável com ID gerado no cadastro
       try (ResultSet rs = pstmt.executeQuery()) {
         if (!rs.next()) {
           throw new SQLException("Erro inesperado ao criar fábrica");
@@ -81,14 +83,14 @@ public class FabricaDAO extends DAO {
         id = rs.getInt("id");
       }
 
-      // Commit das alterações
+      // Efetuando transação
       conn.commit();
 
-      // Retorna o id gerado
+      // Retorna o id gerado no cadastro
       return id;
 
     } catch (SQLException e) {
-      // Faz o rollback das alterações
+      // Cancelando transação
       conn.rollback();
       throw e;
     }
@@ -96,17 +98,18 @@ public class FabricaDAO extends DAO {
 
   // === READ ===
   public List<FabricaDTO> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+    // Lista de fábricas
     List<FabricaDTO> fabricas = new ArrayList<>();
 
-    //Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM exibicao_fabrica";
 
-    //Verificando o campo do filtro
+    // Verificando campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
       sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
-    //Verificando campo e direcao para ordernar a consulta
+    // Verificando campo e direcao da ordenação
     if (campoSequencia != null && camposFiltraveis.containsKey(campoSequencia)) {
       sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
 
@@ -115,14 +118,15 @@ public class FabricaDAO extends DAO {
     }
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      //Definindo parâmetro vazio
+      // Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
         pstmt.setObject(1, valorFiltro);
       }
 
-      //Instanciando um ResultSet
+      // Resgata do banco de dados a lista de fábricas
       try (ResultSet rs = pstmt.executeQuery()) {
         while (rs.next()) {
+          // Variáveis
           int idFabrica = rs.getInt("id");
           String nome = rs.getString("nome_unidade");
           String cnpj = rs.getString("cnpj");
@@ -133,27 +137,32 @@ public class FabricaDAO extends DAO {
           String endereco = rs.getString("endereco");
           String plano = rs.getString("plano");
 
+          // Adicionando instância do DTO dentro da lista de fábricas
           fabricas.add(new FabricaDTO(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, endereco, plano));
         }
       }
     }
 
+    // Retorna a lista de fábricas
     return fabricas;
   }
 
   public Fabrica pesquisarPorCnpj(String cnpj) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM fabrica WHERE cnpj = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setString(1, cnpj);
 
+      // Pesquisa fábrica pelo CNPJ
       try (ResultSet rs = pstmt.executeQuery()) {
+        // Se não encontrar retorna null
         if (!rs.next()) {
           return null;
         }
 
-        // Informações da fábrica
+        // Variáveis
         int idFabrica = rs.getInt("id");
         String nome = rs.getString("nome_unidade");
         boolean status = rs.getBoolean("status");
@@ -162,40 +171,51 @@ public class FabricaDAO extends DAO {
         String ramo = rs.getString("ramo");
         int idPlano = rs.getInt("id_plano");
 
+        // Instância e retorno do Model
         return new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
       }
     }
   }
 
   public Map<Integer, String> getMapIdNome() throws SQLException {
+    // Comando SQL
     String sql = "SELECT id, nome_unidade FROM fabrica";
+
+    // Instância do HashMap
     Map<Integer, String> map = new HashMap<>();
 
+    // Lista dos IDs e nomes das unidades das fábricas
     try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
       while (rs.next()) {
+        // Variáveis
         int id = rs.getInt("id");
         String nome = rs.getString("nome_unidade");
 
+        // Adicionando chave e valor no map
         map.put(id, nome);
       }
     }
 
+    // Retorna o map
     return map;
   }
 
   public Fabrica pesquisarPorId(int id) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM fabrica WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setInt(1, id);
 
+      // Pesquisa fábrica pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
+        // Se não encontrar retorna null
         if (!rs.next()) {
           return null;
         }
 
-        // Informações da fábrica
+        // Variáveis
         String nome = rs.getString("nome_unidade");
         String cnpj = rs.getString("cnpj");
         boolean status = rs.getBoolean("status");
@@ -204,7 +224,7 @@ public class FabricaDAO extends DAO {
         String ramo = rs.getString("ramo");
         int idPlano = rs.getInt("id_plano");
 
-        // Cria e retorna o objeto
+        // Instância e retorno do Model
         return new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
       }
     }
@@ -212,7 +232,7 @@ public class FabricaDAO extends DAO {
 
   // === UPDATE ===
   public void atualizar(Fabrica original, Fabrica alteracoes) throws SQLException {
-    // Desempacotamento do model
+    // Variáveis
     int id = alteracoes.getId();
     int idPlano = alteracoes.getIdPlano();
     String nomeUnidade = alteracoes.getNomeUnidade();
@@ -222,7 +242,7 @@ public class FabricaDAO extends DAO {
     String nomeIndustria = alteracoes.getNomeIndustria();
     String ramo = alteracoes.getRamo();
 
-    // Construção do comando dinâmico
+    // Construção do comando SQL dinâmico
     StringBuilder sql = new StringBuilder("UPDATE fabrica SET ");
     List<Object> valores = new ArrayList<>();
 
@@ -261,29 +281,32 @@ public class FabricaDAO extends DAO {
       valores.add(idPlano);
     }
 
-    // Retorno se nada foi alterado
+    // Retorno vazio se nada foi alterado
     if (valores.isEmpty()) {
       return;
     }
 
-    // Remoção do último ", "
+    // Remoção da última ", "
     sql.setLength(sql.length() - 2);
 
     // Adiciona a cláusula WHERE
     sql.append(" WHERE id = ?");
     valores.add(id);
 
-    // Execução do comando
     try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+      // Definindo variáveis do comando SQL
       for (int i = 0; i < valores.size(); i++) {
         pstmt.setObject(i + 1, valores.get(i));
       }
 
+      // Atualiza fábrica no banco de dados
       pstmt.executeUpdate();
+
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das modificações e propaga a exceção
+      // Cancelando transação
       conn.rollback();
       throw e;
     }
@@ -291,18 +314,22 @@ public class FabricaDAO extends DAO {
 
   // === DELETE ===
   public void remover(int id) throws SQLException {
+    // Comando SQL
     String sql = "DELETE FROM fabrica WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setInt(1, id);
+
+      // Deleta a fábrica do banco de dados
       pstmt.executeUpdate();
+
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das modificações
+      // Cancelando trasação
       conn.rollback();
-
-      // Registra o erro no terminal e o propaga
       throw e;
     }
   }

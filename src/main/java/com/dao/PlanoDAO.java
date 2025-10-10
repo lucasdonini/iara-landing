@@ -25,10 +25,12 @@ public class PlanoDAO extends DAO {
 
   // Métodos Estáticos
   public Object converterValor(String campo, String valor) throws DateTimeParseException {
+    // Se o campo está vazio retorna null
     if (campo == null || campo.isBlank()) {
       return null;
     }
 
+    // Converte e retorna o valor de acordo com o nome do campo
     return switch (campo) {
       case "id" -> Integer.parseInt(valor);
       case "valor" -> Double.parseDouble(valor);
@@ -44,19 +46,19 @@ public class PlanoDAO extends DAO {
     String sql = "INSERT INTO plano(nome, valor, descricao) VALUES (?, ?, ?)";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) { //Preparando comando SQL
-      //Definindo variáveis no código SQL
+      //Definindo variáveis no comando SQL
       pstmt.setString(1, plano.getNome());
       pstmt.setDouble(2, plano.getValor());
       pstmt.setString(3, plano.getDescricao());
 
-      //Salvando alterações no banco
+      //Cadastra o plano no banco de dados
       pstmt.execute();
 
-      //Confirmando transações
+      //Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
-      //Cancelando transações
+      //Cancelando transação
       conn.rollback();
       throw e;
     }
@@ -64,9 +66,10 @@ public class PlanoDAO extends DAO {
 
   // === READ ===
   public List<Plano> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+    // Lista de planos
     List<Plano> planos = new ArrayList<>();
 
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM plano";
 
     // Verificando campo do filtro
@@ -74,7 +77,7 @@ public class PlanoDAO extends DAO {
       sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
-    //Verificando campo para ordenar a consulta
+    // Verificando campo e direcao da ordenação
     if (campoSequencia != null && camposFiltraveis.containsKey((campoSequencia))) {
       sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
 
@@ -83,111 +86,139 @@ public class PlanoDAO extends DAO {
     }
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      //Definindo parâmetro vazio
+      //Definindo variáveis do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
         pstmt.setObject(1, valorFiltro);
       }
 
-      //Instanciando um ResultSet
+      // Resgata do banco de dados a lista de planos
       try (ResultSet rs = pstmt.executeQuery()) {
         while (rs.next()) {
+          // Variáveis
           int id = rs.getInt("id");
           String nome = rs.getString("nome");
           double valor = rs.getDouble("valor");
           String descricao = rs.getString("descricao");
 
+          // Adicionando instância do DTO na lista de planos
           planos.add(new Plano(id, nome, valor, descricao));
         }
       }
     }
 
+    // Retorna a lista de planos
     return planos;
   }
 
   public Plano pesquisarPorId(int id) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM plano WHERE id = ?";
+
+    // Objeto não instanciado de plano
     Plano plano;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setInt(1, id);
 
+      // Pesquisa plano pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
+        // Se não encontrar retorna null
         if (!rs.next()) {
           return null;
         }
 
+        // Variáveis
         String nome = rs.getString("nome");
         double valor = rs.getDouble("valor");
         String descricao = rs.getString("descricao");
 
+        // Instância do Model
         plano = new Plano(id, nome, valor, descricao);
       }
     }
 
+    // Retorna plano
     return plano;
   }
 
   public Plano pesquisarPorNome(String nome) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM plano WHERE nome = ?";
+
+    // Objeto não instanciado de plano
     Plano plano;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setString(1, nome);
 
+      // Pesquisa plano pelo nome
       try (ResultSet rs = pstmt.executeQuery()) {
+        // Se não encontrar retorna null
         if (!rs.next()) {
           return null;
         }
 
+        // Variáveis
         int id = rs.getInt("id");
         double valor = rs.getDouble("valor");
         String descricao = rs.getString("descricao");
 
+        // Instância do Model
         plano = new Plano(id, nome, valor, descricao);
       }
     }
 
+    // Retorna plano
     return plano;
   }
 
   public Plano getCamposAlteraveis(int id) throws SQLException {
+    // Instância do Model
     Plano plano = pesquisarPorId(id);
 
+    // Se for vazio lança exceção
     if (plano == null) {
       throw new SQLException("Falha ao recuperar plano");
     }
 
+    // Retorna plano
     return plano;
   }
 
   public Map<Integer, String> getMapIdNome() throws SQLException {
+    // Instância do HashMap
     Map<Integer, String> map = new HashMap<>();
 
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT id, nome FROM plano";
 
+    // Lista dos IDs e nomes dos planos
     try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
       while (rs.next()) {
+        // Variáveis
         int id = rs.getInt("id");
         String nome = rs.getString("nome");
+
+        // Adicionando chave a valor no map
         map.put(id, nome);
       }
     }
 
+    // Retorna o map
     return map;
   }
 
   // === UPDATE ===
   public void atualizar(Plano original, Plano alterado) throws SQLException {
-    // Desempacotamento do model alterado
+    // Variáveis
     int id = alterado.getId();
     String nome = alterado.getNome();
     double valor = alterado.getValor();
     String descricao = alterado.getDescricao();
 
-    // Monta o comando de acordo com os campos alterados
+    // Construção do comando SQL dinâmico
     StringBuilder sql = new StringBuilder("UPDATE plano SET ");
     List<Object> valores = new ArrayList<>();
 
@@ -206,31 +237,32 @@ public class PlanoDAO extends DAO {
       valores.add(descricao);
     }
 
-    // Sái do metodo se nada foi alterado
+    // Retorna vazio se nada foi alterado
     if (valores.isEmpty()) {
       return;
     }
 
-    // Remove o último espaço e a última vírgula
+    // Remoção da última ", "
     sql.setLength(sql.length() - 2);
 
-    // Adiciona o WHERE
+    // Adiciona a cláusula WHERE
     sql.append(" WHERE id = ?");
     valores.add(id);
 
-    // Prepara, preenche e executa o comando
     try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+      // Definindo variáveis do comando SQL
       for (int i = 0; i < valores.size(); i++) {
         pstmt.setObject(i + 1, valores.get(i));
       }
 
+      // Atualiza o plano no banco de dados
       pstmt.executeUpdate();
 
-      // Commita as alterações
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das alterações e propaga a exceção
+      // Cancelando transação
       conn.rollback();
       throw e;
     }
@@ -238,20 +270,21 @@ public class PlanoDAO extends DAO {
 
   // === DELETE ===
   public void remover(int id) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "DELETE FROM plano WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-      // Completa os parâmetros faltantes
+      // Definindo variável do comando SQL
       pstmt.setInt(1, id);
 
-      // Executa o comando e commita as mudanças
+      // Deleta o plano do banco de dados
       pstmt.executeUpdate();
+
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das modificações e propaga a exceção
+      // Cancelando transação
       conn.rollback();
       throw e;
     }

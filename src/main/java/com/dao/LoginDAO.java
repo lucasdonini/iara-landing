@@ -16,19 +16,21 @@ public class LoginDAO extends DAO {
 
   // Outros Métodos
   public SuperAdmDTO login(LoginDTO credenciais) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM super_adm WHERE email = ?";
+
+    // Variáveis
     String senhaHash, nome, cargo;
     int id;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Completa os parâmetros faltantes
+      // Definindo variável do comando SQL
       pstmt.setString(1, credenciais.getEmail());
 
-      // Captura o resultado
+      // Resgata do banco de dados o super adm correspondente ao email
       try (ResultSet rs = pstmt.executeQuery()) {
 
-        // Se não houver retorno, o login falhou
+        // Se não encontrar retorna null (o login falhou)
         if (!rs.next()) {
           return null;
         }
@@ -36,16 +38,17 @@ public class LoginDAO extends DAO {
         // Caso contrário, busca o hash da senha no banco
         senhaHash = rs.getString("senha");
 
-        // Se a senha não confere, login falhou
+        // Se a senha não for compatível retorna null (login falhou)
         if (!SenhaUtils.comparar(credenciais.getSenha(), senhaHash)) {
           return null;
         }
 
-        // Se o login der certo, retorna as informações do usuário
+        // Variáveis
         id = rs.getInt("id");
         nome = rs.getString("nome");
         cargo = rs.getString("cargo");
 
+        // Retorno e instância do DTO
         return new SuperAdmDTO(id, nome, cargo, credenciais.getEmail());
       }
     }

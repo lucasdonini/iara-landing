@@ -27,10 +27,12 @@ public class SuperAdmDAO extends DAO {
 
   // Métodos Estáticos
   public static Object converterValor(String campo, String valor) {
+    // Se o campo está vazio, retorna null
     if (campo == null || campo.isBlank()) {
       return null;
     }
 
+    // Converte e retorna o valor de acordo com o nome do campo
     return switch (campo) {
       case "id" -> Integer.parseInt(valor);
       case "nome", "email", "cargo" -> valor;
@@ -41,30 +43,30 @@ public class SuperAdmDAO extends DAO {
   // Outros Métodos
   // === CREATE ===
   public void cadastrar(SuperAdm credenciais) throws SQLException {
-    // Armazena as informações do cadastro em variáveis
+    // Variáveis
     String nome = credenciais.getNome();
     String email = credenciais.getEmail();
     String cargo = credenciais.getCargo();
     String senha = credenciais.getSenha();
 
-    // Prepara o comando
+    // Comando SQL
     String sql = "INSERT INTO super_adm (nome, email, cargo, senha) VALUES (?, ?, ?, ?)";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Completa os parâmetros faltantes
+      // Definindo variáveis do comando SQL
       pstmt.setString(1, nome);
       pstmt.setString(2, email);
       pstmt.setString(3, cargo);
       pstmt.setString(4, senha);
 
-      // Executa o update
+      // Cadastra o super adm no banco de dados
       pstmt.executeUpdate();
 
-      // Commita as alterações no banco
+      // Efetuando transaçãoo
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das alterações e propaga a exceção
+      // Cancelando transação
       conn.rollback();
       throw e;
     }
@@ -72,9 +74,10 @@ public class SuperAdmDAO extends DAO {
 
   // === READ ===
   public List<SuperAdmDTO> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+    // Lista de super adms
     List<SuperAdmDTO> superAdms = new ArrayList<>();
 
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT id, nome, cargo, email FROM super_adm";
 
     // Verificando campo do filtro
@@ -82,7 +85,7 @@ public class SuperAdmDAO extends DAO {
       sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
-    //Verificando campo para ordenar a consulta
+    // Verificando campo e direcao da ordenação
     if (campoSequencia != null && camposFiltraveis.containsKey(campoSequencia)) {
       sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
 
@@ -91,110 +94,137 @@ public class SuperAdmDAO extends DAO {
     }
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      //Definindo parâmetro vazio
+      // Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
         pstmt.setObject(1, valorFiltro);
       }
 
-      //Instanciando um ResultSet
+      // Resgata do banco de dados a lista de super adms
       try (ResultSet rs = pstmt.executeQuery()) {
         while (rs.next()) {
+          // Variáveis
           int id = rs.getInt("id");
           String nome = rs.getString("nome");
           String cargo = rs.getString("cargo");
           String email = rs.getString("email");
 
+          // Adicionando instância do DTO na lista de super adms
           superAdms.add(new SuperAdmDTO(id, nome, cargo, email));
         }
       }
     }
 
+    // Retorna a lista de super adms
     return superAdms;
   }
 
   public SuperAdmDTO pesquisarPorId(int id) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT nome, cargo, email FROM super_adm WHERE id = ?";
+
+    // Objeto não instanciado de super adm
     SuperAdmDTO superAdm;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setInt(1, id);
 
+      // Pesquisa super adm pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
+        // Se não encontrar retorna null
         if (!rs.next()) {
           return null;
         }
 
+        // Variáveis
         String nome = rs.getString("nome");
         String cargo = rs.getString("cargo");
         String email = rs.getString("email");
 
+        // Instância do DTO
         superAdm = new SuperAdmDTO(id, nome, cargo, email);
       }
     }
 
+    // Retorna super adm
     return superAdm;
   }
 
   public SuperAdmDTO pesquisarPorEmail(String email) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT id, nome, cargo FROM super_adm WHERE email = ?";
+
+    // Objeto não instanciado de super adm
     SuperAdmDTO superAdm;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setString(1, email);
 
+      // Pesquisa super adm pelo email
       try (ResultSet rs = pstmt.executeQuery()) {
+        // Se não encontrar retorna null
         if (!rs.next()) {
           return null;
         }
 
+        // Variáveis
         int id = rs.getInt("id");
         String nome = rs.getString("nome");
         String cargo = rs.getString("cargo");
 
+        // Instância do DTO
         superAdm = new SuperAdmDTO(id, nome, cargo, email);
       }
     }
 
+    // Retorna super adm
     return superAdm;
   }
 
   public SuperAdm getCamposAlteraveis(int id) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM super_adm WHERE id = ?";
+
+    // Objeto não instanciado de super adm
     SuperAdm superAdm;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setInt(1, id);
 
+      // Pesquisa super adm pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
+        // Se não achar lança exceção
         if (!rs.next()) {
           throw new SQLException("Erro ao recuperar as informações do super adm");
         }
 
+        // Variáveis
         String nome = rs.getString("nome");
         String cargo = rs.getString("cargo");
         String email = rs.getString("email");
         String senha = rs.getString("senha");
 
+        // Instância do Model
         superAdm = new SuperAdm(id, nome, cargo, email, senha);
       }
     }
 
+    // Retorna super adm
     return superAdm;
   }
 
   // === UPDATE ===
   public void atualizar(SuperAdm original, SuperAdm alterado) throws SQLException {
-    // Desempacotamento do model alterado
+    // Variáveis
     int id = alterado.getId();
     String nome = alterado.getNome();
     String cargo = alterado.getCargo();
     String email = alterado.getEmail();
     String senha = alterado.getSenha();
 
-    // Monta o comando de acordo com os campos alterados
+    // Construção do comando SQL dinâmico
     StringBuilder sql = new StringBuilder("UPDATE super_adm SET ");
     List<Object> valores = new ArrayList<>();
 
@@ -218,31 +248,32 @@ public class SuperAdmDAO extends DAO {
       valores.add(senha);
     }
 
-    // Sái do método se nada foi alterado
+    // Retorna vazio se nada foi alterado
     if (valores.isEmpty()) {
       return;
     }
 
-    // Remove o último espaço e a última vírgula
+    // Remoção da última ", "
     sql.setLength(sql.length() - 2);
 
-    // Adiciona o WHERE
+    // Adiciona a cláusula WHERE
     sql.append(" WHERE id = ?");
     valores.add(id);
 
-    // Prepara, preenche e executa o comando
     try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+      // Definindo variáveis do comando SQL
       for (int i = 0; i < valores.size(); i++) {
         pstmt.setObject(i + 1, valores.get(i));
       }
 
+      // Atualiza o super adm no banco de dados
       pstmt.executeUpdate();
 
-      // Commita as alterações
+      // Efetuando a alteração
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das alterações e propaga a exceção
+      // Cancelando a alteração
       conn.rollback();
       throw e;
     }
@@ -250,19 +281,21 @@ public class SuperAdmDAO extends DAO {
 
   // === DELETE ===
   public void remover(int id) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "DELETE FROM super_adm WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Completa os parâmetros faltantes
+      // Definindo variável do comando SQL
       pstmt.setInt(1, id);
 
-      // Executa o comando e commita as mudanças
+      // Deleta o super adm do banco de dados
       pstmt.executeUpdate();
+
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das modificações e propaga a exceção
+      // Cancelando transação
       conn.rollback();
       throw e;
     }

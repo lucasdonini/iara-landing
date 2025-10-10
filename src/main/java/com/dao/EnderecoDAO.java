@@ -17,14 +17,14 @@ public class EnderecoDAO extends DAO {
   // Outros Métodos
   // === CREATE ===
   public void cadastrar(Endereco credenciais) throws SQLException {
-    // Desempacotamento do objeto Endereco
+    // Variáveis
     String complemento = credenciais.getComplemento();
     String cep = credenciais.getCep();
     String rua = credenciais.getRua();
     int idFabrica = credenciais.getIdFabrica();
     int numero = credenciais.getNumero();
 
-    // Insere null se o complemento estiver vazio
+    // Define o complemento como null (se estiver vazio)
     complemento = (complemento == null || complemento.isBlank() ? null : complemento);
 
     //Comando SQL
@@ -34,13 +34,14 @@ public class EnderecoDAO extends DAO {
         """;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) { //Preparando comando SQL
-      //Definindo variáveis do comando SQL
+      // Definindo variáveis do comando SQL
       pstmt.setString(1, cep);
       pstmt.setInt(2, numero);
       pstmt.setString(3, rua);
       pstmt.setString(4, complemento);
       pstmt.setInt(5, idFabrica);
 
+      //Cadastra endereço no banco de dados
       pstmt.executeUpdate();
 
       //Efetuando transação
@@ -55,22 +56,24 @@ public class EnderecoDAO extends DAO {
 
   // === READ ===
   public Endereco pesquisarPorIdFabrica(int idFabrica) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM endereco WHERE id_fabrica = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setInt(1, idFabrica);
 
+      // Pesquisa endereço pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
         if (rs.next()) {
-          // Informações do endereço
+          // Variáveis
           String complemento = rs.getString("complemento");
           String cep = rs.getString("cep");
           String rua = rs.getString("rua");
           int numero = rs.getInt("numero");
           int id = rs.getInt("id");
 
-          // Cria e retorna o objeto
+          // Instância e retorno do Model
           return new Endereco(id, cep, numero, rua, complemento, idFabrica);
 
         } else {
@@ -82,14 +85,14 @@ public class EnderecoDAO extends DAO {
 
   // === UPDATE ===
   public void atualizar(Endereco original, Endereco alterado) throws SQLException {
-    // Desempacotamento do objeto atualizado
+    // Variáveis
     String complemento = alterado.getComplemento();
     String rua = alterado.getRua();
     String cep = alterado.getCep();
     int numero = alterado.getNumero();
     int id = original.getId();
 
-    // Construção do comando dinâmico
+    // Construção do comando SQL dinâmico
     StringBuilder sql = new StringBuilder("UPDATE endereco SET ");
     List<Object> valores = new ArrayList<>();
 
@@ -113,29 +116,32 @@ public class EnderecoDAO extends DAO {
       valores.add(numero);
     }
 
-    // Retorno se nada foi alterado
+    // Retorno vazio se nada foi alterado
     if (valores.isEmpty()) {
       return;
     }
 
-    // Remoção do último ", "
+    // Remoção da última ", "
     sql.setLength(sql.length() - 2);
 
     // Adiciona a cláusula WHERE
     sql.append(" WHERE id = ?");
     valores.add(id);
 
-    // Execução do comando
     try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+      // Definindo variáveis do comando SQL
       for (int i = 0; i < valores.size(); i++) {
         pstmt.setObject(i + 1, valores.get(i));
       }
 
+      // Atualiza endereço no banco de dados
       pstmt.executeUpdate();
+
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das modificações e propaga a exceção
+      // Cancelando transação
       conn.rollback();
       throw e;
     }
@@ -147,20 +153,18 @@ public class EnderecoDAO extends DAO {
     String sql = "DELETE FROM endereco WHERE id = ?";
 
     try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
-      //Definindo variáveis no código SQL
+      // Definindo variáveis do comando SQL
       pstmt.setInt(1, id);
 
-      //Salvando alterações no banco
+      // Deleta o endereço do banco de dados
       pstmt.executeUpdate();
 
-      //Confirmando transações
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
-      //Cancelando transações
+      // Cancelando transação
       conn.rollback();
-
-      //Lançando excessões
       throw e;
     }
   }
