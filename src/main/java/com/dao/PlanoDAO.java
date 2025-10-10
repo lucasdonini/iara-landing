@@ -24,7 +24,7 @@ public class PlanoDAO extends DAO {
   }
 
   // Métodos Estáticos
-  public Object converterValor(String campo, String valor) throws DateTimeParseException {
+  public static Object converterValor(String campo, String valor) throws DateTimeParseException {
     if (campo == null || campo.isBlank()) {
       return null;
     }
