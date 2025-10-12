@@ -25,7 +25,7 @@
   <button type="submit">Salvar</button>
 </form>
 
-<a href="${pageContext.request.contextPath}/area-restrita/superadms?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/superadms">Cancelar</a>
 <% if (erro != null) { %>
 <p>
   <%= erro %>

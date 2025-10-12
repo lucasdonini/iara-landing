@@ -27,7 +27,8 @@ public class SuperAdmServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da requisição
-    String action = req.getParameter("action").trim();
+    String action = req.getParameter("action");
+    action = (action == null ? "read" : action.trim());
 
     // Dados da resposta
     boolean erro = true;
@@ -94,7 +95,7 @@ public class SuperAdmServlet extends HttpServlet {
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
-      destino = req.getServletPath() + "?action=read";
+      destino = req.getServletPath();
 
     }
     // Se houver alguma exceção de JSP, aciona o método doGet

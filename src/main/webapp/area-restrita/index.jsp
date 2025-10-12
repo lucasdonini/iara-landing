@@ -27,11 +27,11 @@
 <nav>
   <ul>
     <li><a href="${pageContext.request.contextPath}/index.html">Página inicial</a></li>
-    <li><a href="${pageContext.request.contextPath}/area-restrita/usuarios?action=read">Usuários</a></li>
-    <li><a href="${pageContext.request.contextPath}/area-restrita/superadms?action=read">Super Administradores</a></li>
-    <li><a href="${pageContext.request.contextPath}/area-restrita/planos?action=read">Planos</a></li>
-    <li><a href="${pageContext.request.contextPath}/area-restrita/fabricas?action=read">Fábricas</a></li>
-    <li><a href="${pageContext.request.contextPath}/area-restrita/pagamentos?action=read">Pagamentos</a></li>
+    <li><a href="${pageContext.request.contextPath}/area-restrita/usuarios">Usuários</a></li>
+    <li><a href="${pageContext.request.contextPath}/area-restrita/superadms">Super Administradores</a></li>
+    <li><a href="${pageContext.request.contextPath}/area-restrita/planos">Planos</a></li>
+    <li><a href="${pageContext.request.contextPath}/area-restrita/fabricas">Fábricas</a></li>
+    <li><a href="${pageContext.request.contextPath}/area-restrita/pagamentos">Pagamentos</a></li>
   </ul>
 </nav>
 <form action="${pageContext.request.contextPath}/login-handler" method="post">

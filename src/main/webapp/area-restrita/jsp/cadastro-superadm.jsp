@@ -17,7 +17,7 @@
   <input type="text" pattern=".{8,}" title="A senha deve ter 8 ou mais caracteres" name="senha" placeholder="Senha">
   <button type="submit">Cadastrar</button>
 </form>
-<a href="${pageContext.request.contextPath}/area-restrita/superadms?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/superadms">Cancelar</a>
 <%
   if (erro != null && !erro.isBlank()) {
 %>

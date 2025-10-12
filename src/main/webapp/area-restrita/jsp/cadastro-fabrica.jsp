@@ -36,7 +36,7 @@
   
   <button type="submit">Cadastrar</button>
 </form>
-<a href="${pageContext.request.contextPath}/area-restrita/fabricas?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/fabricas">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

@@ -42,7 +42,7 @@
   </select>
   <input type="submit">
 </form>
-<a href="${pageContext.request.contextPath}/area-restrita/pagamentos?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/pagamentos">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

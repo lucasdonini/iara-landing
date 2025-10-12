@@ -18,7 +18,7 @@
   <input type="text" name="descricao">
   <input type="submit">
 </form>
-<a href="${pageContext.request.contextPath}/area-restrita/planos?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/planos">Cancelar</a>
 <%
   if (erro != null && !erro.isBlank()) {
 %>

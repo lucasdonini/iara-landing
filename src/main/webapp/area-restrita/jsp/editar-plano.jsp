@@ -19,7 +19,7 @@
   <input type="text" name="descricao" value="<%= plano.getDescricao() %>" placeholder="Nova descricao">
   <button type="submit">Salvar</button>
 </form>
-<a href="${pageContext.request.contextPath}/area-restrita/planos?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/planos">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

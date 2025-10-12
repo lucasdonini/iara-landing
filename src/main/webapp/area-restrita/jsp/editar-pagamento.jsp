@@ -55,7 +55,7 @@
   </select>
   <button type="submit">Salvar</button>
 </form>
-<a href="${pageContext.request.contextPath}/area-restrita/pagamentos?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/pagamentos">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>
