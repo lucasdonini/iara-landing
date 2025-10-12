@@ -25,10 +25,12 @@ public class AreaRestritaServlet extends HttpServlet {
     // Dados da resposta
     String destino = PAGINA_LOGIN;
 
+    // Verifica se o usuário está logado
     if (session != null && session.getAttribute("usuario") instanceof SuperAdmDTO) {
         destino = PAGINA_PRINCIPAL;
     }
 
+    // Encaminha a requisição e a resposta
     req.getRequestDispatcher(destino).forward(req, resp);
   }
 }

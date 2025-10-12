@@ -31,7 +31,7 @@ public class FabricaServlet extends HttpServlet {
   // GET e POST
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-    // Dados da request
+    // Dados da requisição
     String action = req.getParameter("action").trim();
     Object origem = req.getAttribute("origem");
 
@@ -44,6 +44,7 @@ public class FabricaServlet extends HttpServlet {
     String destino = null;
 
     try {
+      //  Faz a ação correspondente à escolha
       switch (action) {
         case "read" -> {
           List<FabricaDTO> fabricas = listarFabricas(req);
@@ -74,8 +75,9 @@ public class FabricaServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (SQLException e) {
-      // Se houver alguma exceção, registra no terminal
+    }
+    // Se houver alguma exceção, registra no terminal
+    catch (SQLException e) {
       System.err.println("Erro ao executar operação no banco:");
       e.printStackTrace(System.err);
 
@@ -88,7 +90,7 @@ public class FabricaServlet extends HttpServlet {
       e.printStackTrace(System.err);
     }
 
-    // Redireciona a request par a página jsp
+    // Redireciona para a página de erro, ou encaminha a requisição e a resposta
     if (erro) {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
@@ -99,7 +101,7 @@ public class FabricaServlet extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-    // Dados da request
+    // Dados da requisição
     String action = req.getParameter("action").trim();
 
     // Dados da resposta
@@ -116,13 +118,16 @@ public class FabricaServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (ExcecaoDeJSP e) {
+    }
+    // Se houver alguma exceção de JSP, aciona o método doGet
+    catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
       doGet(req, resp);
       return;
 
-    } catch (SQLException e) {
-      // Se houver alguma exceção, registra no terminal
+    }
+    // Se houver alguma exceção, registra no terminal
+    catch (SQLException e) {
       System.err.println("Erro ao executar operação no banco:");
       e.printStackTrace(System.err);
 
@@ -135,7 +140,7 @@ public class FabricaServlet extends HttpServlet {
       e.printStackTrace(System.err);
     }
 
-    // Redireciona para a página de destino
+    // Redireciona para a página de erro, ou aciona o método doGet
     if (erro) {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
@@ -146,9 +151,11 @@ public class FabricaServlet extends HttpServlet {
   }
 
   // Outros Métodos
+
   // === CREATE ===
   private void registrarFabrica(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da request
+    // Dados da requisição
+
     // --- Endereço ---
     String temp = req.getParameter("numero").trim();
     int numero = Integer.parseInt(temp);
@@ -169,6 +176,7 @@ public class FabricaServlet extends HttpServlet {
     temp = req.getParameter("id_plano").trim();
     int idPlano = Integer.parseInt(temp);
 
+    // Instância do DTO
     CadastroFabricaDTO credenciais = new CadastroFabricaDTO(nome, cnpj, email, empresa, ramo, idPlano);
 
     try (FabricaDAO fDao = new FabricaDAO(); EnderecoDAO eDao = new EnderecoDAO()) {
@@ -197,20 +205,22 @@ public class FabricaServlet extends HttpServlet {
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (FabricaDAO dao = new FabricaDAO()) {
-      // Recupera os planos do banco
+      // Recupera os planos cadastrados no banco de dados
       return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
     }
   }
 
   private Pair<Fabrica, Endereco> getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da request
+    // Dados da requisiçãoo
     String temp = req.getParameter("id").trim();
     int idFabrica = Integer.parseInt(temp);
 
     try (FabricaDAO fDao = new FabricaDAO(); EnderecoDAO eDao = new EnderecoDAO()) {
-      // Recupera os dados originais da fábrica e retorna
+      // Recupera os dados originais do banco de dados
       Fabrica f = fDao.pesquisarPorId(idFabrica);
       Endereco e = eDao.pesquisarPorIdFabrica(f.getId());
+
+      // Retorna o pair de Fábrica e Endereço
       return new Pair<>(f, e);
     }
   }
@@ -223,7 +233,8 @@ public class FabricaServlet extends HttpServlet {
 
   // === UPDATE ===
   private void atualizarFabrica(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da request
+    // Dados da requisição
+
     // --- Fabrica ---
     String temp = req.getParameter("id_fabrica").trim();
     int idFabrica = Integer.parseInt(temp);
@@ -241,6 +252,7 @@ public class FabricaServlet extends HttpServlet {
     temp = req.getParameter("id_plano").trim();
     int idPlano = Integer.parseInt(temp);
 
+    // Instância do Model
     Fabrica alterado = new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
 
     // --- Endereço ---
@@ -252,28 +264,30 @@ public class FabricaServlet extends HttpServlet {
     String rua = req.getParameter("logradouro").trim();
     String complemento = req.getParameter("complemento").trim();
 
+    // Instância do Model
     Endereco endAlterado = new Endereco(null, cep, numero, rua, complemento, idFabrica);
 
     try (FabricaDAO fDao = new FabricaDAO(); EnderecoDAO eDao = new EnderecoDAO()) {
-      // Recupera as informações originais do banco
+      // Recupera as informações originais do banco de dados
       Fabrica original = fDao.pesquisarPorId(idFabrica);
       Endereco endOriginal = eDao.pesquisarPorIdFabrica(original.getId());
 
-      // Verifica se as alterações não violam a chave UNIQUE de cnpj
+      // Verifica se as alterações não violam a chave UNIQUE de 'cnpj' em 'fabrica'
       Fabrica teste = fDao.pesquisarPorCnpj(cnpj);
       if (teste != null && teste.getId() != idFabrica) {
         throw ExcecaoDeJSP.cnpjDuplicado();
       }
 
-      // Salva as informações no banco
+      // Atualiza a fábrica
       fDao.atualizar(original, alterado);
+      // Atualiza o endereço
       eDao.atualizar(endOriginal, endAlterado);
     }
   }
 
   // === DELETE ===
   private void removerFabrica(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da request
+    // Dados da requisição
     String temp = req.getParameter("id_fabrica").trim();
     int idFabrica = Integer.parseInt(temp);
 

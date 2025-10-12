@@ -37,6 +37,7 @@ public class PlanoServlet extends HttpServlet {
     String destino = null;
 
     try {
+      // Faz a ação correspondente à escolha
       switch (action) {
         case "read" -> {
           List<Plano> planos = listaPlanos(req);
@@ -56,8 +57,9 @@ public class PlanoServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (SQLException e) {
-      // Se houver alguma exceção, registra no terminal
+    }
+    // Se houver alguma exceção, registra no terminal
+    catch (SQLException e) {
       System.err.println("Erro ao executar operação no banco:");
       e.printStackTrace(System.err);
 
@@ -70,7 +72,7 @@ public class PlanoServlet extends HttpServlet {
       e.printStackTrace(System.err);
     }
 
-    // Redireciona a request par a página jsp
+    // Redireciona para a página de erro, ou encaminha a requisição e a resposta
     if (erro) {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
@@ -81,13 +83,14 @@ public class PlanoServlet extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-    // Dados da request
+    // Dados da requisição
     String action = req.getParameter("action").trim();
 
     // Dados da resposta
     boolean erro = true;
 
     try {
+      // Faz a ação correspondente à escolha
       switch (action) {
         case "create" -> registrarPlano(req);
         case "update" -> atualizarPlano(req);
@@ -97,13 +100,16 @@ public class PlanoServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (ExcecaoDeJSP e) {
+    }
+    // Se houver alguma exceção de JSP, aciona o método doGet
+    catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
       doGet(req, resp);
       return;
 
-    } catch (SQLException e) {
-      // Se houver alguma exceção grave, registra no terminal
+    }
+    // Se houver alguma exceção, registra no terminal
+    catch (SQLException e) {
       System.err.println("Erro ao executar operação no banco:");
       e.printStackTrace(System.err);
 
@@ -116,7 +122,7 @@ public class PlanoServlet extends HttpServlet {
       e.printStackTrace(System.err);
     }
 
-    // Redireciona para a página de destino
+    // Redireciona para a página de erro, ou aciona o método doGet
     if (erro) {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
@@ -127,6 +133,7 @@ public class PlanoServlet extends HttpServlet {
   }
 
   // Outros Métodos
+
   // === CREATE ===
   private void registrarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
@@ -141,10 +148,11 @@ public class PlanoServlet extends HttpServlet {
 
     double valor = Double.parseDouble(temp);
 
+    // Instância do Model
     Plano plano = new Plano(null, nome, valor, descricao);
 
     try (PlanoDAO dao = new PlanoDAO()) {
-      // Verifica se o novo plano não viola a chave UNIQUE
+      // Verifica se o cadastro não viola a chave UNIQUE de 'nome' em 'plano'
       if (dao.pesquisarPorNome(nome) != null) {
         throw ExcecaoDeJSP.nomeDuplicado();
       }
@@ -163,7 +171,7 @@ public class PlanoServlet extends HttpServlet {
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (PlanoDAO dao = new PlanoDAO()) {
-      // Recupera os planos do banco
+      // Recupera os planos cadastrados no banco de dados
       return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
     }
   }
@@ -174,14 +182,14 @@ public class PlanoServlet extends HttpServlet {
     int id = Integer.parseInt(temp);
 
     try (PlanoDAO dao = new PlanoDAO()) {
-      // Recupera os dados originais para display
+      // Recupera e retorna os dados originais do banco de dados
       return dao.pesquisarPorId(id);
     }
   }
 
   // === UPDATE ===
   private void atualizarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da request
+    // Dados da requisição
     String nome = req.getParameter("nome").trim();
     String descricao = req.getParameter("descricao").trim();
 
@@ -194,19 +202,20 @@ public class PlanoServlet extends HttpServlet {
     }
     double valor = Double.parseDouble(temp);
 
+    // Instância do Model
     Plano alterado = new Plano(id, nome, valor, descricao);
 
     try (PlanoDAO dao = new PlanoDAO()) {
-      // Recupera as informações originais do banco
+      // Recupera os dados originais do banco de dados
       Plano original = dao.getCamposAlteraveis(id);
 
-      // Verifica se o novo nome viola a chave UNIQUE
+      // Verifica se as alterações não violam a chave UNIQUE de 'nome' em 'plano'
       Plano teste = dao.pesquisarPorNome(nome);
       if (teste != null && id != teste.getId()) {
         throw ExcecaoDeJSP.nomeDuplicado();
       }
 
-      // Salva as informações no banco
+      // Atualiza o plano
       dao.atualizar(original, alterado);
     }
   }

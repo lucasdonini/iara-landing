@@ -8,7 +8,6 @@ import com.dto.UsuarioDTO;
 import com.exception.ExcecaoDeJSP;
 import com.model.TipoAcesso;
 import com.utils.SenhaUtils;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -44,6 +43,7 @@ public class UsuarioServlet extends HttpServlet {
     String destino = null;
 
     try {
+      // Faz a ação correspondente à escolha
       switch (action) {
         case "read" -> {
           List<UsuarioDTO> usuarios = getListaUsuarios(req);
@@ -75,8 +75,9 @@ public class UsuarioServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (SQLException e) {
-      // Se houver alguma exceção, registra no terminal
+    }
+    // Se houver alguma exceção, registra no terminal
+    catch (SQLException e) {
       System.err.println("Erro ao executar operação no banco:");
       e.printStackTrace(System.err);
 
@@ -89,7 +90,7 @@ public class UsuarioServlet extends HttpServlet {
       e.printStackTrace(System.err);
     }
 
-    // Redireciona a request par a página jsp
+    // Redireciona para a página de erro, ou encaminha a requisição e a resposta
     if (erro) {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
@@ -100,13 +101,14 @@ public class UsuarioServlet extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-    // Dados da request
+    // Dados da requisição
     String action = req.getParameter("action").trim();
 
     // Dados da resposta
     boolean erro = true;
 
     try {
+      // Faz a ação correspondente à escolha
       switch (action) {
         case "create" -> registrarUsuario(req);
         case "update" -> atualizarUsuario(req);
@@ -116,13 +118,16 @@ public class UsuarioServlet extends HttpServlet {
 
       erro = false;
 
-    } catch (ExcecaoDeJSP e) {
+    }
+    // Se houver alguma exceção de JSP, aciona o método doGet
+    catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
       doGet(req, resp);
       return;
 
-    } catch (SQLException e) {
-      // Se houver alguma exceção grave, registra no terminal
+    }
+    // Se houver alguma exceção, registra no terminal
+    catch (SQLException e) {
       System.err.println("Erro ao executar operação no banco:");
       e.printStackTrace(System.err);
 
@@ -135,7 +140,7 @@ public class UsuarioServlet extends HttpServlet {
       e.printStackTrace(System.err);
     }
 
-    // Redireciona para a página de destino
+    // Redireciona para a página de erro, ou aciona o método doGet
     if (erro) {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
@@ -146,6 +151,7 @@ public class UsuarioServlet extends HttpServlet {
   }
 
   // Outros Métodos
+
   // === CREATE ===
   private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
@@ -162,14 +168,16 @@ public class UsuarioServlet extends HttpServlet {
 
     int idFabrica = Integer.parseInt(temp);
 
+    // Instância do DTO
     CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(nome, email, hashSenha, idFabrica);
 
+    // Se a senha não tiver no mínimo 8 caracteres, lança uma exceção de JSP
     if (!senhaOriginal.matches(".{8,}")) {
       throw ExcecaoDeJSP.senhaCurta(8);
     }
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Verifica se o cadastro viola a constraint UNIQUE de
+      // Verifica se o cadastro não viola a constraint UNIQUE de 'email' em 'usuario'
       if (dao.pesquisarPorEmail(email) != null) {
         throw ExcecaoDeJSP.emailDuplicado();
       }
@@ -188,7 +196,7 @@ public class UsuarioServlet extends HttpServlet {
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Recupera os usuários do banco e armazena na lista
+      // Recupera os usuários cadastrados no banco de dados
       return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
     }
   }
@@ -205,14 +213,14 @@ public class UsuarioServlet extends HttpServlet {
     int id = Integer.parseInt(temp);
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Recupera as informações atuais do usuário e prepara o display
+      // Recupera e retorna os dados originais do banco de dados
       return dao.getCamposAlteraveis(id);
     }
   }
 
   // === UPDATE ===
   private void atualizarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da request
+    // Dados da requisição
     String email = req.getParameter("email").trim();
     String nome = req.getParameter("nome").trim();
 
@@ -229,13 +237,14 @@ public class UsuarioServlet extends HttpServlet {
     int nivelAcessoInt = Integer.parseInt(temp);
     TipoAcesso tipoAcesso = TipoAcesso.deNivel(nivelAcessoInt);
 
+    // Instância do DTO
     AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, email, tipoAcesso, status, fkFabrica);
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Busca no banco o usuário original
+      // Busca no banco de dados o usuário original
       AtualizacaoUsuarioDTO original = dao.getCamposAlteraveis(id);
 
-      // Verifica se a atualização não viola a constraint UNIQUE de email
+      // Verifica se as alterações não violam a chave UNIQUE de 'email' em 'usuario'
       UsuarioDTO teste = dao.pesquisarPorEmail(email);
       if (teste != null && teste.getId() != id) {
         throw ExcecaoDeJSP.emailDuplicado();
@@ -248,7 +257,7 @@ public class UsuarioServlet extends HttpServlet {
 
   // === DELETE ===
   private void removerUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da request
+    // Dados da requisição
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 

@@ -30,6 +30,7 @@ public class PagamentoDAO extends DAO {
   }
 
   // Outros Métodos
+
   // === CREATE ===
   public void cadastrar(Pagamento pagamento) throws SQLException {
     //Comando SQL
@@ -38,10 +39,12 @@ public class PagamentoDAO extends DAO {
         VALUES (?, ?, ?, ?, ?, ?)
         """;
 
-    try (PreparedStatement pstmt = conn.prepareStatement(sql)) { //Preparando comando SQL
-      //Comando SQL de Query do valor do plano referente a fkFabrica
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Transformando Date em LocalDate
       LocalDate dtPagamento = pagamento.getDataPagamento();
       LocalDate dtVencimento = pagamento.getDataVencimento();
+
+      // Definindo variáveis do comando SQL
       pstmt.setDouble(1, pagamento.getValor());
       pstmt.setBoolean(2, pagamento.getStatus());
       pstmt.setDate(3, (dtVencimento == null ? null : Date.valueOf(dtVencimento)));
@@ -49,13 +52,14 @@ public class PagamentoDAO extends DAO {
       pstmt.setString(5, pagamento.getTipoPagamento());
       pstmt.setInt(6, pagamento.getIdFabrica());
 
-      //Salvando alterações no banco
+      // Cadastra o pagamento no banco de dados
       pstmt.executeUpdate();
 
-      //Confirmando transações
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
+      // Cancelando transaçao
       conn.rollback();
       throw e;
     }
@@ -63,9 +67,10 @@ public class PagamentoDAO extends DAO {
 
   // === READ ===
   public List<Pagamento> listar(String campoFiltro, String valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+    // Lista de pagamentos
     List<Pagamento> pagamentos = new ArrayList<>();
 
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM pagamento";
 
     //Verificando o campo do filtro
@@ -73,7 +78,7 @@ public class PagamentoDAO extends DAO {
       sql += " WHERE %s::varchar = ?".formatted(campoFiltro);
     }
 
-    //Verificando campo e direcao para ordernar a consulta
+    // Verificando campo e direcao da ordenação
     if (campoSequencia != null && camposFiltraveis.containsKey(campoSequencia)) {
       sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
 
@@ -82,14 +87,15 @@ public class PagamentoDAO extends DAO {
     }
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      //Definindo parâmetro vazio
+      // Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
         pstmt.setString(1, valorFiltro);
       }
 
-      //Instanciando um ResultSet
+      // Resgata do banco de dados a lista de pagamentos
       try (ResultSet rs = pstmt.executeQuery()) {
         while (rs.next()) {
+          // Variáveis
           int id = rs.getInt("id");
           double valorPago = rs.getDouble("valor");
           boolean status = rs.getBoolean("status");
@@ -103,27 +109,35 @@ public class PagamentoDAO extends DAO {
           String tipoPagamento = rs.getString("tipo_pagamento");
           int idFabrica = rs.getInt("id_fabrica");
 
+          // Adicionando instância do DTO na lista de pagamentos
           pagamentos.add(new Pagamento(id, valorPago, status, dtVencimento, dtPagto, tipoPagamento, idFabrica));
         }
       }
     }
 
+    // Retorna a lista de pagamentos
     return pagamentos;
   }
 
   public Pagamento pesquisarPorId(int id) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "SELECT * FROM pagamento WHERE id = ?";
+
+    // Objeto não instanciado de pagamento
     Pagamento pagamento;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      // Definindo variável do comando SQL
       pstmt.setInt(1, id);
 
+      // Pesquisa pagamento pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
+        // Se não encontrar retorna null
         if (!rs.next()) {
           return null;
         }
 
+        // Variáveis
         double valorPago = rs.getDouble("valor");
         boolean status = rs.getBoolean("status");
 
@@ -136,26 +150,31 @@ public class PagamentoDAO extends DAO {
         String tipoPagamento = rs.getString("tipo_pagamento");
         int idFabrica = rs.getInt("id_fabrica");
 
+        // Instância do Model
         pagamento = new Pagamento(id, valorPago, status, dtVencimento, dtPagto, tipoPagamento, idFabrica);
       }
     }
 
+    // Retorna pagamento
     return pagamento;
   }
 
   public Pagamento getCamposAlteraveis(int id) throws SQLException {
+    // Instância do Model
     Pagamento p = pesquisarPorId(id);
 
+    // Se for vazio lança exceção
     if (p == null) {
       throw new SQLException("Falha ao recuperar pagamento");
     }
 
+    // Retorna pagamento
     return p;
   }
 
   // === UPDATE ===
   public void atualizar(Pagamento original, Pagamento alterado) throws SQLException {
-    // Desempacotamento do model alterado
+    // Variáveis
     int id = alterado.getId();
     double valorPago = alterado.getValor();
     boolean status = alterado.getStatus();
@@ -164,7 +183,7 @@ public class PagamentoDAO extends DAO {
     String tipoPagamento = alterado.getTipoPagamento();
     int idFabrica = alterado.getIdFabrica();
 
-    // Monta o comando de acordo com os campos alterados
+    // Construção do comando SQL dinâmico
     StringBuilder sql = new StringBuilder("UPDATE pagamento SET ");
     List<Object> valores = new ArrayList<>();
 
@@ -198,31 +217,32 @@ public class PagamentoDAO extends DAO {
       valores.add(idFabrica);
     }
 
-    // Sái do método se nada foi alterado
+    // Retorna vazio se nada foi alterado
     if (valores.isEmpty()) {
       return;
     }
 
-    // Remove o último espaço e a última vírgula
+    // Remoção da última ", "
     sql.setLength(sql.length() - 2);
 
-    // Adiciona o WHERE
+    // Adiciona a cláusula WHERE
     sql.append(" WHERE id = ?");
     valores.add(id);
 
-    // Prepara, preenche e executa o comando
     try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+      // Definindo variáveis do comando SQL
       for (int i = 0; i < valores.size(); i++) {
         pstmt.setObject(i + 1, valores.get(i));
       }
 
+      // Atualiza o pagamento no banco de dados
       pstmt.executeUpdate();
 
-      // Commita as alterações
+      // Efetuando trasação
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das alterações e propaga a exceção
+      // Cancelando transação
       conn.rollback();
       throw e;
     }
@@ -230,19 +250,21 @@ public class PagamentoDAO extends DAO {
 
   // === DELETE ===
   public void remover(int id) throws SQLException {
-    // Prepara o comando
+    // Comando SQL
     String sql = "DELETE FROM pagamento WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Completa os parâmetros faltantes
+      // Definindo variáveis do comando SQL
       pstmt.setInt(1, id);
 
-      // Executa o comando e commita as mudanças
+      // Deleta o pagamento do banco de dados
       pstmt.executeUpdate();
+
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
-      // Faz o rollback das modificações e propaga a exceção
+      // Cancelando transação
       conn.rollback();
       throw e;
     }
