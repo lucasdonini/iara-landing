@@ -60,6 +60,10 @@
   
   <input type="submit" value="Filtrar">
 </form>
+<form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="get">
+  <input type="hidden" name="action" value="read">
+  <button type="submit">Limpar Filtros</button>
+</form>
 
 <table border="1">
   <tr>
