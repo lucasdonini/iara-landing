@@ -38,7 +38,7 @@
     <% } %>
   </select>
   
-  <select name="fk_fabrica">
+  <select name="id_fabrica">
     <% for (int id : fabricas.keySet()) { %>
     <option value="<%= id %>" <%= id == usuario.getIdFabrica() ? "selected" : "" %>>
       <%= fabricas.get(id) %>

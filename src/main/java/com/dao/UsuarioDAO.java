@@ -32,24 +32,8 @@ public class UsuarioDAO extends DAO {
     super();
   }
 
-  // Métodos Estáticos
-  public static Object converterValor(String campo, String valor) {
-    // Se o campo está vazio, retorna null
-    if (campo == null || campo.isBlank()) {
-      return null;
-    }
-
-    // Converte e retorna o valor de acordo com o nome do campo
-    return switch (campo) {
-      case "id", "id_fabrica", "tipo_acesso" -> Integer.parseInt(valor);
-      case "status" -> Boolean.parseBoolean(valor);
-      case "data_criacao" -> LocalDate.parse(valor);
-      case "nome", "email" -> valor;
-      default -> throw new IllegalArgumentException("Campo inválido: " + campo);
-    };
-  }
-
   // Outros Métodos
+
   // === CREATE ===
   public void cadastrar(CadastroUsuarioDTO credenciais) throws SQLException {
     // Variáveis
@@ -67,7 +51,7 @@ public class UsuarioDAO extends DAO {
         """;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Definindo variáveis do comando SQL
+      //  Definindo variáveis do comando SQL
       pstmt.setString(1, nome);
       pstmt.setString(2, email);
       pstmt.setString(3, senha);
@@ -75,7 +59,7 @@ public class UsuarioDAO extends DAO {
       pstmt.setBoolean(5, status);
       pstmt.setInt(6, idFabrica);
 
-      // Cadastra o usuário no banco de dados
+      //  Cadastra o usuário no banco de dados
       pstmt.executeUpdate();
 
       // Efetuando a alteração
@@ -89,7 +73,7 @@ public class UsuarioDAO extends DAO {
   }
 
   // === READ ===
-  public List<UsuarioDTO> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+  public List<UsuarioDTO> listar(String campoFiltro, String valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     // Lista de usuários
     List<UsuarioDTO> usuarios = new ArrayList<>();
 
@@ -97,8 +81,8 @@ public class UsuarioDAO extends DAO {
     String sql = "SELECT id, id_fabrica, email, nome, tipo_acesso, status, data_criacao FROM usuario";
 
     // Verificando campo do filtro
-    if (campoFiltro != null && camposFiltraveis.containsValue(campoFiltro)) {
-      sql += " WHERE %s = ?".formatted(campoFiltro);
+    if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
+      sql += " WHERE %s::varchar = ?".formatted(campoFiltro);
     }
 
     // Verificando campo e direcao da ordenação
@@ -112,7 +96,7 @@ public class UsuarioDAO extends DAO {
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-        pstmt.setObject(1, valorFiltro);
+        pstmt.setString(1, valorFiltro);
       }
 
       // Resgata do banco de dados a lista de usuários
@@ -153,7 +137,7 @@ public class UsuarioDAO extends DAO {
 
       // Pesquisa usuário pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
-        // Se não achar lança exceção
+        // Se não encontrar lança exceção
         if (!rs.next()) {
           throw new SQLException("Falha ao recuperar informações do usuário");
         }
@@ -183,12 +167,12 @@ public class UsuarioDAO extends DAO {
     UsuarioDTO usuario;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Definindo variável do comando SQL
+      // Definindo váriavel do comando SQl
       pstmt.setString(1, email);
 
       // Pesquisa usuário pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
-        // Se não encontrar retorna null
+        // Se não encotrar retorna null
         if (!rs.next()) {
           return null;
         }

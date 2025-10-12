@@ -18,7 +18,7 @@
   <input type="email" name="email" placeholder="Email">
   <input type="text" pattern=".{8,}" title="A senha deve ter 8 ou mais caractéres" name="senha" placeholder="Senha">
   
-  <select name="fk_fabrica" required>
+  <select name="id_fabrica" required>
     <option value="" selected>-- Selecione --</option>
     <% for (int id : fabricas.keySet()) { %>
     <option value="<%= id %>">

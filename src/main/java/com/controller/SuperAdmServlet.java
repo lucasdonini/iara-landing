@@ -5,7 +5,6 @@ import com.dto.SuperAdmDTO;
 import com.exception.ExcecaoDeJSP;
 import com.model.SuperAdm;
 import com.utils.SenhaUtils;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,11 +17,13 @@ import java.util.List;
 
 @WebServlet("/superadms")
 public class SuperAdmServlet extends HttpServlet {
+  // Constantes
   private static final String PAGINA_PRINCIPAL = "WEB-INF/jsp/superadms.jsp";
   private static final String PAGINA_CADASTRO = "WEB-INF/jsp/cadastro-superadm.jsp";
   private static final String PAGINA_EDICAO = "WEB-INF/jsp/editar-superadm.jsp";
   private static final String PAGINA_ERRO = "html/erro.html";
 
+  // GET e POST
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     // Dados da requisição
@@ -76,9 +77,9 @@ public class SuperAdmServlet extends HttpServlet {
     // Redireciona para a página de erro, ou encaminha a requisição e a resposta
     if (erro) {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
+
     } else {
-      RequestDispatcher rd = req.getRequestDispatcher(destino);
-      rd.forward(req, resp);
+      req.getRequestDispatcher(destino).forward(req, resp);
     }
   }
 
@@ -91,7 +92,6 @@ public class SuperAdmServlet extends HttpServlet {
     boolean erro = true;
 
     try {
-      // Faz a ação correspondente à escolha
       switch (action) {
         case "create" -> registrarSuperAdm(req);
         case "update" -> atualizarSuperAdm(req);
@@ -109,7 +109,7 @@ public class SuperAdmServlet extends HttpServlet {
       return;
 
     }
-    // Se houver alguma exceção, registra no terminal
+    // Se houver alguma exceção grave, registra no terminal
     catch (SQLException e) {
       System.err.println("Erro ao executar operação no banco:");
       e.printStackTrace(System.err);
@@ -133,16 +133,48 @@ public class SuperAdmServlet extends HttpServlet {
     }
   }
 
-  private List<SuperAdmDTO> getListaSuperAdms(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+  // Outros Métodos
+
+  // === CREATE ===
+  private void registrarSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
-    String campoFiltro = req.getParameter("campo_filtro");
-    String valorFiltroStr = req.getParameter("valor_filtro");
-    String campoSequencia = req.getParameter("campo_sequencia");
-    String direcaoSequencia = req.getParameter("direcao_sequencia");
+    String senhaOriginal = req.getParameter("senha");
+    String senhaHash = SenhaUtils.hashear(senhaOriginal);
+
+    String nome = req.getParameter("nome").trim();
+    String cargo = req.getParameter("cargo").trim();
+    String email = req.getParameter("email").trim();
+
+    // Instância do Model
+    SuperAdm credenciais = new SuperAdm(null, nome, cargo, email, senhaHash);
+
+    // Verifica se a senha possui o número mínimo de caracteres
+    if (!senhaOriginal.matches(".{8,}")) {
+      throw ExcecaoDeJSP.senhaCurta(8);
+    }
 
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
-      Object valorFiltro = SuperAdmDAO.converterValor(campoFiltro, valorFiltroStr);
+      // Verifica se o super adm não viola a chave UNIQUE de 'email' em 'super_adm'
+      SuperAdmDTO teste = dao.pesquisarPorEmail(email);
 
+      if (teste != null) {
+        throw ExcecaoDeJSP.emailDuplicado();
+      }
+
+      // Cadastra o super adm
+      dao.cadastrar(credenciais);
+    }
+  }
+
+  // === READ ===
+  private List<SuperAdmDTO> getListaSuperAdms(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    //Dados da requisição
+    String campoFiltro = req.getParameter("campo_filtro");
+    String campoSequencia = req.getParameter("campo_sequencia");
+    String direcaoSequencia = req.getParameter("direcao_sequencia");
+    String valorFiltro = req.getParameter("valor_filtro");
+
+    try (SuperAdmDAO dao = new SuperAdmDAO()) {
       // Recupera os super adms cadastrados no banco de dados
       return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
     }
@@ -159,59 +191,23 @@ public class SuperAdmServlet extends HttpServlet {
     }
   }
 
-  private void registrarSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da requisição
-    String senhaOriginal = req.getParameter("senha");
-    String senhaHash = SenhaUtils.hashear(senhaOriginal);
-
-    String nome = req.getParameter("nome").trim();
-    String cargo = req.getParameter("cargo").trim();
-    String email = req.getParameter("email").trim();
-
-    SuperAdm credenciais = new SuperAdm(null, nome, cargo, email, senhaHash);
-
-    if (!senhaOriginal.matches(".{8,}")) {
-      throw ExcecaoDeJSP.senhaCurta(8);
-    }
-
-    try (SuperAdmDAO dao = new SuperAdmDAO()) {
-      // Verifica se o super adm não viola a chave UNIQUE de 'email' em 'super_adm'
-      SuperAdmDTO teste = dao.pesquisarPorEmail(email);
-      if (teste != null) {
-        throw ExcecaoDeJSP.emailDuplicado();
-      }
-
-      // Cadastra o super adm
-      dao.cadastrar(credenciais);
-    }
-  }
-
-  private void removerSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da requisição
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
-
-    try (SuperAdmDAO dao = new SuperAdmDAO()) {
-      // Deleta o super adm
-      dao.remover(id);
-    }
-  }
-
+  // === UPDATE ===
   private void atualizarSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
-
     String nome = req.getParameter("nome").trim();
     String cargo = req.getParameter("cargo").trim();
     String email = req.getParameter("email").trim();
     String senhaAtual = req.getParameter("senha_atual").trim();
     String novaSenha = req.getParameter("nova_senha").trim();
 
+    String temp = req.getParameter("id").trim();
+    int id = Integer.parseInt(temp);
+
+    // Instância do Model
     SuperAdm alterado = new SuperAdm(id, nome, cargo, email, novaSenha);
 
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
-      // Recupera os dados originais do banco de dados
+      // Recupera as informações originais do banco
       SuperAdm original = dao.getCamposAlteraveis(id);
 
       // Verifica se as alterações não violam a chave UNIQUE de 'email' em 'super_adm'
@@ -238,6 +234,18 @@ public class SuperAdmServlet extends HttpServlet {
 
       // Atualiza o super adm
       dao.atualizar(original, alterado);
+    }
+  }
+
+  // === DELETE ===
+  private void removerSuperAdm(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    // Dados da requisição
+    String temp = req.getParameter("id").trim();
+    int id = Integer.parseInt(temp);
+
+    try (SuperAdmDAO dao = new SuperAdmDAO()) {
+      // Deleta o super adm
+      dao.remover(id);
     }
   }
 }

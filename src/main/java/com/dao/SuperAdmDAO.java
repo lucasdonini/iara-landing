@@ -25,22 +25,8 @@ public class SuperAdmDAO extends DAO {
     super();
   }
 
-  // Métodos Estáticos
-  public static Object converterValor(String campo, String valor) {
-    // Se o campo está vazio, retorna null
-    if (campo == null || campo.isBlank()) {
-      return null;
-    }
-
-    // Converte e retorna o valor de acordo com o nome do campo
-    return switch (campo) {
-      case "id" -> Integer.parseInt(valor);
-      case "nome", "email", "cargo" -> valor;
-      default -> throw new IllegalArgumentException("Campo inválido: " + campo);
-    };
-  }
-
   // Outros Métodos
+
   // === CREATE ===
   public void cadastrar(SuperAdm credenciais) throws SQLException {
     // Variáveis
@@ -62,7 +48,7 @@ public class SuperAdmDAO extends DAO {
       // Cadastra o super adm no banco de dados
       pstmt.executeUpdate();
 
-      // Efetuando transaçãoo
+      // Efetuando transação
       conn.commit();
 
     } catch (SQLException e) {
@@ -73,7 +59,7 @@ public class SuperAdmDAO extends DAO {
   }
 
   // === READ ===
-  public List<SuperAdmDTO> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+  public List<SuperAdmDTO> listar(String campoFiltro, String valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     // Lista de super adms
     List<SuperAdmDTO> superAdms = new ArrayList<>();
 
@@ -82,7 +68,7 @@ public class SuperAdmDAO extends DAO {
 
     // Verificando campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-      sql += " WHERE %s = ?".formatted(campoFiltro);
+      sql += " WHERE %s::varchar = ?".formatted(campoFiltro);
     }
 
     // Verificando campo e direcao da ordenação
@@ -94,9 +80,9 @@ public class SuperAdmDAO extends DAO {
     }
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Definindo variável do comando SQL
+      //    Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-        pstmt.setObject(1, valorFiltro);
+        pstmt.setString(1, valorFiltro);
       }
 
       // Resgata do banco de dados a lista de super adms
@@ -129,7 +115,7 @@ public class SuperAdmDAO extends DAO {
       // Definindo variável do comando SQL
       pstmt.setInt(1, id);
 
-      // Pesquisa super adm pelo ID
+       // Pesquisa super adm pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
         // Se não encontrar retorna null
         if (!rs.next()) {
@@ -154,7 +140,7 @@ public class SuperAdmDAO extends DAO {
     // Comando SQL
     String sql = "SELECT id, nome, cargo FROM super_adm WHERE email = ?";
 
-    // Objeto não instanciado de super adm
+    //  Objeto não instanciado de super adm
     SuperAdmDTO superAdm;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -192,6 +178,7 @@ public class SuperAdmDAO extends DAO {
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
       pstmt.setInt(1, id);
+
 
       // Pesquisa super adm pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -269,11 +256,11 @@ public class SuperAdmDAO extends DAO {
       // Atualiza o super adm no banco de dados
       pstmt.executeUpdate();
 
-      // Efetuando a alteração
+      // Efetuando alteração
       conn.commit();
 
     } catch (SQLException e) {
-      // Cancelando a alteração
+      // Cancelando alteração
       conn.rollback();
       throw e;
     }

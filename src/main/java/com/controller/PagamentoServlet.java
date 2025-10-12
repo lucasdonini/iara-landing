@@ -4,7 +4,6 @@ import com.dao.FabricaDAO;
 import com.dao.PagamentoDAO;
 import com.exception.ExcecaoDeJSP;
 import com.model.Pagamento;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,11 +18,13 @@ import java.util.Map;
 
 @WebServlet("/pagamentos")
 public class PagamentoServlet extends HttpServlet {
+  // Constantes
   private static final String PAGINA_PRINCIPAL = "WEB-INF/jsp/pagamentos.jsp";
   private static final String PAGINA_CADASTRO = "WEB-INF/jsp/cadastro-pagamento.jsp";
   private static final String PAGINA_EDICAO = "WEB-INF/jsp/editar-pagamento.jsp";
   private static final String PAGINA_ERRO = "html/erro.html";
 
+  // GET e POST
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     // Dados da requisição
@@ -67,6 +68,7 @@ public class PagamentoServlet extends HttpServlet {
 
           destino = PAGINA_CADASTRO;
         }
+
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
@@ -92,8 +94,7 @@ public class PagamentoServlet extends HttpServlet {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
     } else {
-      RequestDispatcher rd = req.getRequestDispatcher(destino);
-      rd.forward(req, resp);
+      req.getRequestDispatcher(destino).forward(req, resp);
     }
   }
 
@@ -148,16 +149,57 @@ public class PagamentoServlet extends HttpServlet {
     }
   }
 
-  private List<Pagamento> listarPagamentos(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    try (PagamentoDAO dao = new PagamentoDAO()) {
-      //Dados da requisição
-      String campoFiltro = req.getParameter("campoFiltro");
-      String temp = req.getParameter("valorFiltro");
-      Object valorFiltro = PagamentoDAO.converterValor(campoFiltro, temp);
-      String campoSequencia = req.getParameter("campoSequencia");
-      String direcaoSequencia = req.getParameter("direcaoSequencia");
+  // Outros Métodos
 
-      // Recupera os pagamentos cadastrados no banco de dados
+  // === CREATE ===
+  private void registrarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
+    // Dados da requisição
+    String temp = req.getParameter("status").trim();
+    boolean status = Boolean.parseBoolean(temp);
+
+    temp = req.getParameter("data_vencimento").trim();
+    LocalDate dataVencimento = LocalDate.parse(temp);
+
+    LocalDate dataPagamento = null;
+    double valor = 0;
+
+    if (status) {
+      temp = req.getParameter("data_pagamento").trim();
+
+      if (temp.isBlank()) {
+        throw ExcecaoDeJSP.campoNecessarioFaltante("Data do Pagamento");
+      }
+
+      dataPagamento = LocalDate.parse(temp);
+
+      temp = req.getParameter("valor").trim();
+      valor = Double.parseDouble(temp);
+    }
+
+    String tipoPagamento = req.getParameter("tipo_pagamento").trim();
+
+    temp = req.getParameter("id_fabrica").trim();
+    int fkFabrica = Integer.parseInt(temp);
+
+    // Instância do Model
+    Pagamento pagamento = new Pagamento(null, valor, status, dataVencimento, dataPagamento, tipoPagamento, fkFabrica);
+
+    try (PagamentoDAO dao = new PagamentoDAO()) {
+      // Cadastra o pagamento
+      dao.cadastrar(pagamento);
+    }
+  }
+
+  // === READ ===
+  private List<Pagamento> listarPagamentos(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    //Dados da requisição
+    String campoFiltro = req.getParameter("campo_filtro");
+    String campoSequencia = req.getParameter("campo_sequencia");
+    String direcaoSequencia = req.getParameter("direcao_sequencia");
+    String valorFiltro = req.getParameter("valor_filtro");
+
+    try (PagamentoDAO dao = new PagamentoDAO()) {
+      // Recupera e retorna os pagamentos cadastrados no banco de dados
       return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
     }
   }
@@ -173,73 +215,33 @@ public class PagamentoServlet extends HttpServlet {
     }
   }
 
-  private void registrarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da requisição
-    String temp = req.getParameter("status").trim();
-    boolean status = Boolean.parseBoolean(temp);
-
-    temp = req.getParameter("dataVencimento").trim();
-    LocalDate dataVencimento = LocalDate.parse(temp);
-
-    LocalDate dataPagamento = null;
-    double valor = 0;
-    if (status) {
-      temp = req.getParameter("dataPagamento").trim();
-      if (temp.isBlank()) {
-        throw ExcecaoDeJSP.campoNecessarioFaltante("Data do Pagamento");
-      }
-
-      dataPagamento = LocalDate.parse(temp);
-
-      temp = req.getParameter("valor").trim();
-      valor = Double.parseDouble(temp);
-    }
-
-    String tipoPagamento = req.getParameter("tipoPagamento").trim();
-
-    temp = req.getParameter("fkFabrica").trim();
-    int fkFabrica = Integer.parseInt(temp);
-
-    //Instância do Model
-    Pagamento pagamento = new Pagamento(null, valor, status, dataVencimento, dataPagamento, tipoPagamento, fkFabrica);
-
-    try (PagamentoDAO dao = new PagamentoDAO()) {
-      // Cadastra o pagamento
-      dao.cadastrar(pagamento);
+  private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
+    try (FabricaDAO dao = new FabricaDAO()) {
+      return dao.getMapIdNome();
     }
   }
 
-  private void removerPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da requisição
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
-
-    try (PagamentoDAO dao = new PagamentoDAO()) {
-      // Deleta o pagamento
-      dao.remover(id);
-    }
-  }
-
+  // === UPDATE ===
   private void atualizarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da requisição
+    // Dados da request
+    String tipoPagamento = req.getParameter("tipo_pagamento").trim();
+
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
-    temp = req.getParameter("valorPago").trim();
+    temp = req.getParameter("valor_pago").trim();
     double valorPago = Double.parseDouble(temp);
 
     temp = req.getParameter("status").trim();
     boolean status = Boolean.parseBoolean(temp);
 
-    temp = req.getParameter("dataVencimento").trim();
+    temp = req.getParameter("data_vencimento").trim();
     LocalDate dataVencimento = LocalDate.parse(temp);
 
-    temp = req.getParameter("dataPagamento").trim();
+    temp = req.getParameter("data_pagamento").trim();
     LocalDate dataPagamento = LocalDate.parse(temp);
 
-    String tipoPagamento = req.getParameter("tipoPagamento").trim();
-
-    temp = req.getParameter("fkFabrica").trim();
+    temp = req.getParameter("id_fabrica").trim();
     int fkFabrica = Integer.parseInt(temp);
 
     // Instância do Model
@@ -254,9 +256,15 @@ public class PagamentoServlet extends HttpServlet {
     }
   }
 
-  private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
-    try (FabricaDAO dao = new FabricaDAO()) {
-      return dao.getMapIdNome();
+  // === DELETE ===
+  private void removerPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    // Dados da requisição
+    String temp = req.getParameter("id").trim();
+    int id = Integer.parseInt(temp);
+
+    try (PagamentoDAO dao = new PagamentoDAO()) {
+      // Deleta o pagamento
+      dao.remover(id);
     }
   }
 }

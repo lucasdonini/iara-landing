@@ -1,6 +1,11 @@
+<%@ page import="com.dto.SuperAdmDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
+<%
+  SuperAdmDTO usuario = (SuperAdmDTO) session.getAttribute("usuario");
+%>
 
 <head>
   <title>Landing Teste</title>
@@ -16,8 +21,8 @@
 <body>
 <h1>Área Restrita</h1>
 <div>
-  <p>Usuário Logado: ${nomeUsuario}</p>
-  <p>Email: ${emailUsuario}</p>
+  <p>Usuário Logado: <%= usuario.getNome() %></p>
+  <p>Email: <%= usuario.getEmail() %></p>
 </div>
 <nav>
   <ul>

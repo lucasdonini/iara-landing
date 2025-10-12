@@ -8,7 +8,6 @@ import com.dto.UsuarioDTO;
 import com.exception.ExcecaoDeJSP;
 import com.model.TipoAcesso;
 import com.utils.SenhaUtils;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,15 +19,15 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-// FIXME: todos os parâmetros de filtragem estão sendo passados como `null` para o DAO
-
 @WebServlet("/usuarios")
 public class UsuarioServlet extends HttpServlet {
+  // Constantes
   private static final String PAGINA_PRINCIPAL = "WEB-INF/jsp/usuarios.jsp";
   private static final String PAGINA_CADASTRO = "WEB-INF/jsp/cadastro-usuario.jsp";
   private static final String PAGINA_EDICAO = "WEB-INF/jsp/editar-usuario.jsp";
   private static final String PAGINA_ERRO = "html/erro.html";
 
+  // GET e POST
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     // Dados da requisição
@@ -96,8 +95,7 @@ public class UsuarioServlet extends HttpServlet {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
     } else {
-      RequestDispatcher rd = req.getRequestDispatcher(destino);
-      rd.forward(req, resp);
+      req.getRequestDispatcher(destino).forward(req, resp);
     }
   }
 
@@ -128,7 +126,7 @@ public class UsuarioServlet extends HttpServlet {
       return;
 
     }
-    // Se houver alguma exceção grave, registra no terminal
+    // Se houver alguma exceção, registra no terminal
     catch (SQLException e) {
       System.err.println("Erro ao executar operação no banco:");
       e.printStackTrace(System.err);
@@ -152,49 +150,28 @@ public class UsuarioServlet extends HttpServlet {
     }
   }
 
-  private List<UsuarioDTO> getListaUsuarios(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da requisição
-    String campoFiltro = req.getParameter("campo_filtro");
-    String valorFiltroStr = req.getParameter("valor_filtro");
-    String campoSequencia = req.getParameter("campo_sequencia");
-    String direcaoSequencia = req.getParameter("direcao_sequencia");
+  // Outros Métodos
 
-    try (UsuarioDAO dao = new UsuarioDAO()) {
-      Object valorFiltro = UsuarioDAO.converterValor(campoFiltro, valorFiltroStr);
-      // Recupera os usuários cadastrados no banco de dados
-      return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
-
-    } catch (IllegalArgumentException e) {
-      throw ExcecaoDeJSP.valorInvalido(UsuarioDAO.camposFiltraveis.get(campoFiltro));
-    }
-  }
-
-  private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
-    try (FabricaDAO dao = new FabricaDAO()) {
-      return dao.getMapIdNome();
-    }
-  }
-
+  // === CREATE ===
   private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
-    String temp = req.getParameter("fk_fabrica").trim();
+    String email = req.getParameter("email").trim();
+    String nome = req.getParameter("nome").trim();
+    String senhaOriginal = req.getParameter("senha");
+    String hashSenha = SenhaUtils.hashear(senhaOriginal);
+
+    String temp = req.getParameter("id_fabrica").trim();
 
     if (temp.isBlank()) {
       throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
     }
 
-    int fkFabrica = Integer.parseInt(temp);
-
-    String senhaOriginal = req.getParameter("senha");
-    String hashSenha = SenhaUtils.hashear(temp);
-
-    String email = req.getParameter("email").trim();
-    String nome = req.getParameter("nome").trim();
+    int idFabrica = Integer.parseInt(temp);
 
     // Instância do DTO
-    CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(nome, email, hashSenha, fkFabrica);
+    CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(nome, email, hashSenha, idFabrica);
 
-    // Se a senha não estiver corretamente formatada, lança uma exceção de JSP
+    // Se a senha não tiver no mínimo 8 caracteres, lança uma exceção de JSP
     if (!senhaOriginal.matches(".{8,}")) {
       throw ExcecaoDeJSP.senhaCurta(8);
     }
@@ -210,8 +187,28 @@ public class UsuarioServlet extends HttpServlet {
     }
   }
 
+  // === READ ===
+  private List<UsuarioDTO> getListaUsuarios(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    //Dados da requisição
+    String campoFiltro = req.getParameter("campo_filtro");
+    String campoSequencia = req.getParameter("campo_sequencia");
+    String direcaoSequencia = req.getParameter("direcao_sequencia");
+    String valorFiltro = req.getParameter("valor_filtro");
+
+    try (UsuarioDAO dao = new UsuarioDAO()) {
+      // Recupera os usuários cadastrados no banco de dados
+      return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+    }
+  }
+
+  private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
+    try (FabricaDAO dao = new FabricaDAO()) {
+      return dao.getMapIdNome();
+    }
+  }
+
   private AtualizacaoUsuarioDTO getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da requisição
+    // Dados da request
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
@@ -221,25 +218,26 @@ public class UsuarioServlet extends HttpServlet {
     }
   }
 
+  // === UPDATE ===
   private void atualizarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
+    String email = req.getParameter("email").trim();
+    String nome = req.getParameter("nome").trim();
+
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
     temp = req.getParameter("status").trim();
     boolean status = Boolean.parseBoolean(temp);
 
-    temp = req.getParameter("fk_fabrica").trim();
+    temp = req.getParameter("id_fabrica").trim();
     int fkFabrica = Integer.parseInt(temp);
 
     temp = req.getParameter("nivel_acesso").trim();
     int nivelAcessoInt = Integer.parseInt(temp);
     TipoAcesso tipoAcesso = TipoAcesso.deNivel(nivelAcessoInt);
 
-    String email = req.getParameter("email").trim();
-    String nome = req.getParameter("nome").trim();
-
-    //Instância do DTO
+    // Instância do DTO
     AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, email, tipoAcesso, status, fkFabrica);
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
@@ -257,13 +255,14 @@ public class UsuarioServlet extends HttpServlet {
     }
   }
 
+  // === DELETE ===
   private void removerUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da requisição
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Deleta o usuário
+      // Remove o usuário
       dao.remover(id);
     }
   }

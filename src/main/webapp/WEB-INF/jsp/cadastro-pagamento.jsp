@@ -21,17 +21,17 @@
   <label>Valor Pago:</label>
   <input type="number" step="any" placeholder="R$" name="valor">
   <label>Data de Vencimento:</label>
-  <input type="date" name="dataVencimento">
+  <input type="date" name="data_vencimento">
   <label>Data de Pagamento:</label>
-  <input type="date" name="dataPagamento">
+  <input type="date" name="data_pagamento">
   <label>Tipo de Pagamento:</label>
-  <select name="tipoPagamento">
+  <select name="tipo_pagamento">
     <option value="debito">Débito</option>
     <option value="credito">Crédito</option>
     <option value="pix">PIX</option>
   </select>
   <label>Fábrica referente:</label>
-  <select name="fkFabrica">
+  <select name="id_fabrica">
     <option value="" selected> --- Selecione --- </option>
     
     <% for (int id : fabricas.keySet()) { %>

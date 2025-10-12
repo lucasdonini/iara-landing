@@ -24,7 +24,7 @@
   <input type="hidden" name="action" value="update">
   
   <label>Valor pago: R$</label>
-  <input type="number" placeholder="Novo valor" name="valorPago" value="<%= pagamento.getValor() %>">
+  <input type="number" placeholder="Novo valor" name="valor_pago" value="<%= pagamento.getValor() %>">
   
   <label>Status:</label>
   <select name="status">
@@ -33,12 +33,12 @@
   </select>
   
   <label>Data de vencimento:</label>
-  <input type="date" name="dataVencimento" value="<%= pagamento.getDataVencimento() %>">
+  <input type="date" name="data_vencimento" value="<%= pagamento.getDataVencimento() %>">
   
   <label>Data de pagamento:</label>
-  <input type="date" name="dataPagamento" value="<%= pagamento.getDataPagamento() %>">
+  <input type="date" name="data_pagamento" value="<%= pagamento.getDataPagamento() %>">
   
-  <select name="tipoPagamento">
+  <select name="tipo_pagamento">
     <% for (String key : tiposPagamento.keySet()) { %>
     <option value="<%= key %>" <%= pagamento.getTipoPagamento().equals(key) ? "selected" : "" %>>
       <%= tiposPagamento.get(key) %>
@@ -46,7 +46,7 @@
     <% } %>
   </select>
   
-  <select name="fkFabrica">
+  <select name="id_fabrica">
     <% for (int id : fabricas.keySet()) { %>
     <option value="<%= id %>" <%= id == pagamento.getIdFabrica() ? "selected" : "" %>>
       <%= fabricas.get(id) %>

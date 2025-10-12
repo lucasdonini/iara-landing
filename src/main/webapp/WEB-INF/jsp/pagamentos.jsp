@@ -26,7 +26,7 @@
   <input type="hidden" name="action" value="read">
   
   <label>Campo de Filtragem:</label>
-  <select name="campoFiltro">
+  <select name="campo_filtro">
     <option value="" selected>Nenhum selecionado</option>
     
     <% for (String chave : camposFiltraveis.keySet()) { %>
@@ -37,10 +37,10 @@
   </select>
   
   <label>Valor Filtrado:</label>
-  <input type="text" name="valorFiltro">
+  <input type="text" name="valor_filtro">
   
   <label>Ordenar por:</label>
-  <select name="campoSequencia">
+  <select name="campo_sequencia">
     <option value="" selected>Nenhum selecionado</option>
     <% for (String chave : camposFiltraveis.keySet()) { %>
     <option value="<%= chave %>">
@@ -51,8 +51,8 @@
   
   <label>
     Direção de ordenação
-    <input type="radio" name="direcaoSequencia" value="<%= DirecaoOrdenacao.CRESCENTE.getSql() %>" checked> Crescente
-    <input type="radio" name="direcaoSequencia" value="<%= DirecaoOrdenacao.DECRESCENTE.getSql() %>"> Decrescente
+    <input type="radio" name="direcao_sequencia" value="<%= DirecaoOrdenacao.CRESCENTE.getSql() %>" checked> Crescente
+    <input type="radio" name="direcao_sequencia" value="<%= DirecaoOrdenacao.DECRESCENTE.getSql() %>"> Decrescente
   </label>
   
   <input type="submit" value="Filtrar">

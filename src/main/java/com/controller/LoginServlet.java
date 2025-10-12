@@ -25,9 +25,7 @@ public class LoginServlet extends HttpServlet {
   // GET e POST
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    // Encaminha a requisição e a resposta
-    RequestDispatcher rd = req.getRequestDispatcher(PAGINA_LOGIN);
-    rd.forward(req, resp);
+    req.getRequestDispatcher(PAGINA_LOGIN).forward(req, resp);
   }
 
   @Override
@@ -37,21 +35,14 @@ public class LoginServlet extends HttpServlet {
     HttpSession session = req.getSession();
 
     // Dados da resposta
-    boolean redirect = true;
-    String destino = PAGINA_ERRO;
+    boolean erro = true;
 
     try {
       // Faz a ação correspondente à escolha
       switch (action) {
         case "login" -> {
           SuperAdmDTO usuario = login(req);
-
           session.setAttribute("usuario", usuario);
-          req.setAttribute("nomeUsuario", usuario.getNome());
-          req.setAttribute("emailUsuario", usuario.getEmail());
-
-          destino = AREA_RESTRITA;
-          redirect = false;
         }
 
         case "logout" -> {
@@ -62,6 +53,8 @@ public class LoginServlet extends HttpServlet {
 
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
+
+      erro = false;
 
     }
     // Se houver alguma exceção de JSP, aciona o método doGet
@@ -85,17 +78,18 @@ public class LoginServlet extends HttpServlet {
       e.printStackTrace(System.err);
     }
 
-    //Encaminha a requisição e a resposta, ou redireciona a resposta
-    if (redirect) {
-      resp.sendRedirect(req.getContextPath() + '/' + destino);
+    // Encaminha a requisição e a resposta, ou redireciona a resposta
+    if (erro) {
+      resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
 
     } else {
-      RequestDispatcher rd = req.getRequestDispatcher(destino);
-      rd.forward(req, resp);
+      req.getRequestDispatcher(AREA_RESTRITA).forward(req, resp);
     }
   }
 
   // Outros Métodos
+
+  // === LOGIN ===
   private SuperAdmDTO login(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
     String email = req.getParameter("email").trim();
@@ -103,7 +97,7 @@ public class LoginServlet extends HttpServlet {
     LoginDTO credenciais = new LoginDTO(email, senha);
 
     try (LoginDAO dao = new LoginDAO()) {
-      // Tenta realizar login e recuperar o usuário
+      // Tenta fazer login e recuperar o usuário
       SuperAdmDTO usuario = dao.login(credenciais);
 
       // Validação de login
@@ -116,6 +110,7 @@ public class LoginServlet extends HttpServlet {
     }
   }
 
+  // === LOGOUT ===
   private void logout(HttpServletRequest req) {
     // Dados da requisição
     HttpSession session = req.getSession(false);

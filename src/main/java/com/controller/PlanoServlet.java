@@ -3,7 +3,6 @@ package com.controller;
 import com.dao.PlanoDAO;
 import com.exception.ExcecaoDeJSP;
 import com.model.Plano;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,11 +15,13 @@ import java.util.List;
 
 @WebServlet("/planos")
 public class PlanoServlet extends HttpServlet {
+  // Constantes
   private static final String PAGINA_PRINCIPAL = "WEB-INF/jsp/planos.jsp";
   private static final String PAGINA_CADASTRO = "WEB-INF/jsp/cadastro-plano.jsp";
   private static final String PAGINA_EDICAO = "WEB-INF/jsp/editar-plano.jsp";
   private static final String PAGINA_ERRO = "html/erro.html";
 
+  // GET e POST
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     // Dados da requisição
@@ -74,9 +75,9 @@ public class PlanoServlet extends HttpServlet {
     // Redireciona para a página de erro, ou encaminha a requisição e a resposta
     if (erro) {
       resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
+
     } else {
-      RequestDispatcher rd = req.getRequestDispatcher(destino);
-      rd.forward(req, resp);
+      req.getRequestDispatcher(destino).forward(req, resp);
     }
   }
 
@@ -107,7 +108,7 @@ public class PlanoServlet extends HttpServlet {
       return;
 
     }
-    // Se houver alguma exceção grave, registra no terminal
+    // Se houver alguma exceção, registra no terminal
     catch (SQLException e) {
       System.err.println("Erro ao executar operação no banco:");
       e.printStackTrace(System.err);
@@ -131,15 +132,45 @@ public class PlanoServlet extends HttpServlet {
     }
   }
 
-  private List<Plano> listaPlanos(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    try (PlanoDAO dao = new PlanoDAO()) {
-      //Dados da requisição
-      String campoFiltro = req.getParameter("campoFiltro");
-      String temp = req.getParameter("valorFiltro");
-      Object valorFiltro = dao.converterValor(campoFiltro, temp);
-      String campoSequencia = req.getParameter("campoSequencia");
-      String direcaoSequencia = req.getParameter("direcaoSequencia");
+  // Outros Métodos
 
+  // === CREATE ===
+  private void registrarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
+    // Dados da requisição
+    String nome = req.getParameter("nome").trim();
+    String descricao = req.getParameter("descricao").trim();
+
+    String temp = req.getParameter("valor").trim();
+
+    if (temp.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("valor");
+    }
+
+    double valor = Double.parseDouble(temp);
+
+    // Instância do Model
+    Plano plano = new Plano(null, nome, valor, descricao);
+
+    try (PlanoDAO dao = new PlanoDAO()) {
+      // Verifica se o cadastro não viola a chave UNIQUE de 'nome' em 'plano'
+      if (dao.pesquisarPorNome(nome) != null) {
+        throw ExcecaoDeJSP.nomeDuplicado();
+      }
+
+      // Cadastra o plano
+      dao.cadastrar(plano);
+    }
+  }
+
+  // === READ ===
+  private List<Plano> listaPlanos(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    //Dados da requisição
+    String campoFiltro = req.getParameter("campo_filtro");
+    String campoSequencia = req.getParameter("campo_sequencia");
+    String direcaoSequencia = req.getParameter("direcao_sequencia");
+    String valorFiltro = req.getParameter("valor_filtro");
+
+    try (PlanoDAO dao = new PlanoDAO()) {
       // Recupera os planos cadastrados no banco de dados
       return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
     }
@@ -156,56 +187,20 @@ public class PlanoServlet extends HttpServlet {
     }
   }
 
-  private void registrarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
+  // === UPDATE ===
+  private void atualizarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
-    String temp = req.getParameter("valor").trim();
-    if (temp.isBlank()) {
-      throw ExcecaoDeJSP.campoNecessarioFaltante("valor");
-    }
-    double valor = Double.parseDouble(temp);
-
     String nome = req.getParameter("nome").trim();
     String descricao = req.getParameter("descricao").trim();
 
-    // Instância do Model
-    Plano plano = new Plano(null, nome, valor, descricao);
-
-    try (PlanoDAO dao = new PlanoDAO()) {
-      // Verifica se o cadastro não viola a chave UNIQUE de 'nome' em 'plano'
-      if (dao.pesquisarPorNome(nome) != null) {
-        throw ExcecaoDeJSP.nomeDuplicado();
-      }
-
-      // Cadastra o plano
-      dao.cadastrar(plano);
-    }
-  }
-
-  private void removerPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da requisição
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
-
-    try (PlanoDAO dao = new PlanoDAO()) {
-      // Deleta o plano
-      dao.remover(id);
-    }
-  }
-
-  private void atualizarPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da requisição
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
-
-    String nome = req.getParameter("nome").trim();
 
     temp = req.getParameter("valor").trim();
     if (temp.isBlank()) {
       throw ExcecaoDeJSP.campoNecessarioFaltante("valor");
     }
     double valor = Double.parseDouble(temp);
-
-    String descricao = req.getParameter("descricao").trim();
 
     // Instância do Model
     Plano alterado = new Plano(id, nome, valor, descricao);
@@ -222,6 +217,18 @@ public class PlanoServlet extends HttpServlet {
 
       // Atualiza o plano
       dao.atualizar(original, alterado);
+    }
+  }
+
+  // === DELETE ===
+  private void removerPlano(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+    // Dados da requisição
+    String temp = req.getParameter("id").trim();
+    int id = Integer.parseInt(temp);
+
+    try (PlanoDAO dao = new PlanoDAO()) {
+      // Deleta o plano
+      dao.remover(id);
     }
   }
 }
