@@ -16,7 +16,7 @@
 <h1>
   Editar usuário - ID: <%= usuario.getId() %>
 </h1>
-<form action="${pageContext.request.contextPath}/usuarios" method="post">
+<form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="post">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="id" value="<%= usuario.getId() %>">
   <input type="text" name="nome" value="<%= usuario.getNome() %>" placeholder="Novo nome">
@@ -48,7 +48,7 @@
   
   <button type="submit">Salvar</button>
 </form>
-<a href="${pageContext.request.contextPath}/usuarios?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/usuarios?action=read">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

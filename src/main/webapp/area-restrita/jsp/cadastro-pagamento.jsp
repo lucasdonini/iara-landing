@@ -11,7 +11,7 @@
 </head>
 <body>
 <h1>Cadastro - Pagamento</h1>
-<form action="${pageContext.request.contextPath}/pagamentos" method="post">
+<form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="post">
   <input type="hidden" name="action" value="create">
   <label>Status:</label>
   <select name="status">
@@ -42,7 +42,7 @@
   </select>
   <input type="submit">
 </form>
-<a href="${pageContext.request.contextPath}/pagamentos?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/pagamentos?action=read">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

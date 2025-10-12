@@ -22,7 +22,7 @@
 <a href="${pageContext.request.contextPath}/area-restrita">Voltar à área restrita</a>
 <br>
 
-<form action="${pageContext.request.contextPath}/pagamentos" method="get">
+<form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="get">
   <input type="hidden" name="action" value="read">
   
   <label>Campo de Filtragem:</label>
@@ -95,12 +95,12 @@
       <%= fabricas.get(pagamento.getIdFabrica()) %>
     </td>
     <td>
-      <form action="${pageContext.request.contextPath}/pagamentos" method="get">
+      <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="get">
         <input type="hidden" name="id" value="<%= pagamento.getId() %>">
         <input type="hidden" name="action" value="update">
         <button type="submit">Editar</button>
       </form>
-      <form action="${pageContext.request.contextPath}/pagamentos" method="post">
+      <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="post">
         <input type="hidden" name="id" value="<%= pagamento.getId() %>">
         <input type="hidden" name="action" value="delete">
         <button type="submit">Deletar</button>
@@ -109,6 +109,6 @@
   </tr>
   <% } %>
 </table>
-<a href="${pageContext.request.contextPath}/pagamentos?action=create">Cadastrar novo Pagamento</a>
+<a href="${pageContext.request.contextPath}/area-restrita/pagamentos?action=create">Cadastrar novo Pagamento</a>
 </body>
 </html>

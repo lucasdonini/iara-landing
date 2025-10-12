@@ -13,7 +13,7 @@
   Editar Super Adm - ID: <%= adm.getId() %>
 </h1>
 
-<form action="${pageContext.request.contextPath}/superadms" method="post">
+<form action="${pageContext.request.contextPath}/area-restrita/superadms" method="post">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="id" value="<%= adm.getId() %>">
   <input type="text" name="nome" value="<%= adm.getNome() %>" placeholder="Novo nome">
@@ -25,6 +25,7 @@
   <button type="submit">Salvar</button>
 </form>
 
+<a href="${pageContext.request.contextPath}/area-restrita/superadms?action=read">Cancelar</a>
 <% if (erro != null) { %>
 <p>
   <%= erro %>

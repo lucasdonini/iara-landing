@@ -18,9 +18,9 @@ import java.sql.SQLException;
 @WebServlet("/login-handler")
 public class LoginServlet extends HttpServlet {
   // Constantes
-  private static final String PAGINA_ERRO = "html/erro.html";
-  private static final String AREA_RESTRITA = "WEB-INF/jsp/area-restrita.jsp";
-  private static final String PAGINA_LOGIN = "WEB-INF/jsp/login.jsp";
+  private static final String AREA_RESTRITA = "/area-restrita/index.jsp";
+  private static final String PAGINA_LOGIN = "jsp/login.jsp";
+  private static final String PAGINA_ERRO = "/html/erro.html";
 
   // GET e POST
   @Override
@@ -35,7 +35,7 @@ public class LoginServlet extends HttpServlet {
     HttpSession session = req.getSession();
 
     // Dados da resposta
-    boolean erro = true;
+    String destino = PAGINA_ERRO;
 
     try {
       switch (action) {
@@ -53,7 +53,7 @@ public class LoginServlet extends HttpServlet {
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
-      erro = false;
+      destino = AREA_RESTRITA;
 
     } catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
@@ -74,12 +74,7 @@ public class LoginServlet extends HttpServlet {
       e.printStackTrace(System.err);
     }
 
-    if (erro) {
-      resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
-
-    } else {
-      req.getRequestDispatcher(AREA_RESTRITA).forward(req, resp);
-    }
+    resp.sendRedirect(req.getContextPath() + destino);
   }
 
   // Outros Métodos

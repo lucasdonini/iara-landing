@@ -19,7 +19,7 @@
   Editar Pagamento - ID: <%= pagamento.getId() %>
 </h1>
 
-<form action="${pageContext.request.contextPath}/pagamentos" method="post">
+<form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="post">
   <input type="hidden" name="id" value="<%= pagamento.getId() %>">
   <input type="hidden" name="action" value="update">
   
@@ -55,6 +55,7 @@
   </select>
   <button type="submit">Salvar</button>
 </form>
+<a href="${pageContext.request.contextPath}/area-restrita/pagamentos?action=read">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

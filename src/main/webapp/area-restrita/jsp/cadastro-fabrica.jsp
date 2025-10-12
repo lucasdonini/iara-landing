@@ -10,7 +10,7 @@
 </head>
 <body>
 <h1>Cadastro - Fábrica</h1>
-<form action="${pageContext.request.contextPath}/fabricas?action=create" method="post">
+<form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="post">
   <h2>Dados da fábrica</h2>
   <input type="hidden" name="action" value="create">
   <input type="text" name="nome" placeholder="Nome">
@@ -36,7 +36,7 @@
   
   <button type="submit">Cadastrar</button>
 </form>
-<a href="${pageContext.request.contextPath}/fabricas?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/fabricas?action=read">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

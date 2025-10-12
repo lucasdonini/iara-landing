@@ -20,24 +20,19 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/usuarios")
+@WebServlet("/area-restrita/usuarios")
 public class UsuarioServlet extends HttpServlet {
   // Constantes
-  private static final String PAGINA_PRINCIPAL = "WEB-INF/jsp/usuarios.jsp";
-  private static final String PAGINA_CADASTRO = "WEB-INF/jsp/cadastro-usuario.jsp";
-  private static final String PAGINA_EDICAO = "WEB-INF/jsp/editar-usuario.jsp";
-  private static final String PAGINA_ERRO = "html/erro.html";
+  private static final String PAGINA_PRINCIPAL = "jsp/usuarios.jsp";
+  private static final String PAGINA_CADASTRO = "jsp/cadastro-usuario.jsp";
+  private static final String PAGINA_EDICAO = "jsp/editar-usuario.jsp";
+  private static final String PAGINA_ERRO = "/html/erro.html";
 
   // GET e POST
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     // Dados da requisição
     String action = req.getParameter("action").trim();
-    Object origem = req.getAttribute("origem");
-
-    if ("post".equals(origem)) {
-      action = "read";
-    }
 
     // Dados da resposta
     boolean erro = true;
@@ -91,7 +86,7 @@ public class UsuarioServlet extends HttpServlet {
 
     // Redireciona a request par a página jsp
     if (erro) {
-      resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
+      resp.sendRedirect(req.getContextPath() + PAGINA_ERRO);
 
     } else {
       req.getRequestDispatcher(destino).forward(req, resp);
@@ -104,7 +99,7 @@ public class UsuarioServlet extends HttpServlet {
     String action = req.getParameter("action").trim();
 
     // Dados da resposta
-    boolean erro = true;
+    String destino = PAGINA_ERRO;
 
     try {
       switch (action) {
@@ -114,7 +109,7 @@ public class UsuarioServlet extends HttpServlet {
         default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
       }
 
-      erro = false;
+      destino = req.getServletPath() + "?action=read";
 
     } catch (ExcecaoDeJSP e) {
       req.setAttribute("erro", e.getMessage());
@@ -136,13 +131,7 @@ public class UsuarioServlet extends HttpServlet {
     }
 
     // Redireciona para a página de destino
-    if (erro) {
-      resp.sendRedirect(req.getContextPath() + '/' + PAGINA_ERRO);
-
-    } else {
-      req.setAttribute("origem", "post");
-      doGet(req, resp);
-    }
+    resp.sendRedirect(req.getContextPath() + destino);
   }
 
   // Outros Métodos

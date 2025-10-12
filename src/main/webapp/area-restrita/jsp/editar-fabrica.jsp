@@ -17,7 +17,7 @@
 <body>
 <h1>Editar Fábrica - ID: <%= f.getId() %>
 </h1>
-<form action="${pageContext.request.contextPath}/fabricas?action=update" method="post">
+<form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="post">
   <h2>Dados da fábrica</h2>
   <input type="text" name="nome" value="<%= f.getNomeUnidade() %>" placeholder="Nome">
   <input type="text" name="cnpj" value="<%= f.getCnpj() %>" pattern="\d{14}" title="CNPJ inválido" placeholder="CNPJ">
@@ -52,7 +52,7 @@
   
   <button type="submit" style="display: block">Salvar</button>
 </form>
-<a href="${pageContext.request.contextPath}/fabricas?action=read">Cancelar</a>
+<a href="${pageContext.request.contextPath}/area-restrita/fabricas?action=read">Cancelar</a>
 <% if (erro != null && !erro.isBlank()) { %>
 <p>
   <%= erro %>

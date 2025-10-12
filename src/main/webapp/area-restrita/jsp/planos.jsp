@@ -1,24 +1,21 @@
-<%@ page import="com.dto.UsuarioDTO" %>
-<%@ page import="com.utils.DataUtils" %>
-<%@ page import="java.util.Map" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.model.Plano" %>
+<%@ page import="static com.dao.PlanoDAO.camposFiltraveis" %>
 <%@ page import="com.model.DirecaoOrdenacao" %>
-<%@ page import="static com.dao.UsuarioDAO.camposFiltraveis" %>
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="com.utils.NumerosUtils" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-  List<UsuarioDTO> usuarios = (List<UsuarioDTO>) request.getAttribute("usuarios");
-  Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
-  String erro = (String) request.getAttribute("erro");
+  List<Plano> planos = (List<Plano>) request.getAttribute("planos");
 %>
 <html lang="pt-BR">
 <head>
   <title>Landing Teste</title>
 </head>
 <body>
-<h1>Usuários</h1>
-<a href="${pageContext.request.contextPath}/area-restrita"> Voltar à área restrita</a>
-
-<form action="${pageContext.request.contextPath}/usuarios" method="get">
+<h1>Planos</h1>
+<a href="${pageContext.request.contextPath}/area-restrita">Voltar à área restrita</a>
+<br>
+<form action="${pageContext.request.contextPath}/area-restrita/planos" method="get">
   <input type="hidden" name="action" value="read">
   
   <label>
@@ -60,50 +57,31 @@
   
   <input type="submit" value="Filtrar">
 </form>
-
 <table border="1">
   <tr>
-    <th>ID</th>
+    <th>Id</th>
     <th>Nome</th>
-    <th>Email</th>
-    <th>Tipo de Acesso</th>
-    <th>Data de Criação</th>
-    <th>Status</th>
-    <th>Fábrica</th>
+    <th>Valor</th>
+    <th>Descrição</th>
   </tr>
-  
-  <% for (UsuarioDTO u : usuarios) { %>
+  <% for (Plano plano : planos) { %>
   <tr>
-    <td>
-      <%= u.getId() %>
+    <td><%= plano.getId() %>
+    </td>
+    <td><%= plano.getNome() %>
+    </td>
+    <td><%= NumerosUtils.reais.format(plano.getValor()) %>
+    </td>
+    <td><%= plano.getDescricao() %>
     </td>
     <td>
-      <%= u.getNome() %>
-    </td>
-    <td>
-      <%= u.getEmail() %>
-    </td>
-    <td>
-      <%= u.getTipoAcesso().descricao() %>
-    </td>
-    <td>
-      <%= u.getDataCriacao().format(DataUtils.DMY) %>
-    </td>
-    <td>
-      <%= u.getStatus() ? "Ativo" : "Inativo" %>
-    </td>
-    <td>
-      <%= fabricas.get(u.getIdFabrica()) %>
-    </td>
-    <td>
-      <form action="${pageContext.request.contextPath}/usuarios" method="get">
-        <input type="hidden" name="id" value="<%= u.getId() %>">
+      <form action="${pageContext.request.contextPath}/area-restrita/planos" method="get">
+        <input type="hidden" name="id" value="<%= plano.getId() %>">
         <input type="hidden" name="action" value="update">
         <button type="submit">Editar</button>
       </form>
-      
-      <form action="${pageContext.request.contextPath}/usuarios" method="post">
-        <input type="hidden" name="id" value="<%= u.getId() %>">
+      <form action="${pageContext.request.contextPath}/area-restrita/planos" method="post">
+        <input type="hidden" name="id" value="<%= plano.getId() %>">
         <input type="hidden" name="action" value="delete">
         <button type="submit">Deletar</button>
       </form>
@@ -111,11 +89,6 @@
   </tr>
   <% } %>
 </table>
-<a href="${pageContext.request.contextPath}/usuarios?action=create">Cadastrar novo Administrador</a>
-<% if (erro != null && !erro.isBlank()) { %>
-<p>
-  <%= erro %>
-</p>
-<% } %>
+<a href="${pageContext.request.contextPath}/area-restrita/planos?action=create">Cadastrar novo Plano</a>
 </body>
 </html>

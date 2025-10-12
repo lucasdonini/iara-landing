@@ -18,7 +18,7 @@
 <a href="${pageContext.request.contextPath}/area-restrita">Voltar à área restrita</a>
 <br>
 
-<form action="${pageContext.request.contextPath}/fabricas" method="get">
+<form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="get">
   <input type="hidden" name="action" value="read">
   
   <label>
@@ -61,7 +61,7 @@
   <input type="submit" value="Filtrar">
 </form>
 
-<form action="${pageContext.request.contextPath}/fabricas" method="get">
+<form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="get">
   <input type="hidden" name="action" value="read">
   <button type="submit">Limpar Filtros</button>
 </form>
@@ -108,12 +108,12 @@
       <%= f.getEndereco() %>
     </td>
     <td>
-      <form action="${pageContext.request.contextPath}/fabricas?action=update" method="get">
+      <form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="get">
         <input type="hidden" name="id" value="<%= f.getId() %>">
         <input type="hidden" name="action" value="update">
         <button type="submit">Editar</button>
       </form>
-      <form action="${pageContext.request.contextPath}/fabricas?action=delete" method="post">
+      <form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="post">
         <input type="hidden" name="id_fabrica" value="<%= f.getId() %>">
         <input type="hidden" name="action" value="delete">
         <button type="submit">Deletar</button>
@@ -123,6 +123,6 @@
   <% } %>
 </table>
 
-<a href="${pageContext.request.contextPath}/fabricas?action=create">Cadastrar nova Fábrica</a>
+<a href="${pageContext.request.contextPath}/area-restrita/fabricas?action=create">Cadastrar nova Fábrica</a>
 </body>
 </html>

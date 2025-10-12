@@ -1,21 +1,24 @@
-<%@ page import="com.dto.SuperAdmDTO" %>
+<%@ page import="com.dto.UsuarioDTO" %>
+<%@ page import="com.utils.DataUtils" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.model.DirecaoOrdenacao" %>
-<%@ page import="static com.dao.SuperAdmDAO.camposFiltraveis" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
+<%@ page import="static com.dao.UsuarioDAO.camposFiltraveis" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%
-  List<SuperAdmDTO> adms = (List<SuperAdmDTO>) request.getAttribute("superAdms");
+  List<UsuarioDTO> usuarios = (List<UsuarioDTO>) request.getAttribute("usuarios");
+  Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
+  String erro = (String) request.getAttribute("erro");
 %>
 <html lang="pt-BR">
 <head>
   <title>Landing Teste</title>
 </head>
 <body>
-<h1>Super Administradores</h1>
-<a href="${pageContext.request.contextPath}/area-restrita">Voltar à área restrita</a>
+<h1>Usuários</h1>
+<a href="${pageContext.request.contextPath}/area-restrita"> Voltar à área restrita</a>
 
-<form action="${pageContext.request.contextPath}/superadms" method="get">
+<form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="get">
   <input type="hidden" name="action" value="read">
   
   <label>
@@ -60,33 +63,47 @@
 
 <table border="1">
   <tr>
-    <th>Id</th>
+    <th>ID</th>
     <th>Nome</th>
-    <th>Cargo</th>
     <th>Email</th>
+    <th>Tipo de Acesso</th>
+    <th>Data de Criação</th>
+    <th>Status</th>
+    <th>Fábrica</th>
   </tr>
-  <% for (SuperAdmDTO adm : adms) { %>
+  
+  <% for (UsuarioDTO u : usuarios) { %>
   <tr>
     <td>
-      <%= adm.getId() %>
+      <%= u.getId() %>
     </td>
     <td>
-      <%= adm.getNome() %>
+      <%= u.getNome() %>
     </td>
     <td>
-      <%= adm.getCargo() %>
+      <%= u.getEmail() %>
     </td>
     <td>
-      <%= adm.getEmail() %>
+      <%= u.getTipoAcesso().descricao() %>
     </td>
     <td>
-      <form action="${pageContext.request.contextPath}/superadms" method="get">
-        <input type="hidden" name="id" value="<%= adm.getId() %>">
+      <%= u.getDataCriacao().format(DataUtils.DMY) %>
+    </td>
+    <td>
+      <%= u.getStatus() ? "Ativo" : "Inativo" %>
+    </td>
+    <td>
+      <%= fabricas.get(u.getIdFabrica()) %>
+    </td>
+    <td>
+      <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="get">
+        <input type="hidden" name="id" value="<%= u.getId() %>">
         <input type="hidden" name="action" value="update">
         <button type="submit">Editar</button>
       </form>
-      <form action="${pageContext.request.contextPath}/superadms" method="post">
-        <input type="hidden" name="id" value="<%= adm.getId() %>">
+      
+      <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="post">
+        <input type="hidden" name="id" value="<%= u.getId() %>">
         <input type="hidden" name="action" value="delete">
         <button type="submit">Deletar</button>
       </form>
@@ -94,6 +111,11 @@
   </tr>
   <% } %>
 </table>
-<a href="${pageContext.request.contextPath}/superadms?action=create">Cadastrar novo Super Administrador</a>
+<a href="${pageContext.request.contextPath}/area-restrita/usuarios?action=create">Cadastrar novo Administrador</a>
+<% if (erro != null && !erro.isBlank()) { %>
+<p>
+  <%= erro %>
+</p>
+<% } %>
 </body>
 </html>
