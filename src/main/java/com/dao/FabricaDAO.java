@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.*;
 
 public class FabricaDAO extends DAO {
@@ -27,6 +28,16 @@ public class FabricaDAO extends DAO {
   // Construtor
   public FabricaDAO() throws SQLException, ClassNotFoundException {
     super();
+  }
+
+  // Converter Valor
+  public Object converterValor(String campo, String valor){
+      return switch(campo){
+          case "id", "id_plano" -> Integer.parseInt(valor);
+          case "status" -> Boolean.parseBoolean(valor);
+          case "email_corporativo", "nome_unidade", "nome_industria", "cnpj", "ramo" -> String.valueOf(valor);
+          default -> throw new IllegalArgumentException();
+      };
   }
 
   // Outros Métodos
@@ -82,7 +93,7 @@ public class FabricaDAO extends DAO {
   }
 
   // === READ ===
-  public List<FabricaDTO> listar(String campoFiltro, String valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+  public List<FabricaDTO> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     // Lista de fábricas
     List<FabricaDTO> fabricas = new ArrayList<>();
 
@@ -91,7 +102,7 @@ public class FabricaDAO extends DAO {
 
     // Verificando o campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-      sql += " WHERE %s::varchar = ?".formatted(campoFiltro);
+      sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
     // Verificando campo e direcao da ordenação
@@ -105,7 +116,7 @@ public class FabricaDAO extends DAO {
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-        pstmt.setString(1, valorFiltro);
+        pstmt.setObject(1, valorFiltro);
       }
 
       // Resgata do banco de dados a lista de fábricas

@@ -6,6 +6,7 @@ import com.model.SuperAdm;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,15 @@ public class SuperAdmDAO extends DAO {
   // Construtor
   public SuperAdmDAO() throws SQLException, ClassNotFoundException {
     super();
+  }
+
+  // Converter Valor
+  public Object converterValor(String campo, String valor){
+      return switch(campo){
+          case "id" -> Integer.parseInt(valor);
+          case "cargo", "email" -> String.valueOf(valor);
+          default -> throw new IllegalArgumentException();
+      };
   }
 
   // Outros Métodos
@@ -59,7 +69,7 @@ public class SuperAdmDAO extends DAO {
   }
 
   // === READ ===
-  public List<SuperAdmDTO> listar(String campoFiltro, String valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+  public List<SuperAdmDTO> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     // Lista de super adms
     List<SuperAdmDTO> superAdms = new ArrayList<>();
 
@@ -68,7 +78,7 @@ public class SuperAdmDAO extends DAO {
 
     // Verificando campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-      sql += " WHERE %s::varchar = ?".formatted(campoFiltro);
+      sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
     // Verificando campo e direcao da ordenação
@@ -82,7 +92,7 @@ public class SuperAdmDAO extends DAO {
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       //    Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-        pstmt.setString(1, valorFiltro);
+        pstmt.setObject(1, valorFiltro);
       }
 
       // Resgata do banco de dados a lista de super adms

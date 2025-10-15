@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
@@ -21,6 +22,18 @@ public class PlanoDAO extends DAO {
   // Construtor
   public PlanoDAO() throws SQLException, ClassNotFoundException {
     super();
+  }
+
+  // Converter Valor
+  public Object converterValor(String campo, String valor){
+      return switch(campo){
+          case "id" -> Integer.parseInt(valor);
+          case "valor" -> Double.parseDouble(valor);
+          case "status" -> Boolean.parseBoolean(valor);
+          case "data_vencimento", "data_pagamento" -> LocalDate.parse(valor);
+          case "tipo_pagamento" -> String.valueOf(valor);
+          default -> throw new IllegalArgumentException();
+      };
   }
 
   // Outros Métodos
@@ -50,7 +63,7 @@ public class PlanoDAO extends DAO {
   }
 
   // === READ ===
-  public List<Plano> listar(String campoFiltro, String valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+  public List<Plano> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     // Lista de planos
     List<Plano> planos = new ArrayList<>();
 
@@ -59,7 +72,7 @@ public class PlanoDAO extends DAO {
 
     // Verificando campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-      sql += " WHERE %s::varchar = ?".formatted(campoFiltro);
+      sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
     // Verificando campo e direcao da ordenação
@@ -73,7 +86,7 @@ public class PlanoDAO extends DAO {
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variáveis do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-        pstmt.setString(1, valorFiltro);
+        pstmt.setObject(1, valorFiltro);
       }
 
       // Resgata do banco de dados a lista de planos

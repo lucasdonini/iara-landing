@@ -32,6 +32,17 @@ public class UsuarioDAO extends DAO {
     super();
   }
 
+  // Converter Valor
+  public Object converterValor(String campo, String valor){
+      return switch(campo){
+          case "id", "id_fabrica", "tipo_acesso" -> Integer.parseInt(valor);
+          case "status" -> Boolean.parseBoolean(valor);
+          case "data_criacao" -> LocalDate.parse(valor);
+          case "nome", "email" -> String.valueOf(valor);
+          default -> throw new IllegalArgumentException();
+      };
+  }
+
   // Outros Métodos
 
   // === CREATE ===
@@ -73,7 +84,7 @@ public class UsuarioDAO extends DAO {
   }
 
   // === READ ===
-  public List<UsuarioDTO> listar(String campoFiltro, String valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+  public List<UsuarioDTO> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     // Lista de usuários
     List<UsuarioDTO> usuarios = new ArrayList<>();
 
@@ -82,7 +93,7 @@ public class UsuarioDAO extends DAO {
 
     // Verificando campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-      sql += " WHERE %s::varchar = ?".formatted(campoFiltro);
+      sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
     // Verificando campo e direcao da ordenação
@@ -96,7 +107,7 @@ public class UsuarioDAO extends DAO {
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-        pstmt.setString(1, valorFiltro);
+        pstmt.setObject(1, valorFiltro);
       }
 
       // Resgata do banco de dados a lista de usuários
