@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @WebServlet("/area-restrita/pagamentos")
 public class PagamentoServlet extends HttpServlet {
@@ -184,13 +185,30 @@ public class PagamentoServlet extends HttpServlet {
   private List<Pagamento> listarPagamentos(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     //Dados da requisição
     String campoFiltro = req.getParameter("campo_filtro");
+
+    if (campoFiltro!=null && campoFiltro.equals("statusP")){
+        campoFiltro = "status";
+    }
+
     String campoSequencia = req.getParameter("campo_sequencia");
     String direcaoSequencia = req.getParameter("direcao_sequencia");
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (PagamentoDAO dao = new PagamentoDAO()) {
-      // Recupera e retorna os pagamentos cadastrados no banco de dados
-      return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+      if (campoFiltro!=null && !Objects.equals(valorFiltro, "") && !Objects.equals(valorFiltro, null)){
+          // Converte o valor
+          Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
+
+          // Recupera e retorna os pagamentos cadastrados no banco de dados
+          return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
+
+      } else{
+          // Transforma o valorFiltro em 'null'
+          valorFiltro = null;
+
+          // Recupera e retorna os pagamentos cadastrados no banco de dados
+          return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+      }
     }
   }
 

@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 @WebServlet("/area-restrita/planos")
 public class PlanoServlet extends HttpServlet {
@@ -161,8 +162,17 @@ public class PlanoServlet extends HttpServlet {
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (PlanoDAO dao = new PlanoDAO()) {
-      // Recupera os planos cadastrados no banco de dados
-      return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+      if (campoFiltro!=null && !Objects.equals(valorFiltro, "") && !Objects.equals(valorFiltro, null)){
+          // Converte o valor
+          Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
+
+          // Recupera os super adms cadastrados no banco de dados
+          return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
+      }
+      else{
+          // Recupera os super adms cadastrados no banco de dados
+          return dao.listar(campoFiltro, null, campoSequencia, direcaoSequencia);
+      }
     }
   }
 

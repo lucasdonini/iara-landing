@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @WebServlet("/area-restrita/usuarios")
 public class UsuarioServlet extends HttpServlet {
@@ -181,13 +182,27 @@ public class UsuarioServlet extends HttpServlet {
   private List<UsuarioDTO> getListaUsuarios(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     //Dados da requisição
     String campoFiltro = req.getParameter("campo_filtro");
+
+    if (campoFiltro!=null && campoFiltro.equals("statusU")){
+        campoFiltro = "status";
+    }
+
     String campoSequencia = req.getParameter("campo_sequencia");
     String direcaoSequencia = req.getParameter("direcao_sequencia");
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Recupera os usuários cadastrados no banco de dados
-      return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+      if (campoFiltro!=null && !Objects.equals(valorFiltro, "") && !Objects.equals(valorFiltro, null)){
+          // Converte o valor
+          Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
+
+          // Recupera e retorna os pagamentos cadastrados no banco de dados
+          return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
+
+      } else{
+          // Recupera e retorna os pagamentos cadastrados no banco de dados
+          return dao.listar(campoFiltro, null, campoSequencia, direcaoSequencia);
+      }
     }
   }
 
