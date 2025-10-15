@@ -30,7 +30,7 @@ public class SuperAdmDAO extends DAO {
   public Object converterValor(String campo, String valor){
       return switch(campo){
           case "id" -> Integer.parseInt(valor);
-          case "cargo", "email" -> String.valueOf(valor);
+          case "nome", "cargo", "email" -> String.valueOf(valor);
           default -> throw new IllegalArgumentException();
       };
   }

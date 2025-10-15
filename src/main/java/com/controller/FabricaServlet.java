@@ -209,11 +209,8 @@ public class FabricaServlet extends HttpServlet {
           return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
 
       } else{
-          // Transforma o valorFiltro em 'null'
-          valorFiltro = null;
-
           // Recupera e retorna os pagamentos cadastrados no banco de dados
-          return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+          return dao.listar(campoFiltro, null, campoSequencia, direcaoSequencia);
       }
     }
   }

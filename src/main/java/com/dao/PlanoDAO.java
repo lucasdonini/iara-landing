@@ -29,9 +29,7 @@ public class PlanoDAO extends DAO {
       return switch(campo){
           case "id" -> Integer.parseInt(valor);
           case "valor" -> Double.parseDouble(valor);
-          case "status" -> Boolean.parseBoolean(valor);
-          case "data_vencimento", "data_pagamento" -> LocalDate.parse(valor);
-          case "tipo_pagamento" -> String.valueOf(valor);
+          case "descricao", "nome" -> String.valueOf(valor);
           default -> throw new IllegalArgumentException();
       };
   }
