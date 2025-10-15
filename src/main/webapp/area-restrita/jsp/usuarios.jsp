@@ -4,6 +4,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.model.DirecaoOrdenacao" %>
 <%@ page import="static com.dao.UsuarioDAO.camposFiltraveis" %>
+<%@ page import="com.model.Usuario" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
   List<UsuarioDTO> usuarios = (List<UsuarioDTO>) request.getAttribute("usuarios");
@@ -21,34 +22,31 @@
 <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="get">
   <input type="hidden" name="action" value="read">
   
-  <label>
-    Campo de Filtragem:
-    <select name="campo_filtro">
+    <label for="campoFiltro">Campo de Filtragem:</label>
+    <select id="campoFiltro" name="campo_filtro">
       <option value="" selected>Nenhum selecionado</option>
-      
-      <% for (String chave : camposFiltraveis.keySet()) { %>
-      <option value="<%= chave %>">
-        <%= camposFiltraveis.get(chave) %>
-      </option>
-      <% } %>
+      <option value="id" data-type="number">ID</option>
+      <option value="id_fabrica" data-type="number">ID da Fábrica</option>
+      <option value="email" data-type="email">Email</option>
+      <option value="nome" data-type="text">Nome</option>
+      <option value="tipo_acesso" data-type="select">Tipo de Acesso</option>
+      <option value="statusU" data-type="select">Status</option>
+      <option value="data_criacao" data-type="date">Data de Criação</option>
     </select>
-  </label>
-  
-  <label>
-    Valor Filtrado:
-    <input type="text" name="valor_filtro">
-  </label>
+
+  <div id="containerValorFiltro">
+      <label for="valorFiltro">Valor Filtrado:</label>
+      <input id="valorFiltro" type="text" name="valor_filtro">
+  </div>
   
   <label>
     Ordenar por:
     <select name="campo_sequencia">
-      <option value="" selected>Nenhum selecionado</option>
-      
-      <% for (String chave : camposFiltraveis.keySet()) { %>
-      <option value="<%= chave %>">
-        <%= camposFiltraveis.get(chave) %>
+      <% for(String chave:camposFiltraveis.keySet()){%>
+      <option value="<%=chave%>">
+          <%=camposFiltraveis.get(chave)%>
       </option>
-      <% } %>
+      <%}%>
     </select>
   </label>
   
@@ -121,5 +119,6 @@
   <%= erro %>
 </p>
 <% } %>
+<script src="${pageContext.request.contextPath}/javascript/infoTrader.js"></script>
 </body>
 </html>
