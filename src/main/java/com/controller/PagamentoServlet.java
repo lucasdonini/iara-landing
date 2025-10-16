@@ -186,7 +186,7 @@ public class PagamentoServlet extends HttpServlet {
     //Dados da requisição
     String campoFiltro = req.getParameter("campo_filtro");
 
-    if (campoFiltro!=null && campoFiltro.equals("statusP")){
+    if (Objects.equals(campoFiltro, "statusP")){
         campoFiltro = "status";
     }
 
@@ -195,20 +195,11 @@ public class PagamentoServlet extends HttpServlet {
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (PagamentoDAO dao = new PagamentoDAO()) {
-      if (campoFiltro!=null && !Objects.equals(valorFiltro, "") && !Objects.equals(valorFiltro, null)){
-          // Converte o valor
-          Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
+      // Conversão do valor
+      Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
 
-          // Recupera e retorna os pagamentos cadastrados no banco de dados
-          return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
-
-      } else{
-          // Transforma o valorFiltro em 'null'
-          valorFiltro = null;
-
-          // Recupera e retorna os pagamentos cadastrados no banco de dados
-          return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
-      }
+      // Recupera e retorna os pagamentos cadastrados no banco de dados
+      return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
     }
   }
 

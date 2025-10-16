@@ -28,11 +28,15 @@ public class SuperAdmDAO extends DAO {
 
   // Converter Valor
   public Object converterValor(String campo, String valor){
-      return switch(campo){
-          case "id" -> Integer.parseInt(valor);
-          case "nome", "cargo", "email" -> String.valueOf(valor);
-          default -> throw new IllegalArgumentException();
-      };
+      if (valor == null || valor.isBlank()){
+          return null;
+      } else{
+          return switch(campo){
+              case "id" -> Integer.parseInt(valor);
+              case "nome", "cargo", "email" -> valor;
+              default -> throw new IllegalArgumentException();
+          };
+      }
   }
 
   // Outros Métodos
