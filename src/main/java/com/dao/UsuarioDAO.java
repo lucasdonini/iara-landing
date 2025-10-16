@@ -121,6 +121,7 @@ public class UsuarioDAO extends DAO {
     }
 
     // Retorna a lista de usuários
+    conn.commit();
     return usuarios;
   }
 
@@ -156,6 +157,7 @@ public class UsuarioDAO extends DAO {
     }
 
     // Retorna usuário
+    conn.commit();
     return usuario;
   }
 
@@ -194,6 +196,7 @@ public class UsuarioDAO extends DAO {
     }
 
     // Retorna usuário
+    conn.commit();
     return usuario;
   }
 

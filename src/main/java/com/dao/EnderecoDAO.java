@@ -58,6 +58,7 @@ public class EnderecoDAO extends DAO {
   public Endereco pesquisarPorIdFabrica(int idFabrica) throws SQLException {
     // Comando SQL
     String sql = "SELECT * FROM endereco WHERE id_fabrica = ?";
+    Endereco e;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
@@ -65,22 +66,24 @@ public class EnderecoDAO extends DAO {
 
       // Pesquisa endereço pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
-        if (rs.next()) {
-          // Variáveis
-          String complemento = rs.getString("complemento");
-          String cep = rs.getString("cep");
-          String rua = rs.getString("rua");
-          int numero = rs.getInt("numero");
-          int id = rs.getInt("id");
-
-          // Instância e retorno do Model
-          return new Endereco(id, cep, numero, rua, complemento, idFabrica);
-
-        } else {
+        if (!rs.next()) {
           throw new SQLException("Falha ao recuperar endereço");
         }
+
+        // Variáveis
+        String complemento = rs.getString("complemento");
+        String cep = rs.getString("cep");
+        String rua = rs.getString("rua");
+        int numero = rs.getInt("numero");
+        int id = rs.getInt("id");
+
+        // Instância e retorno do Model
+        e = new Endereco(id, cep, numero, rua, complemento, idFabrica);
       }
     }
+
+    conn.commit();
+    return e;
   }
 
   // === UPDATE ===

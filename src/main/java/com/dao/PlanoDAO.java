@@ -92,6 +92,7 @@ public class PlanoDAO extends DAO {
     }
 
     // Retorna a lista de planos
+    conn.commit();
     return planos;
   }
 
@@ -124,6 +125,7 @@ public class PlanoDAO extends DAO {
     }
 
     // Retorna plano
+    conn.commit();
     return plano;
   }
 
@@ -156,6 +158,7 @@ public class PlanoDAO extends DAO {
     }
 
     // Retorna plano
+    conn.commit();
     return plano;
   }
 
@@ -169,6 +172,7 @@ public class PlanoDAO extends DAO {
     }
 
     // Retorna plano
+    conn.commit();
     return plano;
   }
 
@@ -192,6 +196,7 @@ public class PlanoDAO extends DAO {
     }
 
     // Retorna map
+    conn.commit();
     return map;
   }
 

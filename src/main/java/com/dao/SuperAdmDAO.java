@@ -101,6 +101,7 @@ public class SuperAdmDAO extends DAO {
     }
 
     // Retorna a lista de super adms
+    conn.commit();
     return superAdms;
   }
 
@@ -133,6 +134,7 @@ public class SuperAdmDAO extends DAO {
     }
 
     // Retorna super adm
+    conn.commit();
     return superAdm;
   }
 
@@ -165,6 +167,7 @@ public class SuperAdmDAO extends DAO {
     }
 
     // Retorna super adm
+    conn.commit();
     return superAdm;
   }
 
@@ -199,6 +202,7 @@ public class SuperAdmDAO extends DAO {
     }
 
     // Retorna super adm
+    conn.commit();
     return superAdm;
   }
 

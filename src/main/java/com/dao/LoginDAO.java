@@ -12,6 +12,7 @@ public class LoginDAO extends DAO {
   // Construtor
   public LoginDAO() throws SQLException, ClassNotFoundException {
     super();
+    conn.setAutoCommit(true);
   }
 
   // Outros Métodos
@@ -21,6 +22,7 @@ public class LoginDAO extends DAO {
 
     // Variáveis
     String senhaHash, nome, cargo;
+    SuperAdmDTO superAdm;
     int id;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -49,8 +51,10 @@ public class LoginDAO extends DAO {
         cargo = rs.getString("cargo");
 
         // Retorno e instância do DTO
-        return new SuperAdmDTO(id, nome, cargo, credenciais.getEmail());
+        superAdm = new SuperAdmDTO(id, nome, cargo, credenciais.getEmail());
       }
     }
+
+    return superAdm;
   }
 }

@@ -129,12 +129,14 @@ public class FabricaDAO extends DAO {
     }
 
     // Retorna a lista de fábricas
+    conn.commit();
     return fabricas;
   }
 
   public Fabrica pesquisarPorCnpj(String cnpj) throws SQLException {
     // Comando SQL
     String sql = "SELECT * FROM fabrica WHERE cnpj = ?";
+    Fabrica f;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
@@ -156,10 +158,13 @@ public class FabricaDAO extends DAO {
         String ramo = rs.getString("ramo");
         int idPlano = rs.getInt("id_plano");
 
-        // Instância e retorno do Model
-        return new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
+        // Instância do Model
+        f = new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
       }
     }
+
+    conn.commit();
+    return f;
   }
 
   public Map<Integer, String> getMapIdNome() throws SQLException {
@@ -182,12 +187,14 @@ public class FabricaDAO extends DAO {
     }
 
     // Retorna o map
+    conn.commit();
     return map;
   }
 
   public Fabrica pesquisarPorId(int id) throws SQLException {
     // Comando SQL
     String sql = "SELECT * FROM fabrica WHERE id = ?";
+    Fabrica f;
 
     // Definindo variável do comando SQL
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -209,10 +216,13 @@ public class FabricaDAO extends DAO {
         String ramo = rs.getString("ramo");
         int idPlano = rs.getInt("id_plano");
 
-        // Instância e retorno do Model
-        return new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
+        // Instância do Model
+        f = new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
       }
     }
+
+    conn.commit();
+    return f;
   }
 
   // === UPDATE ===

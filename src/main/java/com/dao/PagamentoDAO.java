@@ -116,6 +116,7 @@ public class PagamentoDAO extends DAO {
     }
 
     // Retorna a lista de pagamentos
+    conn.commit();
     return pagamentos;
   }
 
@@ -156,6 +157,7 @@ public class PagamentoDAO extends DAO {
     }
 
     // Retorna pagamento
+    conn.commit();
     return pagamento;
   }
 
@@ -169,6 +171,7 @@ public class PagamentoDAO extends DAO {
     }
 
     // Retorna pagamento
+    conn.commit();
     return p;
   }
 
