@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const pendente = new Option("Pendente");
 
                 pago.value = "true";
-                pendente.value = "pendente";
+                pendente.value = "false";
 
                 select.add(pago); select.add(pendente);
             } else if (value === "statusF"){
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 pix.value = "pix";
 
                 select.add(debito); select.add(credito); select.add(pix);
-            } else{
+            } else if(value === "tipo_acesso"){
                 const geren = new Option("Gerenciamento");
                 const alt = new Option("Alteração");
                 const suges = new Option("Sugestão");
@@ -77,6 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             else{
                 input.type = tipo;
+                if (tipo === "date"){
+                    input.max = "1999-12-31";
+                }
                 input.placeholder = "Digite o valor...";
             }
             containerValorFiltro.appendChild(input);
