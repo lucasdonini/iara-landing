@@ -166,17 +166,11 @@ public class SuperAdmServlet extends HttpServlet {
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
-      if (campoFiltro!=null && !Objects.equals(valorFiltro, "") && !Objects.equals(valorFiltro, null)){
-          // Converte o valor
-          Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
+      // Conversão do valor
+      Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
 
-          // Recupera os super adms cadastrados no banco de dados
-          return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
-      }
-      else{
-          // Recupera os super adms cadastrados no banco de dados
-          return dao.listar(campoFiltro, null, campoSequencia, direcaoSequencia);
-      }
+      // Recupera e retorna os pagamentos cadastrados no banco de dados
+      return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
     }
   }
 

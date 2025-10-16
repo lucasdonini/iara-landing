@@ -34,13 +34,17 @@ public class UsuarioDAO extends DAO {
 
   // Converter Valor
   public Object converterValor(String campo, String valor){
-      return switch(campo){
-          case "id" -> Integer.parseInt(valor);
-          case "status" -> Boolean.parseBoolean(valor);
-          case "data_criacao" -> LocalDate.parse(valor);
-          case "nome", "email", "tipo_acesso" -> String.valueOf(valor);
-          default -> throw new IllegalArgumentException();
-      };
+      if (valor==null || valor.isBlank()){
+          return null;
+      } else{
+          return switch(campo){
+              case "id" -> Integer.parseInt(valor);
+              case "status" -> Boolean.parseBoolean(valor);
+              case "data_criacao" -> LocalDate.parse(valor);
+              case "nome", "email", "tipo_acesso" -> valor;
+              default -> new IllegalArgumentException();
+          };
+      }
   }
 
   // Outros Métodos

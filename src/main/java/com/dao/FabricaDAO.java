@@ -32,12 +32,16 @@ public class FabricaDAO extends DAO {
 
   // Converter Valor
   public Object converterValor(String campo, String valor){
-      return switch(campo){
-          case "id" -> Integer.parseInt(valor);
-          case "status" -> Boolean.parseBoolean(valor);
-          case "email_corporativo", "nome_unidade", "nome_industria", "cnpj", "ramo" -> String.valueOf(valor);
-          default -> throw new IllegalArgumentException();
-      };
+      if (valor == null || valor.isBlank()){
+          return null;
+      } else{
+          return switch(campo){
+              case "id" -> Integer.parseInt(valor);
+              case "status" -> Boolean.parseBoolean(valor);
+              case "email_corporativo", "nome_unidade", "nome_industria", "cnpj", "ramo" -> valor;
+              default -> throw new IllegalArgumentException();
+          };
+      }
   }
 
   // Outros Métodos

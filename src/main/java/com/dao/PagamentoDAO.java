@@ -31,14 +31,18 @@ public class PagamentoDAO extends DAO {
 
   // Converter Valor
   public Object converterValor(String campo, String valor){
-      return switch(campo){
-          case "id" -> Integer.parseInt(valor);
-          case "valor" -> Double.parseDouble(valor);
-          case "status" -> Boolean.parseBoolean(valor);
-          case "data_pagamento", "data_vencimento" -> LocalDate.parse(valor);
-          case "tipo_pagamento" -> String.valueOf(valor);
-          default -> throw new IllegalArgumentException();
-      };
+      if (valor == null || valor.isBlank()){
+          return null;
+      } else{
+          return switch(campo){
+              case "id" -> Integer.parseInt(valor);
+              case "valor" -> Double.parseDouble(valor);
+              case "status" -> Boolean.parseBoolean(valor);
+              case "data_pagamento", "data_vencimento" -> LocalDate.parse(valor);
+              case "tipo_pagamento" -> valor;
+              default -> null;
+          };
+      }
   }
   // Outros Métodos
 

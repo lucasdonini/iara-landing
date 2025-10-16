@@ -1,8 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Resgata elementos HTMl
     const campoFiltro = document.getElementById("campoFiltro");
     const containerValorFiltro = document.getElementById("containerValorFiltro");
 
+    // Chama a função quando um novo campo é selecionado
     campoFiltro.addEventListener("change", () => {
+        // Tipo definido no 'data-type'
         const tipo = campoFiltro.selectedOptions[0].dataset.type;
 
         // limpa o container e re-insere só o label
