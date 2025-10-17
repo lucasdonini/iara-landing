@@ -55,7 +55,7 @@ public class PlanoDAO extends DAO {
     List<Plano> planos = new ArrayList<>();
 
     // Comando SQL
-    String sql = "SELECT * FROM plano";
+    String sql = "SELECT id, nome, valor, descricao FROM plano";
 
     // Verificando campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
@@ -98,7 +98,7 @@ public class PlanoDAO extends DAO {
 
   public Plano pesquisarPorId(int id) throws SQLException {
     // Comando SQL
-    String sql = "SELECT * FROM plano WHERE id = ?";
+    String sql = "SELECT nome, valor, descricao FROM plano WHERE id = ?";
 
     // Objeto não instanciado de plano
     Plano plano;
@@ -131,7 +131,7 @@ public class PlanoDAO extends DAO {
 
   public Plano pesquisarPorNome(String nome) throws SQLException {
     // Comando SQL
-    String sql = "SELECT * FROM plano WHERE nome = ?";
+    String sql = "SELECT id, valor, descricao FROM plano WHERE nome = ?";
 
     // Objeto não instanciado de plano
     Plano plano;
