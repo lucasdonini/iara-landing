@@ -41,7 +41,7 @@ public class UsuarioDAO extends DAO {
     String senha = credenciais.getSenha();
     String nome = credenciais.getNome();
     int idFabrica = credenciais.getIdFabrica();
-    int tipoAcesso = TipoAcesso.GERENCIAMENTO.nivel();
+    int tipoAcesso = TipoAcesso.GERENTE.nivel();
     boolean status = true;
 
     // Comando SQL

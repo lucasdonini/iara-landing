@@ -1,11 +1,12 @@
 package com.model;
 
+import com.utils.StringUtils;
+
 public enum TipoAcesso {
   // Instâncias
-  LEITURA(0, "Leitura"),
-  SUGESTAO(1, "Sugestão"),
-  ALTERACAO(2, "Alteração"),
-  GERENCIAMENTO(3, "Gerenciamento");
+  FUNCIONARIO(0, "ler, tirar foto"),
+  SUPERVISOR_CIF(1, "ler, tirar foto, aprovar foto"),
+  GERENTE(2, "ler, tirar foto, aprovar foto, cadastrar ábaco, cadastrar pessoa");
 
   // Atributos
   private final int nivel;
@@ -40,6 +41,6 @@ public enum TipoAcesso {
   // toString
   @Override
   public String toString() {
-    return "TipoAcesso{nivel=%d, descricao='%s'}".formatted(nivel, descricao);
+    return StringUtils.capitalize(name());
   }
 }

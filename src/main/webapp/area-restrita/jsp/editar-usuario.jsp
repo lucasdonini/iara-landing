@@ -25,7 +25,7 @@
   <select name="nivel_acesso">
     <% for (TipoAcesso t : TipoAcesso.values()) { %>
     <option value="<%= t.nivel() %>" <%= t == usuario.getTipoAcesso() ? "selected" : "" %>>
-      <%= t.descricao() %>
+      <%= t.toString() %>
     </option>
     <% } %>
   </select>

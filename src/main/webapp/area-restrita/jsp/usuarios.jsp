@@ -88,7 +88,7 @@
       <%= u.getEmail() %>
     </td>
     <td>
-      <%= u.getTipoAcesso().descricao() %>
+      <%= u.getTipoAcesso().toString() %>
     </td>
     <td>
       <%= u.getDataCriacao().format(DataUtils.DMY) %>
