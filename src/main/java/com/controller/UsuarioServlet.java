@@ -16,9 +16,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 @WebServlet("/area-restrita/usuarios")
 public class UsuarioServlet extends HttpServlet {
@@ -54,16 +56,20 @@ public class UsuarioServlet extends HttpServlet {
         case "update" -> {
           AtualizacaoUsuarioDTO usuario = getInformacoesAlteraveis(req);
           Map<Integer, String> fabricas = getMapFabricas();
+          List<String> emailGerentes = getEmailGerentes();
 
           req.setAttribute("usuario", usuario);
           req.setAttribute("fabricas", fabricas);
+          req.setAttribute("emailGerentes", emailGerentes);
           destino = PAGINA_EDICAO;
         }
 
         case "create" -> {
           Map<Integer, String> fabricas = getMapFabricas();
+          List<String> emailGerentes = getEmailGerentes();
 
           req.setAttribute("fabricas", fabricas);
+          req.setAttribute("emailGerentes", emailGerentes);
           destino = PAGINA_CADASTRO;
         }
 
@@ -146,21 +152,31 @@ public class UsuarioServlet extends HttpServlet {
   // === CREATE ===
   private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
-    String email = req.getParameter("email").trim();
     String nome = req.getParameter("nome").trim();
+
+    String emailGerente = req.getParameter("email_gerentes");
+    if (emailGerente != null){
+        emailGerente = emailGerente.trim();
+    }
+
+    String genero = req.getParameter("genero").trim();
+
+    String temp = req.getParameter("data_nascimento");
+    LocalDate dataNascimento = LocalDate.parse(temp);
+
+    String cargo = req.getParameter("cargo").trim();
+    String email = req.getParameter("email").trim();
     String senhaOriginal = req.getParameter("senha");
     String hashSenha = SenhaUtils.hashear(senhaOriginal);
 
-    String temp = req.getParameter("id_fabrica").trim();
-
+    temp = req.getParameter("fk_fabrica");
     if (temp.isBlank()) {
       throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
     }
-
-    int idFabrica = Integer.parseInt(temp);
+    Integer fkFabrica = Integer.parseInt(temp);
 
     // Instância do DTO
-    CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(nome, email, hashSenha, idFabrica);
+    CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(nome, emailGerente, genero, dataNascimento, cargo, email, hashSenha, fkFabrica);
 
     // Se a senha não tiver no mínimo 8 caracteres, lança uma exceção de JSP
     if (!senhaOriginal.matches(".{8,}")) {
@@ -200,6 +216,12 @@ public class UsuarioServlet extends HttpServlet {
     }
   }
 
+  private List<String> getEmailGerentes() throws SQLException, ClassNotFoundException{
+      try(UsuarioDAO dao = new UsuarioDAO()){
+          return dao.emailGerentes();
+      }
+  }
+
   private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
     try (FabricaDAO dao = new FabricaDAO()) {
       return dao.getMapIdNome();
@@ -207,9 +229,8 @@ public class UsuarioServlet extends HttpServlet {
   }
 
   private AtualizacaoUsuarioDTO getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da request
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
+    // Dados da requisição
+    UUID id = UUID.fromString(req.getParameter("id"));
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
       // Recupera e retorna os dados originais do banco de dados
@@ -220,24 +241,35 @@ public class UsuarioServlet extends HttpServlet {
   // === UPDATE ===
   private void atualizarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
     // Dados da requisição
-    String email = req.getParameter("email").trim();
+    UUID id = UUID.fromString(req.getParameter("id"));
     String nome = req.getParameter("nome").trim();
 
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
+    String emailGerente = req.getParameter("email_gerentes");
+    if (emailGerente != null){
+        emailGerente = emailGerente.trim();
+    }
 
-    temp = req.getParameter("status").trim();
+    String genero = req.getParameter("genero").trim();
+    String cargo = req.getParameter("cargo").trim();
+    String email = req.getParameter("email").trim();
+
+    String temp = req.getParameter("status").trim();
     boolean status = Boolean.parseBoolean(temp);
 
-    temp = req.getParameter("id_fabrica").trim();
+    temp = req.getParameter("fk_fabrica");
+    if (temp.isBlank()){
+      throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
+    }
     int fkFabrica = Integer.parseInt(temp);
 
     temp = req.getParameter("nivel_acesso").trim();
     int nivelAcessoInt = Integer.parseInt(temp);
     TipoAcesso tipoAcesso = TipoAcesso.deNivel(nivelAcessoInt);
 
+    String descTipoAcesso = req.getParameter("desc_tipoacesso").trim();
+
     // Instância do DTO
-    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, email, tipoAcesso, status, fkFabrica);
+    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, emailGerente, genero, cargo, email, tipoAcesso, descTipoAcesso, status, fkFabrica);
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
       // Busca no banco de dados o usuário original
@@ -245,7 +277,7 @@ public class UsuarioServlet extends HttpServlet {
 
       // Verifica se as alterações não violam a chave UNIQUE de 'email' em 'usuario'
       UsuarioDTO teste = dao.pesquisarPorEmail(email);
-      if (teste != null && teste.getId() != id) {
+      if (teste != null && !teste.getId().equals(id)) {
         throw ExcecaoDeJSP.emailDuplicado();
       }
 
@@ -257,8 +289,7 @@ public class UsuarioServlet extends HttpServlet {
   // === DELETE ===
   private void removerUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     // Dados da requisição
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
+    UUID id = UUID.fromString(req.getParameter("id"));
 
     try (UsuarioDAO dao = new UsuarioDAO()) {
       // Remove o usuário

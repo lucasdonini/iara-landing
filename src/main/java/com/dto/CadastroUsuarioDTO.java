@@ -1,18 +1,28 @@
 package com.dto;
 
+import java.time.LocalDate;
+
 public class CadastroUsuarioDTO {
   // Atributos
   private String nome;
+  private String emailGerente;
+  private String genero;
+  private LocalDate dataNascimento;
+  private String cargo;
   private String email;
   private String senha;
-  private Integer idFabrica;
+  private Integer fkFabrica;
 
   // Construtor
-  public CadastroUsuarioDTO(String nome, String email, String senha, Integer idFabrica) {
+  public CadastroUsuarioDTO(String nome, String emailGerente, String genero, LocalDate dataNascimento, String cargo, String email, String senha, Integer nomefabrica) {
     this.nome = nome;
+    this.emailGerente = emailGerente;
+    this.genero = genero;
+    this.dataNascimento = dataNascimento;
+    this.cargo = cargo;
     this.email = email;
     this.senha = senha;
-    this.idFabrica = idFabrica;
+    this.fkFabrica = nomefabrica;
   }
 
   // Getters e Setters
@@ -22,6 +32,38 @@ public class CadastroUsuarioDTO {
 
   public void setNome(String nome) {
     this.nome = nome;
+  }
+
+  public String getEmailGerente() {
+      return emailGerente;
+  }
+
+  public void setEmailGerente(String emailGerente) {
+      this.emailGerente = emailGerente;
+  }
+
+  public String getGenero() {
+      return genero;
+  }
+
+  public void setGenero(String genero) {
+      this.genero = genero;
+  }
+
+  public LocalDate getDataNascimento() {
+      return dataNascimento;
+  }
+
+  public void setDataNascimento(LocalDate dataNascimento) {
+      this.dataNascimento = dataNascimento;
+  }
+
+  public String getCargo() {
+      return cargo;
+  }
+
+  public void setCargo(String cargo) {
+      this.cargo = cargo;
   }
 
   public String getEmail() {
@@ -40,17 +82,17 @@ public class CadastroUsuarioDTO {
     this.senha = senha;
   }
 
-  public Integer getIdFabrica() {
-    return idFabrica;
+  public Integer getFkFabrica() {
+    return fkFabrica;
   }
 
-  public void setIdFabrica(Integer idFabrica) {
-    this.idFabrica = idFabrica;
+  public void setFkFabrica(Integer fkFabrica) {
+    this.fkFabrica = fkFabrica;
   }
 
   // toString
   @Override
   public String toString() {
-    return "CadastroUsuarioDTO{nome='%s', email='%s', senha='%s', idFabrica=%d}".formatted(nome, email, senha, idFabrica);
+    return "CadastroUsuarioDTO{nome='%s', emailGerente='%s', genero='%s', dataNascimento=%s, cargo='%s', email='%s', senha='%s', fkFabrica=%d}".formatted(nome, emailGerente, genero, dataNascimento, cargo, email, senha, fkFabrica);
   }
 }

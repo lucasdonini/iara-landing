@@ -25,12 +25,15 @@
     <label for="campoFiltro">Campo de Filtragem:</label>
     <select id="campoFiltro" name="campo_filtro">
       <option value="" selected>Nenhum selecionado</option>
-      <option value="id" data-type="number">ID</option>
-      <option value="email" data-type="email">Email</option>
       <option value="nome" data-type="text">Nome</option>
+      <option value="genero" data-type="select">Gênero</option>
+      <option value="data_nascimento" data-type="date">Data de Nascimento</option>
+      <option value="cargo" data-type="text">Cargo</option>
+      <option value="email" data-type="email">Email</option>
       <option value="tipo_acesso" data-type="select">Tipo de Acesso</option>
+      <option value="desc_tipoacesso" data-type="text">Descrição do Tipo de Acesso</option>
       <option value="statusU" data-type="select">Status</option>
-      <option value="data_criacao" data-type="date">Data de Criação</option>
+      <option value="data_criacao" data-type="datetime-local">Data de Criação</option>
     </select>
 
   <div id="containerValorFiltro">
@@ -64,10 +67,14 @@
 
 <table border="1">
   <tr>
-    <th>ID</th>
     <th>Nome</th>
+    <th>Email do Gerente</th>
+    <th>Gênero</th>
+    <th>Data de Nascimento</th>
+    <th>Cargo</th>
     <th>Email</th>
     <th>Tipo de Acesso</th>
+    <th>Descrição do Tipo de Acesso</th>
     <th>Data de Criação</th>
     <th>Status</th>
     <th>Fábrica</th>
@@ -76,10 +83,19 @@
   <% for (UsuarioDTO u : usuarios) { %>
   <tr>
     <td>
-      <%= u.getId() %>
+      <%= u.getNome() %>
     </td>
     <td>
-      <%= u.getNome() %>
+      <%= u.getEmailGerente() %>
+    </td>
+    <td>
+      <%= u.getGenero() %>
+    </td>
+    <td>
+      <%= u.getDataNascimento() %>
+    </td>
+    <td>
+      <%= u.getCargo() %>
     </td>
     <td>
       <%= u.getEmail() %>
@@ -88,13 +104,16 @@
       <%= u.getTipoAcesso().descricao() %>
     </td>
     <td>
+      <%= u.getDescTipoAcesso() %>
+    </td>
+    <td>
       <%= u.getDataCriacao().format(DataUtils.DMY) %>
     </td>
     <td>
       <%= u.getStatus() ? "Ativo" : "Inativo" %>
     </td>
     <td>
-      <%= fabricas.get(u.getIdFabrica()) %>
+      <%= u.getNomeFabrica() %>
     </td>
     <td>
       <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="get">

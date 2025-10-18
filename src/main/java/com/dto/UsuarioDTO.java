@@ -3,43 +3,80 @@ package com.dto;
 import com.model.TipoAcesso;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class UsuarioDTO {
   // Atributos
-  private Integer id;
+  private UUID id;
   private String nome;
+  private String emailGerente;
+  private String genero;
+  private LocalDate dataNascimento;
+  private String cargo;
   private String email;
   private TipoAcesso tipoAcesso;
-  private LocalDate dataCriacao;
+  private String descTipoAcesso;
+  private LocalDateTime dataCriacao;
   private Boolean status;
-  private Integer idFabrica;
+  private String nomeFabrica;
 
   // Construtor
-  public UsuarioDTO(Integer id, String nome, String email, TipoAcesso tipoAcesso, LocalDate dataCriacao, Boolean status, Integer idFabrica) {
+  public UsuarioDTO(UUID id, String nome, String emailGerente, String genero, LocalDate dataNascimento, String email, String cargo, TipoAcesso tipoAcesso, String descTipoAcesso, LocalDateTime dataCriacao, Boolean status, String nomeFabrica) {
     this.id = id;
     this.nome = nome;
+    this.emailGerente = emailGerente;
+    this.genero = genero;
+    this.dataNascimento = dataNascimento;
+    this.cargo = cargo;
     this.email = email;
     this.tipoAcesso = tipoAcesso;
+    this.descTipoAcesso = descTipoAcesso;
     this.dataCriacao = dataCriacao;
     this.status = status;
-    this.idFabrica = idFabrica;
+    this.nomeFabrica = nomeFabrica;
   }
 
   // Getters e Setters
-  public Integer getId() {
-    return id;
+
+  public UUID getId() {
+      return id;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setId(UUID id) {
+      this.id = id;
   }
 
   public String getNome() {
-    return nome;
+      return nome;
   }
 
   public void setNome(String nome) {
-    this.nome = nome;
+      this.nome = nome;
+  }
+
+  public String getEmailGerente() {
+      return emailGerente;
+  }
+
+  public void setEmailGerente(String nomeGerente) {
+      this.emailGerente = emailGerente;
+  }
+
+  public String getGenero() {
+      return genero;
+  }
+
+  public void setGenero(String genero) {
+      this.genero = genero;
+  }
+
+  public LocalDate getDataNascimento() {
+      return dataNascimento;
+  }
+
+  public void setDataNascimento(LocalDate dataNascimento) {
+      this.dataNascimento = dataNascimento;
   }
 
   public String getEmail() {
@@ -50,6 +87,14 @@ public class UsuarioDTO {
     this.email = email;
   }
 
+  public String getCargo() {
+      return cargo;
+  }
+
+  public void setCargo(String cargo) {
+      this.cargo = cargo;
+  }
+
   public TipoAcesso getTipoAcesso() {
     return tipoAcesso;
   }
@@ -58,11 +103,19 @@ public class UsuarioDTO {
     this.tipoAcesso = tipoAcesso;
   }
 
-  public LocalDate getDataCriacao() {
+  public String getDescTipoAcesso() {
+      return descTipoAcesso;
+  }
+
+  public void setDescTipoAcesso(String descTipoAcesso) {
+      this.descTipoAcesso = descTipoAcesso;
+  }
+
+  public LocalDateTime getDataCriacao() {
     return dataCriacao;
   }
 
-  public void setDataCriacao(LocalDate dataCriacao) {
+  public void setDataCriacao(LocalDateTime dataCriacao) {
     this.dataCriacao = dataCriacao;
   }
 
@@ -74,18 +127,18 @@ public class UsuarioDTO {
     this.status = status;
   }
 
-  public Integer getIdFabrica() {
-    return idFabrica;
+  public String getNomeFabrica() {
+    return nomeFabrica;
   }
 
-  public void setIdFabrica(Integer idFabrica) {
-    this.idFabrica = idFabrica;
+  public void setNomeFabrica(String nomeFabrica) {
+    this.nomeFabrica = nomeFabrica;
   }
 
   // toString
   @Override
   public String toString() {
-    return "UsuarioDTO{id=%d, nome='%s', email='%s', tipoAcesso=%s, dataCriacao=%s, status=%b, idFabrica=%d}"
-        .formatted(id, nome, email, tipoAcesso, dataCriacao, status, idFabrica);
+    return "UsuarioDTO{id='%s', nome='%s', emailGerente='%s', genero='%s', dataNascimento=%s, cargo='%s', email='%s', tipoAcesso=%s, descTipoAcesso='%s', dataCriacao=%s, status=%b, nomeFabrica='%s'}"
+        .formatted(id, nome, emailGerente, genero, dataNascimento, email, cargo, tipoAcesso, descTipoAcesso, dataCriacao, status, nomeFabrica);
   }
 }

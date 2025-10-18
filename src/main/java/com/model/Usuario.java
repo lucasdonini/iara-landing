@@ -1,38 +1,57 @@
 package com.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 // tabela: usuario
 public class Usuario {
   // Atributos
-  private Integer id; // coluna: id
+  private UUID id; // coluna: id
+  private UUID idGerente; // coluna: id_gerente
   private String nome; // coluna: nome
+  private String genero; // coluna: genero
+  private LocalDate dataNascimento; // coluna: data_nascimento
   private String email; // coluna: email
   private String senha; // coluna: senha
+  private String cargo; // coluna: cargo
   private TipoAcesso tipoAcesso; // coluna: tipo_acesso
-  private LocalDate dataCriacao; // coluna: data_criacao
+  private String descTipoAcesso; // coluna: desc_tipoacesso
+  private LocalDateTime dataCriacao; // coluna: data_criacao
   private Boolean status; // coluna: status
-  private Integer idFabrica; // coluna: id_fabrica
+  private Integer fkFabrica; // coluna: fk_fabrica
 
   // Construtor
-  public Usuario(Integer id, String nome, String email, String senha, TipoAcesso tipoAcesso, LocalDate dataCriacao, Boolean status, Integer idFabrica) {
+  public Usuario(UUID id, UUID idGerente, String nome, String genero, LocalDate dataNascimento, String email, String senha, String cargo, TipoAcesso tipoAcesso, String descTipoAcesso, LocalDateTime dataCriacao, Boolean status, Integer idFabrica) {
     this.id = id;
+    this.idGerente = idGerente;
     this.nome = nome;
+    this.genero = genero;
+    this.dataNascimento = dataNascimento;
     this.email = email;
     this.senha = senha;
     this.tipoAcesso = tipoAcesso;
+    this.descTipoAcesso = descTipoAcesso;
     this.dataCriacao = dataCriacao;
     this.status = status;
-    this.idFabrica = idFabrica;
+    this.fkFabrica = idFabrica;
   }
 
   // Getters e Setters
-  public Integer getId() {
+  public UUID getId() {
     return id;
   }
 
-  public void setId(Integer id) {
+  public void setId(UUID id) {
     this.id = id;
+  }
+
+  public UUID getIdGerente() {
+      return idGerente;
+  }
+
+  public void setIdGerente(UUID idGerente) {
+      this.idGerente = idGerente;
   }
 
   public String getNome() {
@@ -41,6 +60,22 @@ public class Usuario {
 
   public void setNome(String nome) {
     this.nome = nome;
+  }
+
+  public String getGenero() {
+      return genero;
+  }
+
+  public void setGenero(String genero) {
+      this.genero = genero;
+  }
+
+  public LocalDate getDataNascimento() {
+      return dataNascimento;
+  }
+
+  public void setDataNascimento(LocalDate dataNascimento) {
+      this.dataNascimento = dataNascimento;
   }
 
   public String getEmail() {
@@ -59,6 +94,14 @@ public class Usuario {
     this.senha = password;
   }
 
+  public String getCargo() {
+      return cargo;
+  }
+
+  public void setCargo(String cargo) {
+      this.cargo = cargo;
+  }
+
   public TipoAcesso getTipoAcesso() {
     return tipoAcesso;
   }
@@ -67,11 +110,19 @@ public class Usuario {
     this.tipoAcesso = tipoAcesso;
   }
 
-  public LocalDate getDataCriacao() {
+  public String getDescTipoAcesso() {
+      return descTipoAcesso;
+  }
+
+  public void setDescTipoAcesso(String descTipoAcesso) {
+      this.descTipoAcesso = descTipoAcesso;
+  }
+
+  public LocalDateTime getDataCriacao() {
     return dataCriacao;
   }
 
-  public void setDataCriacao(LocalDate dataCriacao) {
+  public void setDataCriacao(LocalDateTime dataCriacao) {
     this.dataCriacao = dataCriacao;
   }
 
@@ -83,18 +134,18 @@ public class Usuario {
     this.status = status;
   }
 
-  public Integer getIdFabrica() {
-    return idFabrica;
+  public Integer getFkFabrica() {
+    return fkFabrica;
   }
 
-  public void setIdFabrica(Integer idFabrica) {
-    this.idFabrica = idFabrica;
+  public void setFkFabrica(Integer fkFabrica) {
+    this.fkFabrica = fkFabrica;
   }
 
   // toString
   @Override
   public String toString() {
-    return "Usuario{id=%d, nome='%s', email='%s', senha='%s', tipoAcesso=%s, dataCriacao=%s, status=%b, idFabrica=%d}"
-        .formatted(id, nome, email, senha, tipoAcesso, dataCriacao, status, idFabrica);
+    return "Usuario{id=%d, idGerente=%d, nome='%s', genero=%s, dataNascimento=%s, email='%s', senha='%s', cargo=%s, tipoAcesso=%s, descTipoAcesso=%s, dataCriacao=%s, status=%b, idFabrica=%d}"
+        .formatted(id, nome, email, senha, tipoAcesso, dataCriacao, status, fkFabrica);
   }
 }
