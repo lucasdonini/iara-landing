@@ -1,5 +1,7 @@
 package com.model;
 
+import com.utils.StringUtils;
+
 public enum DirecaoOrdenacao {
   // Instâncias
   CRESCENTE("ASC"),
@@ -21,6 +23,6 @@ public enum DirecaoOrdenacao {
   // toString
   @Override
   public String toString() {
-    return "DirecaoOrdenacao{sql='%s'}".formatted(sql);
+    return StringUtils.capitalize(name());
   }
 }
