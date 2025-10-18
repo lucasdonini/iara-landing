@@ -6,6 +6,7 @@
 <%
   AtualizacaoUsuarioDTO usuario = (AtualizacaoUsuarioDTO) request.getAttribute("usuario");
   Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
+  List<String> emailGerentes = (List<String>) request.getAttribute("emailGerentes");
   String erro = (String) request.getAttribute("erro");
 %>
 <html>
@@ -14,12 +15,32 @@
 </head>
 <body>
 <h1>
-  Editar usuário - ID: <%= usuario.getId() %>
+  Editar usuário
 </h1>
 <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="post">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="id" value="<%= usuario.getId() %>">
   <input type="text" name="nome" value="<%= usuario.getNome() %>" placeholder="Novo nome">
+
+  <select name="email_gerente" >
+      <% if (emailGerentes != null) {%>
+      <% for (String email:emailGerentes) { %>
+      <option value="<%= email %>" <%= email.equals(usuario.getEmailGerente()) ? "selected" : "" %>>
+          <%= email %>
+      </option>
+      <% } %>
+      <% } %>
+  </select>
+
+  <select name="genero">
+      <% for (String genero: List.of("masculino", "feminino", "outros")) {%>
+      <option value=" <%= genero %>" <%= genero.equals(usuario.getGenero()) ? "selected" : ""%>>
+          <%= genero %>
+      </option>
+      <%}%>
+  </select>
+
+  <input type="text" name="cargo" value="<%= usuario.getCargo() %>" placeholder="Novo cargo">
   <input type="text" name="email" value="<%= usuario.getEmail() %>" placeholder="Novo email">
   
   <select name="nivel_acesso">
@@ -29,6 +50,8 @@
     </option>
     <% } %>
   </select>
+
+  <input type="text" name="desc_tipoacesso" value="<%= usuario.getDescTipoAcesso() %>" placeholder="Nova descrição do tipo de acesso">
   
   <select name="status">
     <% for (boolean b : List.of(true, false)) { %>
@@ -38,9 +61,9 @@
     <% } %>
   </select>
   
-  <select name="id_fabrica">
+  <select name="fk_fabrica">
     <% for (int id : fabricas.keySet()) { %>
-    <option value="<%= id %>" <%= id == usuario.getIdFabrica() ? "selected" : "" %>>
+    <option value="<%= id %>" <%= id == usuario.getFkFabrica() ? "selected" : "" %>>
       <%= fabricas.get(id) %>
     </option>
     <% } %>

@@ -65,6 +65,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 geren.value = "3";
 
                 select.add(leit); select.add(suges); select.add(alt); select.add(geren);
+            } else if (value === "genero"){
+                const masculino = new Option("Masculino");
+                const feminino = new Option("Feminino");
+                const outros = new Option("Outros");
+
+                masculino.value = "masculino";
+                feminino.value = "feminino";
+                outros.value = "outros";
+
+                select.add(masculino); select.add(feminino); select.add(outros);
             }
             containerValorFiltro.appendChild(select);
         } else {

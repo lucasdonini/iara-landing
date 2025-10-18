@@ -2,32 +2,43 @@ package com.dto;
 
 import com.model.TipoAcesso;
 
+import java.util.UUID;
+
 public class AtualizacaoUsuarioDTO {
   // Atributos
-  private Integer id;
+  private UUID id;
   private String nome;
+  private String emailGerente;
+  private String genero;
+  private String cargo;
   private String email;
   private TipoAcesso tipoAcesso;
+  private String descTipoAcesso;
   private Boolean status;
-  private Integer idFabrica;
+  private Integer fkFabrica;
 
   // Construtor
-  public AtualizacaoUsuarioDTO(Integer id, String nome, String email, TipoAcesso tipoAcesso, Boolean status, Integer idFabrica) {
+  public AtualizacaoUsuarioDTO(UUID id, String nome, String emailGerente, String genero, String cargo, String email, TipoAcesso tipoAcesso, String descTipoAcesso, Boolean status, Integer fkFabrica) {
     this.id = id;
     this.nome = nome;
+    this.emailGerente = emailGerente;
+    this.genero = genero;
+    this.cargo = cargo;
     this.email = email;
     this.tipoAcesso = tipoAcesso;
+    this.descTipoAcesso = descTipoAcesso;
     this.status = status;
-    this.idFabrica = idFabrica;
+    this.fkFabrica = fkFabrica;
   }
 
   // Getters e Setters
-  public Integer getId() {
-    return id;
+
+  public UUID getId() {
+      return id;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setId(UUID id) {
+     this.id = id;
   }
 
   public String getNome() {
@@ -36,6 +47,30 @@ public class AtualizacaoUsuarioDTO {
 
   public void setNome(String nome) {
     this.nome = nome;
+  }
+
+  public String getEmailGerente() {
+      return emailGerente;
+  }
+
+  public void setEmailGerente(String emailGerente) {
+      this.emailGerente = emailGerente;
+  }
+
+  public String getGenero() {
+      return genero;
+  }
+
+  public void setGenero(String genero) {
+      this.genero = genero;
+  }
+
+  public String getCargo() {
+      return cargo;
+  }
+
+  public void setCargo(String cargo) {
+      this.cargo = cargo;
   }
 
   public String getEmail() {
@@ -54,6 +89,14 @@ public class AtualizacaoUsuarioDTO {
     this.tipoAcesso = accessLevel;
   }
 
+  public String getDescTipoAcesso() {
+      return descTipoAcesso;
+  }
+
+  public void setDescTipoAcesso(String descTipoAcesso) {
+      this.descTipoAcesso = descTipoAcesso;
+  }
+
   public Boolean getStatus() {
     return status;
   }
@@ -62,18 +105,18 @@ public class AtualizacaoUsuarioDTO {
     this.status = status;
   }
 
-  public Integer getIdFabrica() {
-    return idFabrica;
+  public Integer getFkFabrica() {
+    return fkFabrica;
   }
 
-  public void setIdFabrica(Integer idFabrica) {
-    this.idFabrica = idFabrica;
+  public void setFkFabrica(Integer fkFabrica) {
+    this.fkFabrica = fkFabrica;
   }
 
   // toString
   @Override
   public String toString() {
-    return "AtualizacaoUsuarioDTO{id=%d, nome='%s', email='%s', tipoAcesso=%s, status=%b, idFabrica=%d}"
-        .formatted(id, nome, email, tipoAcesso, status, idFabrica);
+    return "AtualizacaoUsuarioDTO{nome='%s', emailGerente='%s', genero='%s', cargo='%s', email='%s', tipoAcesso=%s, status=%b, fkFabrica=%d}"
+        .formatted(nome, emailGerente, genero, cargo, email, tipoAcesso, status, fkFabrica);
   }
 }
