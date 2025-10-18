@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 @WebServlet("/area-restrita/superadms")
 public class SuperAdmServlet extends HttpServlet {
@@ -165,8 +166,11 @@ public class SuperAdmServlet extends HttpServlet {
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (SuperAdmDAO dao = new SuperAdmDAO()) {
-      // Recupera os super adms cadastrados no banco de dados
-      return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+      // Conversão do valor
+      Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
+
+      // Recupera e retorna os pagamentos cadastrados no banco de dados
+      return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
     }
   }
 

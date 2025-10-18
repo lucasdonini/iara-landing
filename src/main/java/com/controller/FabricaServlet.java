@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @WebServlet("/area-restrita/fabricas")
 public class FabricaServlet extends HttpServlet {
@@ -190,13 +191,21 @@ public class FabricaServlet extends HttpServlet {
   private List<FabricaDTO> listarFabricas(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     //Dados da requisição
     String campoFiltro = req.getParameter("campo_filtro");
+
+    if (Objects.equals(campoFiltro, "statusF")){
+        campoFiltro = "status";
+    }
+
     String campoSequencia = req.getParameter("campo_sequencia");
     String direcaoSequencia = req.getParameter("direcao_sequencia");
     String valorFiltro = req.getParameter("valor_filtro");
 
     try (FabricaDAO dao = new FabricaDAO()) {
-      // Recupera os planos cadastrados no banco de dados
-      return dao.listar(campoFiltro, valorFiltro, campoSequencia, direcaoSequencia);
+      // Conversão do valor
+      Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
+
+      // Recupera e retorna os pagamentos cadastrados no banco de dados
+      return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
     }
   }
 

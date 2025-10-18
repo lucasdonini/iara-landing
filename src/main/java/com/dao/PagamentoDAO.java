@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,21 @@ public class PagamentoDAO extends DAO {
     super();
   }
 
+  // Converter Valor
+  public Object converterValor(String campo, String valor){
+      try{
+          return switch(campo){
+              case "id" -> Integer.parseInt(valor);
+              case "valor" -> Double.parseDouble(valor);
+              case "status" -> Boolean.parseBoolean(valor);
+              case "data_pagamento", "data_vencimento" -> LocalDate.parse(valor);
+              case "tipo_pagamento" -> valor;
+              default -> new IllegalArgumentException();
+          };
+      } catch(DateTimeParseException | IllegalArgumentException | NullPointerException e){
+          return null;
+      }
+  }
   // Outros Métodos
 
   // === CREATE ===
@@ -66,7 +82,7 @@ public class PagamentoDAO extends DAO {
   }
 
   // === READ ===
-  public List<Pagamento> listar(String campoFiltro, String valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+  public List<Pagamento> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     // Lista de pagamentos
     List<Pagamento> pagamentos = new ArrayList<>();
 
@@ -75,7 +91,7 @@ public class PagamentoDAO extends DAO {
 
     //Verificando o campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-      sql += " WHERE %s::varchar = ?".formatted(campoFiltro);
+      sql += " WHERE %s = ?".formatted(campoFiltro);
     }
 
     // Verificando campo e direcao da ordenação
@@ -89,7 +105,7 @@ public class PagamentoDAO extends DAO {
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-        pstmt.setString(1, valorFiltro);
+        pstmt.setObject(1, valorFiltro);
       }
 
       // Resgata do banco de dados a lista de pagamentos

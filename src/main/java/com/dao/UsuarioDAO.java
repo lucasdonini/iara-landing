@@ -5,21 +5,21 @@ import com.dto.CadastroUsuarioDTO;
 import com.dto.UsuarioDTO;
 import com.model.TipoAcesso;
 
+import java.sql.*;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
 public class UsuarioDAO extends DAO {
   // Constantes
   public static final Map<String, String> camposFiltraveis = Map.of(
-      "id", "Id",
+      "id", "ID",
       "nome", "Nome",
+      "genero", "Gênero",
+      "data_nascimento", "Data de Nascimento",
+      "cargo", "Cargo",
       "email", "Email",
       "id_fabrica", "Fábrica",
       "tipo_acesso", "Tipo de Acesso",
@@ -32,32 +32,58 @@ public class UsuarioDAO extends DAO {
     super();
   }
 
+  // Converter Valor
+  public Object converterValor(String campo, String valor){
+      try{
+          return switch(campo){
+              case "tipo_acesso", "id_fabrica" -> Integer.parseInt(valor);
+              case "status" -> Boolean.parseBoolean(valor);
+              case "data_nascimento" -> LocalDate.parse(valor);
+              case "data_criacao" -> LocalDateTime.parse(valor);
+              case "nome", "genero", "cargo", "email" -> valor;
+              default -> new IllegalArgumentException();
+          };
+      } catch(DateTimeParseException | NumberFormatException | NullPointerException e){
+          return null;
+      }
+  }
+
+
   // Outros Métodos
 
   // === CREATE ===
   public void cadastrar(CadastroUsuarioDTO credenciais) throws SQLException {
     // Variáveis
+    String nome = credenciais.getNome();
+    String emailGerente = credenciais.getEmailGerente();
+    String genero = credenciais.getGenero();
+    LocalDate dataNascimento = credenciais.getDataNascimento();
+    String cargo = credenciais.getCargo();
     String email = credenciais.getEmail();
     String senha = credenciais.getSenha();
-    String nome = credenciais.getNome();
-    int idFabrica = credenciais.getIdFabrica();
-    int tipoAcesso = TipoAcesso.GERENTE.nivel();
+    Integer fkFabrica = credenciais.getFkFabrica();
+    TipoAcesso tipoAcesso = TipoAcesso.GERENTE;
     boolean status = true;
 
     // Comando SQL
     String sql = """
-        INSERT INTO usuario(nome, email, senha, tipo_acesso, status, id_fabrica)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO usuario(nome, id_gerente, genero, data_nascimento, cargo, email, senha, tipo_acesso, status, fk_fabrica, desc_tipoacesso)
+        VALUES (?, (SELECT id FROM usuario WHERE email = ?), ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       //  Definindo variáveis do comando SQL
       pstmt.setString(1, nome);
-      pstmt.setString(2, email);
-      pstmt.setString(3, senha);
-      pstmt.setInt(4, tipoAcesso);
-      pstmt.setBoolean(5, status);
-      pstmt.setInt(6, idFabrica);
+      pstmt.setString(2, emailGerente);
+      pstmt.setString(3, genero);
+      pstmt.setDate(4, Date.valueOf(dataNascimento));
+      pstmt.setString(5, cargo);
+      pstmt.setString(6, email);
+      pstmt.setString(7, senha);
+      pstmt.setInt(8, tipoAcesso.nivel());
+      pstmt.setBoolean(9, status);
+      pstmt.setInt(10, fkFabrica);
+      pstmt.setString(11, tipoAcesso.descricao());
 
       //  Cadastra o usuário no banco de dados
       pstmt.executeUpdate();
@@ -73,21 +99,26 @@ public class UsuarioDAO extends DAO {
   }
 
   // === READ ===
-  public List<UsuarioDTO> listar(String campoFiltro, String valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+  public List<UsuarioDTO> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
     // Lista de usuários
     List<UsuarioDTO> usuarios = new ArrayList<>();
 
     // Comando SQL
-    String sql = "SELECT id, id_fabrica, email, nome, tipo_acesso, status, data_criacao FROM usuario";
+    String sql = """
+        SELECT u.id, u.nome, g.email as "email_gerente", u.genero, u.data_nascimento, u.email, u.cargo, u.tipo_acesso, u.desc_tipoacesso, u.data_criacao, u.status, f.nome_unidade as "nome_fabrica"
+        FROM usuario u
+        LEFT JOIN usuario g ON g.id = u.id_gerente
+        JOIN fabrica f ON f.id = u.fk_fabrica
+      """;
 
     // Verificando campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-      sql += " WHERE %s::varchar = ?".formatted(campoFiltro);
+      sql += " WHERE u.%s = ?".formatted(campoFiltro);
     }
 
     // Verificando campo e direcao da ordenação
     if (campoSequencia != null && camposFiltraveis.containsKey(campoSequencia)) {
-      sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
+      sql += " ORDER BY u.%s %s".formatted(campoSequencia, direcaoSequencia);
 
     } else {
       sql += " ORDER BY id ASC";
@@ -96,26 +127,34 @@ public class UsuarioDAO extends DAO {
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
       if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-        pstmt.setString(1, valorFiltro);
+        pstmt.setObject(1, valorFiltro);
       }
 
       // Resgata do banco de dados a lista de usuários
       try (ResultSet rs = pstmt.executeQuery()) {
         while (rs.next()) {
           // Variáveis
-          int id = rs.getInt("id");
+          UUID id = UUID.fromString(rs.getString("id"));
           String nome = rs.getString("nome");
+          String emailGerente = rs.getString("email_gerente");
+          String genero = rs.getString("genero");
+
+          Date temp = rs.getDate("data_nascimento");
+          LocalDate dataNascimento = (temp == null ? null : temp.toLocalDate());
+
+          String cargo = rs.getString("cargo");
           String email = rs.getString("email");
           TipoAcesso tipoAcesso = TipoAcesso.deNivel(rs.getInt("tipo_acesso"));
+          String descTipoAcesso = rs.getString("desc_tipoacesso");
 
-          Date temp = rs.getDate("data_criacao");
-          LocalDate dtCriacao = (temp == null ? null : temp.toLocalDate());
+          Timestamp temp2 = rs.getTimestamp("data_criacao");
+          LocalDateTime dataCriacao = (temp2 == null ? null : temp2.toLocalDateTime());
 
           boolean status = rs.getBoolean("status");
-          int idFabrica = rs.getInt("id_fabrica");
+          String nomeFabrica = rs.getString("nome_fabrica");
 
           // Adicionando instância do DTO na lista de usuários
-          usuarios.add(new UsuarioDTO(id, nome, email, tipoAcesso, dtCriacao, status, idFabrica));
+          usuarios.add(new UsuarioDTO(id, nome, emailGerente, genero, dataNascimento, email, cargo, tipoAcesso, descTipoAcesso, dataCriacao, status, nomeFabrica));
         }
       }
     }
@@ -125,16 +164,42 @@ public class UsuarioDAO extends DAO {
     return usuarios;
   }
 
-  public AtualizacaoUsuarioDTO getCamposAlteraveis(int id) throws SQLException {
+  public List<String> emailGerentes() throws SQLException{
+      // Lista de emails
+      List<String> emailGerentes = new ArrayList<>();
+
+      // Comando SQL
+      String sql = "SELECT email FROM email_gerentes";
+
+      try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+          // Resgata do banco de dados a lista de email dos gerentes
+          try(ResultSet rs = pstmt.executeQuery()){
+              while(rs.next()){
+                  // Adicionando email na lista de email dos gerentes
+                  emailGerentes.add(rs.getString("email"));
+              }
+          }
+      }
+
+      // Retorna a lista de email dos gerentes
+      return emailGerentes;
+  }
+
+  public AtualizacaoUsuarioDTO getCamposAlteraveis(UUID id) throws SQLException {
     // Comando SQL
-    String sql = "SELECT nome, email, tipo_acesso, status, id_fabrica FROM usuario WHERE id = ?";
+    String sql = """
+        SELECT u.nome, g.email as "email_gerente", u.genero, u.data_nascimento, u.cargo, u.email, u.tipo_acesso, u.status, u.fk_fabrica, u.desc_tipoacesso
+        FROM usuario u
+        LEFT JOIN usuario g ON g.id = u.id_gerente
+        WHERE u.id = ?
+    """;
 
     // Objeto não instanciado de usuário
     AtualizacaoUsuarioDTO usuario;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
-      pstmt.setInt(1, id);
+      pstmt.setObject(1, id);
 
       // Pesquisa usuário pelo ID
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -144,15 +209,19 @@ public class UsuarioDAO extends DAO {
         }
 
         // Variáveis
-        String nome = rs.getString("nome");
-        String email = rs.getString("email");
-        int temp = rs.getInt("tipo_acesso");
-        TipoAcesso tipoAcesso = TipoAcesso.deNivel(temp);
-        boolean status = rs.getBoolean("status");
-        int idFabrica = rs.getInt("id_fabrica");
+          String nome = rs.getString("nome");
+          String emailGerente = rs.getString("email_gerente");
+          String genero = rs.getString("genero");
+          String cargo = rs.getString("cargo");
+          String email = rs.getString("email");
+          TipoAcesso tipoAcesso = TipoAcesso.deNivel(rs.getInt("tipo_acesso"));
+          String descTipoAcesso = rs.getString("desc_tipoacesso");
+          boolean status = rs.getBoolean("status");
+          Integer fkFabrica = rs.getInt("fk_fabrica");
 
-        // Instância do DTO
-        usuario = new AtualizacaoUsuarioDTO(id, nome, email, tipoAcesso, status, idFabrica);
+
+          // Instância do DTO
+        usuario = new AtualizacaoUsuarioDTO(id, nome, emailGerente, genero, cargo, email, tipoAcesso, descTipoAcesso, status, fkFabrica);
       }
     }
 
@@ -163,7 +232,13 @@ public class UsuarioDAO extends DAO {
 
   public UsuarioDTO pesquisarPorEmail(String email) throws SQLException {
     // Comando SQL
-    String sql = "SELECT id, nome, tipo_acesso, data_criacao, status, id_fabrica FROM usuario WHERE email = ?";
+    String sql = """
+        SELECT u.id, u.nome, g.email as "email_gerente", u.genero, u.data_nascimento, u.email, u.cargo, u.tipo_acesso, u.desc_tipoacesso, u.data_criacao, u.status, f.nome_unidade as "nome_fabrica"
+        FROM usuario u
+        JOIN usuario g ON g.id = u.id_gerente
+        JOIN fabrica f ON f.id = u.fk_fabrica
+        WHERE u.email = ?
+    """;
 
     // Objeto não instanciado de usuário
     UsuarioDTO usuario;
@@ -180,18 +255,27 @@ public class UsuarioDAO extends DAO {
         }
 
         // Variáveis
-        int id = rs.getInt("id");
+        // TODO: testar o getObject
+        UUID id = UUID.fromString(rs.getString("id"));
         String nome = rs.getString("nome");
-        TipoAcesso tipoAcesso = TipoAcesso.deNivel(rs.getInt("tipo_acesso"));
+        String emailGerente = rs.getString("email_gerente");
+        String genero = rs.getString("genero");
 
-        Date dtCriacaoDate = rs.getDate("data_criacao");
-        LocalDate dtCriacao = (dtCriacaoDate == null ? null : dtCriacaoDate.toLocalDate());
+        Date temp = rs.getDate("data_nascimento");
+        LocalDate dataNascimento = (temp == null ? null : temp.toLocalDate());
+
+        String cargo = rs.getString("cargo");
+        TipoAcesso tipoAcesso = TipoAcesso.deNivel(rs.getInt("tipo_acesso"));
+        String descTipoAcesso = rs.getString("desc_tipoacesso");
+
+        Timestamp temp1 = rs.getTimestamp("data_criacao");
+        LocalDateTime dataCriacao = (temp1 == null ? null : temp1.toLocalDateTime());
 
         boolean status = rs.getBoolean("status");
-        int fkFabrica = rs.getInt("id_fabrica");
+        String nomeFabrica = rs.getString("nome_fabrica");
 
         // Instância do DTO
-        usuario = new UsuarioDTO(id, nome, email, tipoAcesso, dtCriacao, status, fkFabrica);
+        usuario = new UsuarioDTO(id, nome, emailGerente, genero, dataNascimento, email, cargo, tipoAcesso, descTipoAcesso, dataCriacao, status, nomeFabrica);
       }
     }
 
@@ -203,20 +287,37 @@ public class UsuarioDAO extends DAO {
   // === UPDATE ===
   public void atualizar(AtualizacaoUsuarioDTO original, AtualizacaoUsuarioDTO alterado) throws SQLException {
     // Variáveis
-    int id = alterado.getId();
     String nome = alterado.getNome();
+    String emailGerente = alterado.getEmailGerente();
+    String genero = alterado.getGenero();
+    String cargo = alterado.getCargo();
     String email = alterado.getEmail();
     TipoAcesso tipoAcesso = alterado.getTipoAcesso();
     boolean status = alterado.getStatus();
-    int fkFabrica = alterado.getIdFabrica();
+    Integer fkFabrica = alterado.getFkFabrica();
 
     // Construção do comando SQL dinâmico
     StringBuilder sql = new StringBuilder("UPDATE usuario SET ");
     List<Object> valores = new ArrayList<>();
 
     if (!Objects.equals(nome, original.getNome())) {
-      sql.append("nome = ?,  ");
+      sql.append("nome = ?, ");
       valores.add(nome);
+    }
+
+    if (!Objects.equals(emailGerente, original.getEmailGerente())){
+        sql.append("id_gerente = (SELECT id FROM usuario WHERE email = ?), ");
+        valores.add(emailGerente);
+    }
+
+    if (!Objects.equals(genero, original.getGenero())){
+        sql.append("genero = ?, ");
+        valores.add(genero);
+    }
+
+    if (!Objects.equals(cargo, original.getCargo())){
+        sql.append("cargo = ?, ");
+        valores.add(cargo);
     }
 
     if (!Objects.equals(email, original.getEmail())) {
@@ -234,8 +335,8 @@ public class UsuarioDAO extends DAO {
       valores.add(status);
     }
 
-    if (fkFabrica != original.getIdFabrica()) {
-      sql.append("id_fabrica = ?, ");
+    if (!Objects.equals(fkFabrica, original.getFkFabrica())) {
+      sql.append("fk_fabrica = ?, ");
       valores.add(fkFabrica);
     }
 
@@ -248,8 +349,8 @@ public class UsuarioDAO extends DAO {
     sql.setLength(sql.length() - 2);
 
     // Adiciona a cláusula WHERE
-    sql.append(" WHERE id = ?");
-    valores.add(id);
+    sql.append(" WHERE email = ?");
+    valores.add(email);
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
       // Definindo variáveis do comando SQL
@@ -271,13 +372,13 @@ public class UsuarioDAO extends DAO {
   }
 
   // === DELETE ===
-  public void remover(int id) throws SQLException {
+  public void remover(UUID id) throws SQLException {
     // Comando SQL
     String sql = "DELETE FROM usuario WHERE id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Definindo variável do comando SQL
-      pstmt.setInt(1, id);
+      pstmt.setObject(1, id);
 
       // Deleta o usuário do banco de dados
       pstmt.executeUpdate();

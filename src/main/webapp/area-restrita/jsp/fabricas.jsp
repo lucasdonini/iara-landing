@@ -20,24 +20,22 @@
 
 <form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="get">
   <input type="hidden" name="action" value="read">
-  
-  <label>
-    Campo de Filtragem:
-    <select name="campo_filtro">
+
+  <label for="campoFiltro" >Campo de Filtragem:</label>
+  <select id="campoFiltro" name="campo_filtro">
       <option value="" selected>Nenhum selecionado</option>
-      
-      <% for (String chave : camposFiltraveis.keySet()) { %>
-      <option value="<%= chave %>">
-        <%= camposFiltraveis.get(chave) %>
-      </option>
-      <% } %>
-    </select>
-  </label>
-  
-  <label>
-    Valor Filtrado:
-    <input type="text" name="valor_filtro">
-  </label>
+      <option value="id" data-type="number">ID</option>
+      <option value="nome_unidade" data-type="text">Nome</option>
+      <option value="cnpj" data-type="number">CNPJ</option>
+      <option value="statusF" data-type="select">Status</option>
+      <option value="nome_industria" data-type="text">Empresa</option>
+      <option value="ramo" data-type="text">Ramo</option>
+  </select>
+
+<div id="containerValorFiltro">
+    <label for="valorFiltro" >Valor Filtrado:</label>
+    <input id="valorFiltro" type="text" name="valor_filtro">
+</div>
   
   <label>
     Ordenar por:
@@ -124,5 +122,6 @@
 </table>
 
 <a href="${pageContext.request.contextPath}/area-restrita/fabricas?action=create">Cadastrar nova Fábrica</a>
+<script src="${pageContext.request.contextPath}/javascript/infoTrader.js"></script>
 </body>
 </html>
