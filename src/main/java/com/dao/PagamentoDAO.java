@@ -1,12 +1,12 @@
 package com.dao;
 
+import com.dto.PagamentoDTO;
+import com.model.MetodoPagamento;
 import com.model.Pagamento;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class PagamentoDAO extends DAO {
       "tipo_pagamento", "Tipo de Pagamento",
       "data_vencimento", "Data de Vencimento",
       "data_pagamento", "Data do Pagamento",
-      "id_fabrica", "Fábrica"
+      "fk_metodopag", "Fábrica"
   );
 
   // Construtor
@@ -34,11 +34,11 @@ public class PagamentoDAO extends DAO {
   public Object converterValor(String campo, String valor){
       try{
           return switch(campo){
-              case "id" -> Integer.parseInt(valor);
+              case "id", "fk_metodopag" -> Integer.parseInt(valor);
               case "valor" -> Double.parseDouble(valor);
               case "status" -> Boolean.parseBoolean(valor);
-              case "data_pagamento", "data_vencimento" -> LocalDate.parse(valor);
-              case "tipo_pagamento" -> valor;
+              case "data_vencimento" -> LocalDate.parse(valor);
+              case "data_pagamento", "data_inicio" -> LocalDateTime.parse(valor);
               default -> new IllegalArgumentException();
           };
       } catch(DateTimeParseException | IllegalArgumentException | NullPointerException e){
@@ -51,22 +51,25 @@ public class PagamentoDAO extends DAO {
   public void cadastrar(Pagamento pagamento) throws SQLException {
     //Comando SQL
     String sql = """
-        INSERT INTO pagamento(valor, status, data_vencimento, data_pagamento, tipo_pagamento, id_fabrica)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO pagamento(valor, status, data_vencimento, data_pagamento, data_inicio, fk_metodopag, fk_fabrica, fk_plano)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       // Transformando Date em LocalDate
-      LocalDate dtPagamento = pagamento.getDataPagamento();
+      LocalDateTime dtPagamento = pagamento.getDataPagamento();
+      LocalDateTime dtInicio = pagamento.getDataInicio();
       LocalDate dtVencimento = pagamento.getDataVencimento();
 
       // Definindo variáveis do comando SQL
       pstmt.setDouble(1, pagamento.getValor());
       pstmt.setBoolean(2, pagamento.getStatus());
       pstmt.setDate(3, (dtVencimento == null ? null : Date.valueOf(dtVencimento)));
-      pstmt.setDate(4, (dtPagamento == null ? null : Date.valueOf(dtPagamento)));
-      pstmt.setString(5, pagamento.getTipoPagamento());
-      pstmt.setInt(6, pagamento.getIdFabrica());
+      pstmt.setTimestamp(4, (dtPagamento == null ? null : Timestamp.valueOf(dtPagamento)));
+      pstmt.setTimestamp(5, (dtInicio == null ? null : Timestamp.valueOf(dtInicio)));
+      pstmt.setInt(6, pagamento.getMetodoPagamento().getNivel());
+      pstmt.setInt(7, pagamento.getFkFabrica());
+      pstmt.setInt(8, pagamento.getFkPlano());
 
       // Cadastra o pagamento no banco de dados
       pstmt.executeUpdate();
@@ -119,14 +122,18 @@ public class PagamentoDAO extends DAO {
           Date dtVencimentoDate = rs.getDate("data_vencimento");
           LocalDate dtVencimento = (dtVencimentoDate == null ? null : dtVencimentoDate.toLocalDate());
 
-          Date dtPagtoDate = rs.getDate("data_pagamento");
-          LocalDate dtPagto = (dtPagtoDate == null ? null : dtPagtoDate.toLocalDate());
+          Timestamp dtPagtoTimestamp = rs.getTimestamp("data_pagamento");
+          LocalDateTime dtPagto = (dtPagtoTimestamp == null ? null : dtPagtoTimestamp.toLocalDateTime());
 
-          String tipoPagamento = rs.getString("tipo_pagamento");
-          int idFabrica = rs.getInt("id_fabrica");
+          Timestamp dtInicioTimestamp = rs.getTimestamp("data_inicio");
+          LocalDateTime dtInicio = (dtInicioTimestamp == null ? null : dtInicioTimestamp.toLocalDateTime());
+
+          MetodoPagamento metodoPagamento = MetodoPagamento.deNivel(rs.getInt("fk_metodopag"));
+          Integer fkFabrica = rs.getInt("fk_fabrica");
+          Integer fkPlano = rs.getInt("fk_plano");
 
           // Adicionando instância do DTO na lista de pagamentos
-          pagamentos.add(new Pagamento(id, valorPago, status, dtVencimento, dtPagto, tipoPagamento, idFabrica));
+          pagamentos.add(new Pagamento(id, valorPago, status, dtVencimento, dtPagto, dtInicio, metodoPagamento, fkFabrica, fkPlano));
         }
       }
     }
@@ -159,16 +166,20 @@ public class PagamentoDAO extends DAO {
         boolean status = rs.getBoolean("status");
 
         Date dtVencimentoDate = rs.getDate("data_vencimento");
-        LocalDate dtVencimento = (dtVencimentoDate == null ? null : dtVencimentoDate.toLocalDate());
+        LocalDate dtVencimento = dtVencimentoDate.toLocalDate();
 
-        Date dtPagtoDate = rs.getDate("data_pagamento");
-        LocalDate dtPagto = (dtPagtoDate == null ? null : dtPagtoDate.toLocalDate());
+        Timestamp dtPagtoTimestamp = rs.getTimestamp("data_pagamento");
+        LocalDateTime dtPagto = (dtPagtoTimestamp == null ? null : dtPagtoTimestamp.toLocalDateTime());
 
-        String tipoPagamento = rs.getString("tipo_pagamento");
-        int idFabrica = rs.getInt("id_fabrica");
+        Timestamp dtInicioTimestamp = rs.getTimestamp("data_inicio");
+        LocalDateTime dtInicio = (dtInicioTimestamp == null ? null : dtInicioTimestamp.toLocalDateTime());
+
+        MetodoPagamento metodoPagamento = MetodoPagamento.deNivel(rs.getInt("fk_metodopag"));
+        int fkFabrica = rs.getInt("fk_fabrica");
+        int fkPlano = rs.getInt("fk_plano");
 
         // Instância do Model
-        pagamento = new Pagamento(id, valorPago, status, dtVencimento, dtPagto, tipoPagamento, idFabrica);
+        pagamento = new Pagamento(id, valorPago, status, dtVencimento, dtPagto, dtInicio, metodoPagamento, fkFabrica, fkPlano);
       }
     }
 
@@ -198,9 +209,11 @@ public class PagamentoDAO extends DAO {
     double valorPago = alterado.getValor();
     boolean status = alterado.getStatus();
     LocalDate dataVencimento = alterado.getDataVencimento();
-    LocalDate dataPagamento = alterado.getDataPagamento();
-    String tipoPagamento = alterado.getTipoPagamento();
-    int idFabrica = alterado.getIdFabrica();
+    LocalDateTime dataPagamento = alterado.getDataPagamento();
+    LocalDateTime dataInicio = alterado.getDataInicio();
+    MetodoPagamento metodoPagamento = alterado.getMetodoPagamento();
+    int fkFabrica = alterado.getFkFabrica();
+    int fkPlano = alterado.getFkPlano();
 
     // Construção do comando SQL dinâmico
     StringBuilder sql = new StringBuilder("UPDATE pagamento SET ");
@@ -226,14 +239,24 @@ public class PagamentoDAO extends DAO {
       valores.add(dataPagamento);
     }
 
-    if (!Objects.equals(tipoPagamento, original.getTipoPagamento())) {
-      sql.append("tipo_pagamento = ?, ");
-      valores.add(tipoPagamento);
+    if (!Objects.equals(dataInicio, original.getDataInicio())) {
+      sql.append("data_inicio = ?, ");
+      valores.add(dataInicio);
     }
 
-    if (original.getIdFabrica() != idFabrica) {
-      sql.append("id_fabrica = ?, ");
-      valores.add(idFabrica);
+    if (!Objects.equals(metodoPagamento, original.getMetodoPagamento())){
+        sql.append("fk_metodopag = ?, ");
+        valores.add(metodoPagamento.getNivel());
+    }
+
+    if (original.getFkFabrica() != fkFabrica) {
+      sql.append("fk_fabrica = ?, ");
+      valores.add(fkFabrica);
+    }
+
+    if (original.getFkPlano() != fkPlano) {
+        sql.append("fk_plano = ?, ");
+        valores.add(fkPlano);
     }
 
     // Retorna vazio se nada foi alterado

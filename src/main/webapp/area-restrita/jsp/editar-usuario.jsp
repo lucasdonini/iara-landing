@@ -8,7 +8,7 @@
   Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
   List<String> emailGerentes = (List<String>) request.getAttribute("emailGerentes");
   String erro = (String) request.getAttribute("erro");
-  
+
   emailGerentes.add("");
 %>
 <html>
@@ -25,6 +25,9 @@
   <input type="text" name="nome" value="<%= usuario.getNome() %>" placeholder="Novo nome">
   
   <select name="email_gerente">
+    <% if (usuario.getEmailGerente() == null) {%>
+    <option value="" selected>-- Selecione --</option>
+    <% } %>
     <% for (String email : emailGerentes) { %>
     <option value="<%= email %>" <%= email.equals(usuario.getEmailGerente()) ? "selected" : "" %>>
       <%= email %>

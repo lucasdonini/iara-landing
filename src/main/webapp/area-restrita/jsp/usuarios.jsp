@@ -26,7 +26,7 @@
     <option value="" selected>Nenhum selecionado</option>
     <option value="nome" data-type="text">Nome</option>
     <option value="genero" data-type="select">Gênero</option>
-    <option value="data_nascimento" data-type="date">Data de Nascimento</option>
+    <option value="data_nascimento" data-type="date-nascimento">Data de Nascimento</option>
     <option value="cargo" data-type="text">Cargo</option>
     <option value="email" data-type="email">Email</option>
     <option value="tipo_acesso" data-type="select">Tipo de Acesso</option>

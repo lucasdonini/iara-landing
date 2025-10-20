@@ -39,7 +39,7 @@
     <% } %>
   </select>
   
-  <input type="date" name="data_nascimento" max="<%= LocalDate.now().minusYears(18) %>" required>
+  <input type="date" name="data_nascimento" max="<%= LocalDate.now().minusYears(16) %>" required>
   <input type="text" name="cargo" placeholder="Cargo" required>
   <input type="email" name="email" placeholder="Email" required>
   <input type="text" pattern=".{8,}" title="A senha deve ter 8 ou mais caractéres" name="senha" placeholder="Senha"
