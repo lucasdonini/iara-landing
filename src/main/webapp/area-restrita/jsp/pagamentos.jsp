@@ -32,8 +32,9 @@
       <option value="valor" data-type="decimal">Valor Pago</option>
       <option value="statusP" data-type="select">Status</option>
       <option value="data_vencimento" data-type="date">Data Vencimento</option>
-      <option value="data_pagamento" data-type="date">Data Pagamento</option>
-      <option value="tipo_pagamento" data-type="select">Tipo de Pagamento</option>
+      <option value="data_pagamento" data-type="datetime-local">Data Pagamento</option>
+      <option value="data_inicio" data-type="datetime-local">Data de Início</option>
+      <option value="fk_metodopag" data-type="select">Metodo de Pagamento</option>
       <!-- POR O FILTRO POR FÁBRICA -->
   </select>
 
@@ -73,12 +74,15 @@
     <th>Status</th>
     <th>Data de Vencimento</th>
     <th>Data de Pagamento</th>
-    <th>Tipo de Pagamento</th>
+    <th>Data de Início</th>
+    <th>Método de Pagamento</th>
     <th>Fábrica</th>
+    <th>Plano</th>
   </tr>
   <%
     for (Pagamento pagamento : pagamentos) {
-      LocalDate dtPagto = pagamento.getDataPagamento();
+      LocalDateTime dtPagto = pagamento.getDataPagamento();
+      LocalDateTime dtInicio = pagamento.getDataInicio();
   %>
   <tr>
     <td>
@@ -100,7 +104,13 @@
       <%= StringUtils.capitalize(pagamento.getTipoPagamento()) %>
     </td>
     <td>
-      <%= fabricas.get(pagamento.getIdFabrica()) %>
+      <%= pagamento.getMetodoPagamento().toString() %>
+    </td>
+    <td>
+      <%= fabricas.get(pagamento.getFkFabrica()) %>
+    </td>
+    <td>
+        <%= planos.get(pagamento.getFkPlano())%>
     </td>
     <td>
       <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="get">

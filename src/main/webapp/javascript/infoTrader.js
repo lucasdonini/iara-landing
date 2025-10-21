@@ -75,6 +75,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 outros.value = "outros";
 
                 select.add(masculino); select.add(feminino); select.add(outros);
+            } else if(value === "fk_metodopag"){
+                const credito = new Option("Cartão de Crédito");
+                const boleto = new Option("Boleto");
+                const pix = new Option("PIX");
+                const trans = new Option("Transferência Bancária");
+                const debito = new Option("Débito Automático");
+
+                credito.value = "1";
+                boleto.value = "2";
+                pix.value = "3";
+                trans.value = "4";
+                debito.value = "5";
+
+                select.add(credito); select.add(boleto); select.add(pix); select.add(trans); select.add(debito);
             }
             containerValorFiltro.appendChild(select);
         } else {
@@ -87,14 +101,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 input.step = "0.01";
                 input.inputMode = "decimal";
                 input.placeholder = "R$";
-            }
-            else{
-                input.type = tipo;
-                if (tipo === "date"){
-                    input.max = "1999-12-31";
+            } else{
+                if (tipo === "date-nascimento"){
+                    input.type = "date";
+                    const data = new Date();
+                    data.setFullYear(data.getFullYear()-16);
+
+                    input.max = data.toISOString().split("T")[0];
+                } else if (tipo === "date" || tipo === "datetime-local"){
+                    input.type = tipo;
+                    const data = new Date();
+                    data.setFullYear(data.getFullYear()+15);
+
+                    input.max = data.toISOString().split("T")[0];
                 }
                 input.placeholder = "Digite o valor...";
             }
+
             containerValorFiltro.appendChild(input);
         }
     });

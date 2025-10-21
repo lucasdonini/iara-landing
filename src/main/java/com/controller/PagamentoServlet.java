@@ -2,7 +2,10 @@ package com.controller;
 
 import com.dao.FabricaDAO;
 import com.dao.PagamentoDAO;
+import com.dao.PlanoDAO;
+import com.dto.PagamentoDTO;
 import com.exception.ExcecaoDeJSP;
+import com.model.MetodoPagamento;
 import com.model.Pagamento;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,9 +46,11 @@ public class PagamentoServlet extends HttpServlet {
         case "read" -> {
           List<Pagamento> pagamentos = listarPagamentos(req);
           Map<Integer, String> fabricas = getMapFabricas();
+          Map<Integer, String> planos = getMapPlanos();
 
           req.setAttribute("pagamentos", pagamentos);
           req.setAttribute("fabricas", fabricas);
+          req.setAttribute("planos", planos);
 
           destino = PAGINA_PRINCIPAL;
         }
@@ -52,16 +58,21 @@ public class PagamentoServlet extends HttpServlet {
         case "update" -> {
           Pagamento pagamento = getInformacoesAlteraveis(req);
           Map<Integer, String> fabricas = getMapFabricas();
+          Map<Integer, String> planos = getMapPlanos();
 
           req.setAttribute("pagamento", pagamento);
           req.setAttribute("fabricas", fabricas);
+          req.setAttribute("planos", planos);
 
           destino = PAGINA_EDICAO;
         }
 
         case "create" -> {
           Map<Integer, String> fabricas = getMapFabricas();
+          Map<Integer, String> planos = getMapPlanos();
+
           req.setAttribute("fabricas", fabricas);
+          req.setAttribute("planos", planos);
 
           destino = PAGINA_CADASTRO;
         }
@@ -151,7 +162,10 @@ public class PagamentoServlet extends HttpServlet {
     temp = req.getParameter("data_vencimento").trim();
     LocalDate dataVencimento = LocalDate.parse(temp);
 
-    LocalDate dataPagamento = null;
+    temp = req.getParameter("data_inicio").trim();
+    LocalDateTime dataInicio = temp.isBlank() ? null : LocalDateTime.parse(temp);
+
+    LocalDateTime dataPagamento = null;
     double valor = 0;
 
     if (status) {
@@ -161,19 +175,31 @@ public class PagamentoServlet extends HttpServlet {
         throw ExcecaoDeJSP.campoNecessarioFaltante("Data do Pagamento");
       }
 
-      dataPagamento = LocalDate.parse(temp);
+      dataPagamento = LocalDateTime.parse(temp);
 
-      temp = req.getParameter("valor").trim();
-      valor = Double.parseDouble(temp);
     }
 
-    String tipoPagamento = req.getParameter("tipo_pagamento").trim();
+    temp = req.getParameter("valor").trim();
+    valor = Double.parseDouble(temp);
 
-    temp = req.getParameter("id_fabrica").trim();
+    temp = req.getParameter("metodo_pagamento").trim();
+    int metodoPagamentoNivel = Integer.parseInt(temp);
+    MetodoPagamento metodoPagamento = MetodoPagamento.deNivel(metodoPagamentoNivel);
+
+    temp = req.getParameter("fk_fabrica").trim();
+    if (temp.isBlank()){
+        throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
+    }
     int fkFabrica = Integer.parseInt(temp);
 
+    temp = req.getParameter("fk_plano").trim();
+    if (temp.isBlank()){
+        throw ExcecaoDeJSP.campoNecessarioFaltante("plano");
+    }
+    int fkPlano = Integer.parseInt(temp);
+
     // Instância do Model
-    Pagamento pagamento = new Pagamento(null, valor, status, dataVencimento, dataPagamento, tipoPagamento, fkFabrica);
+    Pagamento pagamento = new Pagamento(null, valor, status, dataVencimento, dataPagamento, dataInicio, metodoPagamento, fkFabrica, fkPlano);
 
     try (PagamentoDAO dao = new PagamentoDAO()) {
       // Cadastra o pagamento
@@ -220,11 +246,15 @@ public class PagamentoServlet extends HttpServlet {
     }
   }
 
-  // === UPDATE ===
-  private void atualizarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da request
-    String tipoPagamento = req.getParameter("tipo_pagamento").trim();
+  private Map<Integer, String> getMapPlanos() throws SQLException, ClassNotFoundException {
+      try (PlanoDAO dao = new PlanoDAO()) {
+          return dao.getMapIdNome();
+      }
+  }
 
+  // === UPDATE ===
+  private void atualizarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
+    // Dados da requisição
     String temp = req.getParameter("id").trim();
     int id = Integer.parseInt(temp);
 
@@ -237,14 +267,32 @@ public class PagamentoServlet extends HttpServlet {
     temp = req.getParameter("data_vencimento").trim();
     LocalDate dataVencimento = LocalDate.parse(temp);
 
-    temp = req.getParameter("data_pagamento").trim();
-    LocalDate dataPagamento = LocalDate.parse(temp);
+    LocalDateTime dataPagamento = null;
+    if (status){
+        temp = req.getParameter("data_pagamento").trim();
 
-    temp = req.getParameter("id_fabrica").trim();
+        if (temp.isBlank()){
+            throw ExcecaoDeJSP.campoNecessarioFaltante("Data de Pagamento");
+        }
+
+        dataPagamento = LocalDateTime.parse(temp);
+    }
+
+    temp = req.getParameter("data_inicio").trim();
+    LocalDateTime dataInicio = LocalDateTime.parse(temp);
+
+    temp = req.getParameter("fk_metodopag");
+    int fkMetodopag = Integer.parseInt(temp);
+    MetodoPagamento metodoPagamento = MetodoPagamento.deNivel(fkMetodopag);
+
+    temp = req.getParameter("fk_fabrica").trim();
     int fkFabrica = Integer.parseInt(temp);
 
+    temp = req.getParameter("fk_plano").trim();
+    int fkPLano = Integer.parseInt(temp);
+
     // Instância do Model
-    Pagamento alterado = new Pagamento(id, valorPago, status, dataVencimento, dataPagamento, tipoPagamento, fkFabrica);
+    Pagamento alterado = new Pagamento(id, valorPago, status, dataVencimento, dataPagamento, dataInicio, metodoPagamento, fkFabrica, fkPLano);
 
     try (PagamentoDAO dao = new PagamentoDAO()) {
       // Recupera os dados originais do banco de dados
