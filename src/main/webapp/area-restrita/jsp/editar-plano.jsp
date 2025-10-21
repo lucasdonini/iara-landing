@@ -17,6 +17,12 @@
   <input type="text" name="nome" value="<%= plano.getNome() %>" placeholder="Novo nome">
   <input type="number" name="valor" step="any" value="<%= plano.getValor() %>" placeholder="Novo valor">
   <input type="text" name="descricao" value="<%= plano.getDescricao() %>" placeholder="Nova descricao">
+  <label>Anos:</label>
+  <input type="number" name="anos_duracao" value="<%= plano.getDuracao().getYears() %>" min="0">
+  <label>Meses:</label>
+  <input type="number" name="meses_duracao" value="<%= plano.getDuracao().getMonths() %>" min="0">
+  <label>Dias:</label>
+  <input type="number" name="dias_duracao" value="<%= plano.getDuracao().getDays() %>" min="0">
   <button type="submit">Salvar</button>
 </form>
 <a href="${pageContext.request.contextPath}/area-restrita/planos">Cancelar</a>

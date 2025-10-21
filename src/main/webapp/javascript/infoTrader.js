@@ -91,6 +91,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 select.add(credito); select.add(boleto); select.add(pix); select.add(trans); select.add(debito);
             }
             containerValorFiltro.appendChild(select);
+        } else if (tipo === "duracao"){
+           const numDuracao = document.createElement("input");
+           const labelDuracao = document.createElement("select");
+
+           numDuracao.id = "valorFiltro";
+           numDuracao.name = "valor_filtro";
+           labelDuracao.id = "labelDuracao";
+           labelDuracao.name = "label_duracao";
+
+           numDuracao.type = "number";
+           numDuracao.min = "0";
+           numDuracao.placeholder = "Ex: 2 (anos, meses...)";
+
+           const anos = new Option("Anos");
+           anos.value = "years";
+           const meses = new Option("Meses");
+           meses.value = "months";
+           const dias = new Option("Dias");
+           dias.value = "days";
+
+           labelDuracao.add(anos); labelDuracao.add(meses); labelDuracao.add(dias);
+
+           containerValorFiltro.appendChild(numDuracao);
+           containerValorFiltro.appendChild(labelDuracao);
         } else {
             const input = document.createElement("input");
             input.id = "valorFiltro";
@@ -101,23 +125,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 input.step = "0.01";
                 input.inputMode = "decimal";
                 input.placeholder = "R$";
+            } else if (tipo === "date-nascimento"){
+                input.type = "date";
+                const data = new Date();
+                data.setFullYear(data.getFullYear()-16);
+
+                input.max = data.toISOString().split("T")[0];
+            } else if (tipo === "date" || tipo === "datetime-local"){
+                input.type = tipo;
+                const data = new Date();
+                data.setFullYear(data.getFullYear()+15);
+
+                input.max = data.toISOString().split("T")[0];
             } else{
-                if (tipo === "date-nascimento"){
-                    input.type = "date";
-                    const data = new Date();
-                    data.setFullYear(data.getFullYear()-16);
-
-                    input.max = data.toISOString().split("T")[0];
-                } else if (tipo === "date" || tipo === "datetime-local"){
-                    input.type = tipo;
-                    const data = new Date();
-                    data.setFullYear(data.getFullYear()+15);
-
-                    input.max = data.toISOString().split("T")[0];
-                }
+                input.type = tipo;
                 input.placeholder = "Digite o valor...";
             }
-
             containerValorFiltro.appendChild(input);
         }
     });
