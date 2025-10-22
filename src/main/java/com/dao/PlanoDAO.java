@@ -1,6 +1,7 @@
 package com.dao;
 
 import com.model.Plano;
+import org.postgresql.util.PGInterval;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,7 +17,8 @@ public class PlanoDAO extends DAO {
       "id", "Id",
       "nome", "Nome",
       "valor", "Valor",
-      "descricao", "Descrição"
+      "descricao", "Descrição",
+      "duracao", "Duração do Plano"
   );
 
   // Construtor
@@ -31,9 +33,10 @@ public class PlanoDAO extends DAO {
               case "id" -> Integer.parseInt(valor);
               case "valor" -> Double.parseDouble(valor);
               case "descricao", "nome" -> valor;
+              case "duracao" -> new PGInterval(valor);
               default -> throw new IllegalArgumentException();
           };
-      } catch(DateTimeParseException | IllegalArgumentException | NullPointerException e){
+      } catch(DateTimeParseException | IllegalArgumentException | NullPointerException | SQLException e){
           return null;
       }
   }
@@ -43,13 +46,14 @@ public class PlanoDAO extends DAO {
   // === CREATE ===
   public void cadastrar(Plano plano) throws SQLException {
     //Comando SQL
-    String sql = "INSERT INTO plano(nome, valor, descricao) VALUES (?, ?, ?)";
+    String sql = "INSERT INTO plano(nome, valor, descricao, duracao) VALUES (?, ?, ?, ?)";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) { //Preparando comando SQL
       //Definindo variáveis no código SQL
       pstmt.setString(1, plano.getNome());
       pstmt.setDouble(2, plano.getValor());
       pstmt.setString(3, plano.getDescricao());
+      pstmt.setObject(4, plano.getDuracao());
 
       // Cadastra o plano no banco de dados
       pstmt.execute();
@@ -70,7 +74,7 @@ public class PlanoDAO extends DAO {
     List<Plano> planos = new ArrayList<>();
 
     // Comando SQL
-    String sql = "SELECT id, nome, valor, descricao FROM plano";
+    String sql = "SELECT id, nome, valor, descricao, duracao FROM plano";
 
     // Verificando campo do filtro
     if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
@@ -100,8 +104,11 @@ public class PlanoDAO extends DAO {
           double valor = rs.getDouble("valor");
           String descricao = rs.getString("descricao");
 
+          String duracaoS = String.valueOf(rs.getObject("duracao"));
+          PGInterval duracao = new PGInterval(duracaoS);
+
           // Adicionando instância do DTO na lista de planos
-          planos.add(new Plano(id, nome, valor, descricao));
+          planos.add(new Plano(id, nome, valor, descricao, duracao));
         }
       }
     }
@@ -113,7 +120,7 @@ public class PlanoDAO extends DAO {
 
   public Plano pesquisarPorId(int id) throws SQLException {
     // Comando SQL
-    String sql = "SELECT nome, valor, descricao FROM plano WHERE id = ?";
+    String sql = "SELECT nome, valor, descricao, duracao FROM plano WHERE id = ?";
 
     // Objeto não instanciado de plano
     Plano plano;
@@ -134,8 +141,11 @@ public class PlanoDAO extends DAO {
         double valor = rs.getDouble("valor");
         String descricao = rs.getString("descricao");
 
+        String duracaoS = String.valueOf(rs.getObject("duracao"));
+        PGInterval duracao = new PGInterval(duracaoS);
+
         // Instância do Model
-        plano = new Plano(id, nome, valor, descricao);
+        plano = new Plano(id, nome, valor, descricao, duracao);
       }
     }
 
@@ -146,7 +156,7 @@ public class PlanoDAO extends DAO {
 
   public Plano pesquisarPorNome(String nome) throws SQLException {
     // Comando SQL
-    String sql = "SELECT id, valor, descricao FROM plano WHERE nome = ?";
+    String sql = "SELECT id, valor, descricao, duracao FROM plano WHERE nome = ?";
 
     // Objeto não instanciado de plano
     Plano plano;
@@ -167,8 +177,10 @@ public class PlanoDAO extends DAO {
         double valor = rs.getDouble("valor");
         String descricao = rs.getString("descricao");
 
+        String duracaoS = String.valueOf(rs.getObject("duracao"));
+        PGInterval duracao = new PGInterval(duracaoS);
         // Instância do Model
-        plano = new Plano(id, nome, valor, descricao);
+        plano = new Plano(id, nome, valor, descricao, duracao);
       }
     }
 
@@ -222,6 +234,7 @@ public class PlanoDAO extends DAO {
     String nome = alterado.getNome();
     double valor = alterado.getValor();
     String descricao = alterado.getDescricao();
+    PGInterval duracao = alterado.getDuracao();
 
     // Construção do comando SQL dinâmico
     StringBuilder sql = new StringBuilder("UPDATE plano SET ");
@@ -240,6 +253,11 @@ public class PlanoDAO extends DAO {
     if (!Objects.equals(descricao, original.getDescricao())) {
       sql.append("descricao = ?, ");
       valores.add(descricao);
+    }
+
+    if (!Objects.equals(duracao, original.getDuracao())) {
+        sql.append("duracao = ?, ");
+        valores.add(duracao);
     }
 
     // Retorna vazio se nada foi alterado

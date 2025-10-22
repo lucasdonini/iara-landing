@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.postgresql.util.PGInterval;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -139,8 +140,19 @@ public class PlanoServlet extends HttpServlet {
 
     double valor = Double.parseDouble(temp);
 
+    temp = req.getParameter("anos_duracao").trim();
+    int anosDuracao = temp.isBlank() ? 0 : Integer.parseInt(temp);
+
+    temp = req.getParameter("meses_duracao").trim();
+    int mesesDuracao = temp.isBlank() ? 0 : Integer.parseInt(temp);
+
+    temp = req.getParameter("dias_duracao").trim();
+    int diasDuracao = temp.isBlank() ? 0 : Integer.parseInt(temp);
+
+    PGInterval duracao = new PGInterval(anosDuracao, mesesDuracao, diasDuracao, 0, 0, 0);
+
     // Instância do Model
-    Plano plano = new Plano(null, nome, valor, descricao);
+    Plano plano = new Plano(null, nome, valor, descricao, duracao);
 
     try (PlanoDAO dao = new PlanoDAO()) {
       // Verifica se o novo plano não viola a chave UNIQUE
@@ -161,9 +173,16 @@ public class PlanoServlet extends HttpServlet {
     String direcaoSequencia = req.getParameter("direcao_sequencia");
     String valorFiltro = req.getParameter("valor_filtro");
 
+
     try (PlanoDAO dao = new PlanoDAO()) {
+       Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
       // Conversão do valor
-      Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
+      if (Objects.equals(campoFiltro, "duracao")){
+          String labelDuracao = req.getParameter("label_duracao");
+          String interval = "%s %s".formatted(valorFiltro,labelDuracao);
+          valorFiltroConvertido = dao.converterValor(campoFiltro, interval);
+      }
+
 
       // Recupera e retorna os pagamentos cadastrados no banco de dados
       return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
@@ -196,8 +215,19 @@ public class PlanoServlet extends HttpServlet {
     }
     double valor = Double.parseDouble(temp);
 
-    // Instância do Model
-    Plano alterado = new Plano(id, nome, valor, descricao);
+    temp = req.getParameter("anos_duracao").trim();
+    int anosDuracao = temp.isBlank() ? 0 : Integer.parseInt(temp);
+
+    temp = req.getParameter("meses_duracao").trim();
+    int mesesDuracao = temp.isBlank() ? 0 : Integer.parseInt(temp);
+
+    temp = req.getParameter("dias_duracao").trim();
+    int diasDuracao = temp.isBlank() ? 0 : Integer.parseInt(temp);
+
+    PGInterval duracao = new PGInterval(anosDuracao, mesesDuracao, diasDuracao, 0, 0, 0);
+
+      // Instância do Model
+    Plano alterado = new Plano(id, nome, valor, descricao, duracao);
 
     try (PlanoDAO dao = new PlanoDAO()) {
       // Recupera os dados originais do banco de dados

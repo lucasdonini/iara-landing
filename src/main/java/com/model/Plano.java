@@ -1,5 +1,7 @@
 package com.model;
 
+import org.postgresql.util.PGInterval;
+
 // tabela: plano
 public class Plano {
   // Atributos
@@ -7,13 +9,15 @@ public class Plano {
   private String nome; // coluna: nome
   private Double valor; // coluna: valor
   private String descricao; // coluna: descricao
+  private PGInterval duracao; // coluna: duracao
 
   // Construtor
-  public Plano(Integer id, String nome, Double valor, String descricao) {
+  public Plano(Integer id, String nome, Double valor, String descricao, PGInterval duracao) {
     this.id = id;
     this.nome = nome;
     this.valor = valor;
     this.descricao = descricao;
+    this.duracao = duracao;
   }
 
   // Getters e Setters
@@ -49,9 +53,17 @@ public class Plano {
     this.descricao = descricao;
   }
 
-  // toString
+  public PGInterval getDuracao() {
+      return duracao;
+  }
+
+  public void setDuracao(PGInterval duracao) {
+      this.duracao = duracao;
+  }
+
+    // toString
   @Override
   public String toString() {
-    return "Plano{id=%d, nome='%s', valor=%.2f, descricao='%s'}".formatted(id, nome, valor, descricao);
+    return "Plano{id=%d, nome='%s', valor=%.2f, descricao='%s', duracao=%s}".formatted(id, nome, valor, descricao, duracao);
   }
 }
