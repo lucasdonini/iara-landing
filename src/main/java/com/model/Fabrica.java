@@ -2,7 +2,7 @@ package com.model;
 
 // tabela: fabrica
 public class Fabrica {
-  // Atributos
+
   private Integer id; // coluna: id
   private String nomeUnidade; // coluna: nome_unidade
   private String cnpj; // coluna: cnpj
@@ -12,7 +12,6 @@ public class Fabrica {
   private String ramo; // coluna: ramo
   private Integer idPlano; // coluna: id_plano
 
-  // Construtor
   public Fabrica(Integer id, String nomeUnidade, String cnpj, Boolean status, String emailCorporativo, String nomeIndustria, String ramo, Integer idPlano) {
     this.id = id;
     this.nomeUnidade = nomeUnidade;
@@ -24,7 +23,6 @@ public class Fabrica {
     this.idPlano = idPlano;
   }
 
-  // Getters e Setters
   public Integer getId() {
     return id;
   }
@@ -89,7 +87,6 @@ public class Fabrica {
     this.idPlano = idPlano;
   }
 
-  // toString
   @Override
   public String toString() {
     return "Fabrica{id=%s, nomeUnidade='%s', cnpj='%s', status=%b, emailCorporativo='%s', nomeIndustria='%s', ramo='%s', idPlano=%d}"
