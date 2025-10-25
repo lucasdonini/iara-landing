@@ -1,7 +1,9 @@
 package com.dto;
 
+// DTO da tabela fabrica utilizado para o cadastro de novas fábricas no banco de dados
+
 public class CadastroFabricaDTO {
-  // Atributos
+
   private String nomeUnidade;
   private String cnpj;
   private String emailCorporativo;
@@ -9,7 +11,6 @@ public class CadastroFabricaDTO {
   private String ramo;
   private Integer idPlano;
 
-  // Construtor
   public CadastroFabricaDTO(String nomeUnidade, String cnpj, String emailCorporativo, String nomeIndustria, String ramo, Integer idPlano) {
     this.nomeUnidade = nomeUnidade;
     this.cnpj = cnpj;
@@ -19,7 +20,6 @@ public class CadastroFabricaDTO {
     this.idPlano = idPlano;
   }
 
-  // Getters e Setters
   public String getNomeUnidade() {
     return nomeUnidade;
   }
@@ -68,7 +68,6 @@ public class CadastroFabricaDTO {
     this.idPlano = idPlano;
   }
 
-  // toString
   @Override
   public String toString() {
     return "CadastroFabricaDTO{nomeUnidade='%s', cnpj='%s', emailCorporativo='%s', nomeIndustria='%s', ramo='%s', idPlano=%d}"
