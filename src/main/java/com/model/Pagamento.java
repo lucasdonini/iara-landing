@@ -1,38 +1,36 @@
 package com.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 // tabela: pagamento
 public class Pagamento {
-  // Constantes
-  public static final Map<String, String> tiposPagamento = Map.of(
-      "debito", "Débito",
-      "credito", "Crédito",
-      "pix", "Pix"
-  );
 
-  // Atributos
   private Integer id; // coluna: id
   private Double valor; // coluna: valor
   private Boolean status; // coluna: status
   private LocalDate dataVencimento; // coluna: data_vencimento
-  private LocalDate dataPagamento; // coluna data_pagamento
-  private String tipoPagamento; // coluna: tipo_pagamento
-  private Integer idFabrica; // coluna: id_fabrica
+  private LocalDateTime dataPagamento; // coluna: data_pagamento
+  private LocalDateTime dataInicio; // coluna: data_inicio
+  private MetodoPagamento metodoPagamento; // coluna: fk_metodopag
+  private Integer fkFabrica; // coluna: fk_fabrica
+  private Integer fkPlano; // coluna: fk_plano
 
-  // Construtor
-  public Pagamento(Integer id, Double valor, Boolean status, LocalDate dataVencimento, LocalDate dataPagamento, String tipoPagamnto, Integer idFabrica) {
+
+  public Pagamento(Integer id, Double valor, Boolean status, LocalDate dataVencimento, LocalDateTime dataPagamento, LocalDateTime dataInicio, MetodoPagamento metodoPagamento, Integer idFabrica, Integer fkPlano) {
     this.id = id;
     this.valor = valor;
     this.status = status;
     this.dataVencimento = dataVencimento;
     this.dataPagamento = dataPagamento;
-    this.tipoPagamento = tipoPagamnto;
-    this.idFabrica = idFabrica;
+    this.dataInicio = dataInicio;
+    this.metodoPagamento = metodoPagamento;
+    this.fkFabrica = idFabrica;
+    this.fkPlano = fkPlano;
   }
 
-  // Getters e Setters
+
   public Integer getId() {
     return id;
   }
@@ -65,34 +63,50 @@ public class Pagamento {
     this.dataVencimento = dataVencimento;
   }
 
-  public LocalDate getDataPagamento() {
+  public LocalDateTime getDataPagamento() {
     return dataPagamento;
   }
 
-  public void setDataPagamento(LocalDate dataPagamento) {
+  public void setDataPagamento(LocalDateTime dataPagamento) {
     this.dataPagamento = dataPagamento;
   }
 
-  public String getTipoPagamento() {
-    return tipoPagamento;
+  public LocalDateTime getDataInicio() {
+      return dataInicio;
   }
 
-  public void setTipoPagamento(String tipoPagamento) {
-    this.tipoPagamento = tipoPagamento;
+  public void setDataInicio(LocalDateTime dataInicio) {
+      this.dataInicio = dataInicio;
   }
 
-  public Integer getIdFabrica() {
-    return this.idFabrica;
+  public MetodoPagamento getMetodoPagamento() {
+    return metodoPagamento;
   }
 
-  public void setIdFabrica(Integer idFabrica) {
-    this.idFabrica = idFabrica;
+  public void setMetodoPagamento(MetodoPagamento metodoPagamento) {
+    this.metodoPagamento = metodoPagamento;
   }
 
-  // toString
+  public Integer getFkFabrica() {
+    return this.fkFabrica;
+  }
+
+  public void setFkFabrica(Integer fkFabrica) {
+    this.fkFabrica = fkFabrica;
+  }
+
+  public Integer getFkPlano() {
+      return fkPlano;
+  }
+
+  public void setFkPlano(Integer fkPlano) {
+      this.fkPlano = fkPlano;
+  }
+
+
   @Override
   public String toString() {
-    return "Pagamento{id=%d, valor=%.2f, status=%b, dataVencimento=%s, dataPagamento=%s, tipoPagamento='%s', idFabrica=%d}"
-        .formatted(id, valor, status, dataVencimento, dataPagamento, tipoPagamento, idFabrica);
+    return "Pagamento{id=%d, valor=%.2f, status=%b, dataVencimento=%s, dataPagamento=%s, dataInicio=%s, metodoPagamento='%s', fkFabrica=%d, fkPlano=%d}"
+        .formatted(id, valor, status, dataVencimento, dataPagamento, dataInicio, metodoPagamento, fkFabrica, fkPlano);
   }
 }

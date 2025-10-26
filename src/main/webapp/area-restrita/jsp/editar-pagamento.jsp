@@ -1,10 +1,11 @@
-<%@ page import="static com.model.Pagamento.tiposPagamento" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="com.model.Pagamento" %>
+<%@ page import="com.model.MetodoPagamento" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
   Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
+  Map<Integer, String> planos = (Map<Integer, String>) request.getAttribute("planos");
   Pagamento pagamento = (Pagamento) request.getAttribute("pagamento");
   String erro = (String) request.getAttribute("erro");
 %>
@@ -36,22 +37,33 @@
   <input type="date" name="data_vencimento" value="<%= pagamento.getDataVencimento() %>">
   
   <label>Data de pagamento:</label>
-  <input type="date" name="data_pagamento" value="<%= pagamento.getDataPagamento() %>">
-  
-  <select name="tipo_pagamento">
-    <% for (String key : tiposPagamento.keySet()) { %>
-    <option value="<%= key %>" <%= pagamento.getTipoPagamento().equals(key) ? "selected" : "" %>>
-      <%= tiposPagamento.get(key) %>
+  <input type="datetime-local" name="data_pagamento" value="<%= pagamento.getDataPagamento() %>" <%= pagamento.getStatus() ? "required" : ""%> >
+
+  <label>Data de início:</label>
+  <input type="datetime-local" name="data_inicio" value="<%= pagamento.getDataInicio() %>">
+
+  <select name="fk_metodopag">
+    <% for (MetodoPagamento m : MetodoPagamento.values()) { %>
+    <option value="<%= m.getNivel() %>" <%= pagamento.getMetodoPagamento().equals(m) ? "selected" : "" %>>
+      <%= m.toString() %>
     </option>
     <% } %>
   </select>
   
-  <select name="id_fabrica">
+  <select name="fk_fabrica">
     <% for (int id : fabricas.keySet()) { %>
-    <option value="<%= id %>" <%= id == pagamento.getIdFabrica() ? "selected" : "" %>>
+    <option value="<%= id %>" <%= id == pagamento.getFkFabrica() ? "selected" : "" %>>
       <%= fabricas.get(id) %>
     </option>
     <% } %>
+  </select>
+
+  <select name="fk_plano">
+      <% for (int id : planos.keySet()) { %>
+      <option value="<%= id %>" <%= id == pagamento.getFkPlano() ? "selected" : "" %>>
+          <%= planos.get(id) %>
+      </option>
+      <% } %>
   </select>
   <button type="submit">Salvar</button>
 </form>

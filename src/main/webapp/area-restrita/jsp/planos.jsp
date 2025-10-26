@@ -25,6 +25,7 @@
     <option value="nome" data-type="text">Nome</option>
     <option value="valor" data-type="decimal" placeholder="R$">Valor</option>
     <option value="descricao" data-type="text-area">Descrição</option>
+    <option value="duracao" data-type="duracao">Duração</option>
   </select>
 
   <div id="containerValorFiltro">
@@ -63,6 +64,7 @@
     <th>Nome</th>
     <th>Valor</th>
     <th>Descrição</th>
+    <th>Duração</th>
   </tr>
   <% for (Plano plano : planos) { %>
   <tr>
@@ -73,6 +75,15 @@
     <td><%= NumerosUtils.reais.format(plano.getValor()) %>
     </td>
     <td><%= plano.getDescricao() %>
+    </td>
+    <td>
+       <% if (plano.getDuracao().getYears() != 0) {%>
+            <p><%= plano.getDuracao().getYears() %> Anos</p>
+        <%} if (plano.getDuracao().getMonths() != 0) {%>
+            <p><%= plano.getDuracao().getMonths() %> Meses</p>
+        <%} if (plano.getDuracao().getDays() != 0) {%>
+            <p><%= plano.getDuracao().getDays() %> Dias</p>
+        <% } %>
     </td>
     <td>
       <form action="${pageContext.request.contextPath}/area-restrita/planos" method="get">

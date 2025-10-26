@@ -6,8 +6,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+// DTO da tabela usuario utilizado para a visualização dos dados registrados no banco de dados
+
 public class UsuarioDTO {
-  // Atributos
+
   private UUID id;
   private String nome;
   private String emailGerente;
@@ -20,7 +22,6 @@ public class UsuarioDTO {
   private Boolean status;
   private String nomeFabrica;
 
-  // Construtor
   public UsuarioDTO(UUID id, String nome, String emailGerente, String genero, LocalDate dataNascimento, String email, String cargo, TipoAcesso tipoAcesso, LocalDateTime dataCriacao, Boolean status, String nomeFabrica) {
     this.id = id;
     this.nome = nome;
@@ -34,8 +35,6 @@ public class UsuarioDTO {
     this.status = status;
     this.nomeFabrica = nomeFabrica;
   }
-
-  // Getters e Setters
 
   public UUID getId() {
       return id;
@@ -125,7 +124,6 @@ public class UsuarioDTO {
     this.nomeFabrica = nomeFabrica;
   }
 
-  // toString
   @Override
   public String toString() {
     return "UsuarioDTO{id='%s', nome='%s', emailGerente='%s', genero='%s', dataNascimento=%s, cargo='%s', email='%s', tipoAcesso=%s, dataCriacao=%s, status=%b, nomeFabrica='%s'}"

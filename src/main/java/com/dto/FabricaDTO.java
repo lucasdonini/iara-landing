@@ -1,7 +1,9 @@
 package com.dto;
 
+// DTO da tabela fabrica utilizado para a visualização dos dados registrados no banco de dados
+
 public class FabricaDTO {
-  // Atributos
+
   private Integer id;
   private String nomeUnidade;
   private String cnpj;
@@ -12,7 +14,6 @@ public class FabricaDTO {
   private String endereco;
   private String plano;
 
-  // Construtor
   public FabricaDTO(Integer id, String nomeUnidade, String cnpj, Boolean status, String emailCorporativo, String nomeIndustria, String ramo, String endereco, String plano) {
     this.id = id;
     this.nomeUnidade = nomeUnidade;
@@ -25,7 +26,6 @@ public class FabricaDTO {
     this.plano = plano;
   }
 
-  // Getters e Setters
   public Integer getId() {
     return id;
   }
@@ -98,7 +98,7 @@ public class FabricaDTO {
     this.plano = plano;
   }
 
-  // Outros métodos
+  // Método que formata o CNPJ no formato correto para armazenar no banco de dados
   public String cnpjFormatado() {
     StringBuilder sb = new StringBuilder(cnpj);
     sb.insert(12, "-");
@@ -108,7 +108,6 @@ public class FabricaDTO {
     return sb.toString();
   }
 
-  // toString
   @Override
   public String toString() {
     return "FabricaDTO{id=%d, nomeUnidade='%s', cnpj='%s', status=%b, emailCorporativo='%s', nomeIndustria='%s', ramo='%s', endereco='%s', plano='%s'}"

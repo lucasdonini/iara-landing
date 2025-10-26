@@ -11,12 +11,13 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+// Servlet para filtrar o acesso a páginas JSP da área-restrita, uma vez que não estamos utilizando WEB-INF
+
 @WebFilter(filterName = "area-restrita-filter", urlPatterns = "/area-restrita/*")
 public class AreaRestritaFilter extends HttpFilter {
-  // Constantes
+
   private static final String PAGINA_LOGIN = "/jsp/login.jsp";
 
-  // Outros Métodos
   @Override
   public void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {
     HttpSession session = req.getSession(false);
