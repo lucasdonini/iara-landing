@@ -4,8 +4,10 @@ import com.model.TipoAcesso;
 
 import java.util.UUID;
 
+// DTO da tabela usuario utilizado para a atualização de usuários registrados no banco de dados
+
 public class AtualizacaoUsuarioDTO {
-  // Atributos
+
   private UUID id;
   private String nome;
   private String emailGerente;
@@ -16,7 +18,6 @@ public class AtualizacaoUsuarioDTO {
   private Boolean status;
   private Integer fkFabrica;
 
-  // Construtor
   public AtualizacaoUsuarioDTO(UUID id, String nome, String emailGerente, String genero, String cargo, String email, TipoAcesso tipoAcesso, Boolean status, Integer fkFabrica) {
     this.id = id;
     this.nome = nome;
@@ -28,8 +29,6 @@ public class AtualizacaoUsuarioDTO {
     this.status = status;
     this.fkFabrica = fkFabrica;
   }
-
-  // Getters e Setters
 
   public UUID getId() {
       return id;
@@ -103,7 +102,6 @@ public class AtualizacaoUsuarioDTO {
     this.fkFabrica = fkFabrica;
   }
 
-  // toString
   @Override
   public String toString() {
     return "AtualizacaoUsuarioDTO{id=%s, nome='%s', emailGerente='%s', genero='%s', cargo='%s', email='%s', tipoAcesso=%s, status=%b, fkFabrica=%d}"

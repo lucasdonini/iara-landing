@@ -2,25 +2,24 @@ package com.model;
 
 import com.utils.StringUtils;
 
+/*
+* ENUM de simplificação referente as direções de ordenação do banco de dados, com o objetivo de facilitar a manipulação da ordenação das listagens dos dados do banco de dados.
+* */
 public enum DirecaoOrdenacao {
-  // Instâncias
+
   CRESCENTE("ASC"),
   DECRESCENTE("DESC");
 
-  // Atributos
   private final String sql;
 
-  // Construtor
   DirecaoOrdenacao(String sql) {
     this.sql = sql;
   }
 
-  // Outros Métodos
   public String getSql() {
     return sql;
   }
 
-  // toString
   @Override
   public String toString() {
     return StringUtils.capitalize(name());

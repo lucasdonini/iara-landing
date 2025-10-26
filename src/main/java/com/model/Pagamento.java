@@ -7,7 +7,6 @@ import java.util.Map;
 // tabela: pagamento
 public class Pagamento {
 
-  // Atributos
   private Integer id; // coluna: id
   private Double valor; // coluna: valor
   private Boolean status; // coluna: status
@@ -19,7 +18,6 @@ public class Pagamento {
   private Integer fkPlano; // coluna: fk_plano
 
 
-  // Construtor
   public Pagamento(Integer id, Double valor, Boolean status, LocalDate dataVencimento, LocalDateTime dataPagamento, LocalDateTime dataInicio, MetodoPagamento metodoPagamento, Integer idFabrica, Integer fkPlano) {
     this.id = id;
     this.valor = valor;
@@ -32,7 +30,7 @@ public class Pagamento {
     this.fkPlano = fkPlano;
   }
 
-  // Getters e Setters
+
   public Integer getId() {
     return id;
   }
@@ -105,7 +103,7 @@ public class Pagamento {
       this.fkPlano = fkPlano;
   }
 
-    // toString
+
   @Override
   public String toString() {
     return "Pagamento{id=%d, valor=%.2f, status=%b, dataVencimento=%s, dataPagamento=%s, dataInicio=%s, metodoPagamento='%s', fkFabrica=%d, fkPlano=%d}"

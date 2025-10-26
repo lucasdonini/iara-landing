@@ -8,7 +8,7 @@ import java.util.UUID;
 
 // tabela: usuario
 public class Usuario {
-  // Atributos
+
   private UUID id; // coluna: id
   private UUID idGerente; // coluna: id_gerente
   private String nome; // coluna: nome
@@ -22,7 +22,6 @@ public class Usuario {
   private Boolean status; // coluna: status
   private Integer fkFabrica; // coluna: fk_fabrica
 
-  // Construtor
   public Usuario(UUID id, UUID idGerente, String nome, String genero, LocalDate dataNascimento, String email, String senha, String cargo, TipoAcesso tipoAcesso, LocalDateTime dataCriacao, Boolean status, Integer idFabrica) {
     this.id = id;
     this.idGerente = idGerente;
@@ -38,7 +37,6 @@ public class Usuario {
     this.cargo = cargo;
   }
 
-  // Getters e Setters
   public UUID getId() {
     return id;
   }
@@ -135,7 +133,6 @@ public class Usuario {
     this.fkFabrica = fkFabrica;
   }
 
-  // toString
   @Override
   public String toString() {
     String nascimento = dataNascimento.format(DataUtils.DMY);

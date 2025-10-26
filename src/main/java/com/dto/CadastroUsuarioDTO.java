@@ -2,8 +2,10 @@ package com.dto;
 
 import java.time.LocalDate;
 
+// DTO da tabela usuario utilizado para o cadastro de novos usuários no banco de dados
+
 public class CadastroUsuarioDTO {
-  // Atributos
+
   private String nome;
   private String emailGerente;
   private String genero;
@@ -13,7 +15,6 @@ public class CadastroUsuarioDTO {
   private String senha;
   private Integer fkFabrica;
 
-  // Construtor
   public CadastroUsuarioDTO(String nome, String emailGerente, String genero, LocalDate dataNascimento, String cargo, String email, String senha, Integer nomefabrica) {
     this.nome = nome;
     this.emailGerente = emailGerente;
@@ -25,7 +26,6 @@ public class CadastroUsuarioDTO {
     this.fkFabrica = nomefabrica;
   }
 
-  // Getters e Setters
   public String getNome() {
     return nome;
   }
@@ -90,7 +90,6 @@ public class CadastroUsuarioDTO {
     this.fkFabrica = fkFabrica;
   }
 
-  // toString
   @Override
   public String toString() {
     return "CadastroUsuarioDTO{nome='%s', emailGerente='%s', genero='%s', dataNascimento=%s, cargo='%s', email='%s', senha='%s', fkFabrica=%d}".formatted(nome, emailGerente, genero, dataNascimento, cargo, email, senha, fkFabrica);

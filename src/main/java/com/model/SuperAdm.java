@@ -2,14 +2,13 @@ package com.model;
 
 // tabela: super_adm
 public class SuperAdm {
-  // Atributos
+
   private Integer id; // coluna: id
   private String nome; // coluna: nome
   private String cargo; // coluna: cargo
   private String email; // coluna: email
   private String senha; // coluna: senha
 
-  // Construtor
   public SuperAdm(Integer id, String nome, String cargo, String email, String senha) {
     this.id = id;
     this.nome = nome;
@@ -18,7 +17,6 @@ public class SuperAdm {
     this.senha = senha;
   }
 
-  // Getters e Setters
   public Integer getId() {
     return id;
   }
@@ -59,7 +57,6 @@ public class SuperAdm {
     this.senha = senha;
   }
 
-  // toString
   @Override
   public String toString() {
     return "SuperAdm{id=%d, nome='%s', cargo='%s', email='%s', senha='%s'}".formatted(id, nome, cargo, email, senha);

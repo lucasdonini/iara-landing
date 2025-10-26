@@ -24,265 +24,247 @@ import java.util.UUID;
 
 @WebServlet("/area-restrita/usuarios")
 public class UsuarioServlet extends HttpServlet {
-  // Constantes
-  private static final String PAGINA_PRINCIPAL = "jsp/usuarios.jsp";
-  private static final String PAGINA_CADASTRO = "jsp/cadastro-usuario.jsp";
-  private static final String PAGINA_EDICAO = "jsp/editar-usuario.jsp";
-  private static final String PAGINA_ERRO = "/html/erro.html";
 
-  // GET e POST
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    // Dados da requisição
-    String action = req.getParameter("action");
-    action = (action == null ? "read" : action.trim());
+    private static final String PAGINA_PRINCIPAL = "jsp/usuarios.jsp";
+    private static final String PAGINA_CADASTRO = "jsp/cadastro-usuario.jsp";
+    private static final String PAGINA_EDICAO = "jsp/editar-usuario.jsp";
+    private static final String PAGINA_ERRO = "/html/erro.html";
 
-    // Dados da resposta
-    boolean erro = true;
-    String destino = null;
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-    try {
-      // Faz a ação correspondente à escolha
-      switch (action) {
-        case "read" -> {
-          List<UsuarioDTO> usuarios = getListaUsuarios(req);
-          Map<Integer, String> fabricas = getMapFabricas();
+        String action = req.getParameter("action");
+        action = (action == null ? "read" : action.trim());
 
-          req.setAttribute("usuarios", usuarios);
-          req.setAttribute("fabricas", fabricas);
-          destino = PAGINA_PRINCIPAL;
+        boolean erro = true;
+        String destino = null;
+
+        try {
+            switch (action) {
+                case "read" -> {
+                    List<UsuarioDTO> usuarios = getListaUsuarios(req);
+                    Map<Integer, String> fabricas = getMapFabricas();
+
+                    req.setAttribute("usuarios", usuarios);
+                    req.setAttribute("fabricas", fabricas);
+                    destino = PAGINA_PRINCIPAL;
+                }
+
+                case "update" -> {
+                    AtualizacaoUsuarioDTO usuario = getInformacoesAlteraveis(req);
+                    Map<Integer, String> fabricas = getMapFabricas();
+                    List<String> emailGerentes = getListaEmailsGerentes();
+
+                    req.setAttribute("usuario", usuario);
+                    req.setAttribute("fabricas", fabricas);
+                    req.setAttribute("emailGerentes", emailGerentes);
+                    destino = PAGINA_EDICAO;
+                }
+
+                case "create" -> {
+                    Map<Integer, String> fabricas = getMapFabricas();
+                    List<String> emailGerentes = getListaEmailsGerentes();
+
+                    req.setAttribute("fabricas", fabricas);
+                    req.setAttribute("emailGerentes", emailGerentes);
+                    destino = PAGINA_CADASTRO;
+                }
+
+                default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
+            }
+
+            erro = false;
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar operação no banco:");
+            e.printStackTrace(System.err);
+
+        } catch (ClassNotFoundException e) {
+            System.err.println("Falha ao carregar o driver postgresql:");
+            e.printStackTrace(System.err);
+
+        } catch (Throwable e) {
+            System.err.println("Erro inesperado:");
+            e.printStackTrace(System.err);
         }
 
-        case "update" -> {
-          AtualizacaoUsuarioDTO usuario = getInformacoesAlteraveis(req);
-          Map<Integer, String> fabricas = getMapFabricas();
-          List<String> emailGerentes = getListaEmailsGerentes();
+        if (erro) {
+            resp.sendRedirect(req.getContextPath() + PAGINA_ERRO);
 
-          req.setAttribute("usuario", usuario);
-          req.setAttribute("fabricas", fabricas);
-          req.setAttribute("emailGerentes", emailGerentes);
-          destino = PAGINA_EDICAO;
+        } else {
+            req.getRequestDispatcher(destino).forward(req, resp);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        String action = req.getParameter("action").trim();
+
+        String destino = PAGINA_ERRO;
+
+        try {
+            switch (action) {
+                case "create" -> registrarUsuario(req);
+                case "update" -> atualizarUsuario(req);
+                case "delete" -> removerUsuario(req);
+                default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
+            }
+
+            destino = req.getServletPath();
+
+        }
+        // Se houver alguma exceção de JSP, aciona o método doGet
+        catch (ExcecaoDeJSP e) {
+            req.setAttribute("erro", e.getMessage());
+            doGet(req, resp);
+            return;
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar operação no banco:");
+            e.printStackTrace(System.err);
+
+        } catch (ClassNotFoundException e) {
+            System.err.println("Falha ao carregar o driver postgresql:");
+            e.printStackTrace(System.err);
+
+        } catch (Throwable e) {
+            System.err.println("Erro inesperado:");
+            e.printStackTrace(System.err);
         }
 
-        case "create" -> {
-          Map<Integer, String> fabricas = getMapFabricas();
-          List<String> emailGerentes = getListaEmailsGerentes();
+        resp.sendRedirect(req.getContextPath() + destino);
+    }
 
-          req.setAttribute("fabricas", fabricas);
-          req.setAttribute("emailGerentes", emailGerentes);
-          destino = PAGINA_CADASTRO;
+    // === CREATE ===
+    private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
+
+        String nome = req.getParameter("nome").trim();
+        String emailGerente = req.getParameter("email_gerentes").trim();
+        String genero = req.getParameter("genero").trim();
+
+        String temp = req.getParameter("data_nascimento").trim();
+        LocalDate dataNascimento = LocalDate.parse(temp);
+
+        String cargo = req.getParameter("cargo").trim();
+        String email = req.getParameter("email").trim();
+
+        String senhaOriginal = req.getParameter("senha");
+        String hashSenha = SenhaUtils.hashear(senhaOriginal);
+
+        temp = req.getParameter("fk_fabrica");
+        // Verifica se fábrica foi preenchida
+        if (temp.isBlank()) {
+            throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
+        }
+        Integer fkFabrica = Integer.parseInt(temp);
+
+        CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(nome, emailGerente, genero, dataNascimento, cargo, email, hashSenha, fkFabrica);
+
+        // Se a senha não tiver no mínimo 8 caracteres, lança uma exceção de JSP
+        if (!senhaOriginal.matches(".{8,}")) {
+            throw ExcecaoDeJSP.senhaCurta(8);
         }
 
-        default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
-      }
+        try (UsuarioDAO dao = new UsuarioDAO()) {
+            // Verifica se o cadastro não viola a constraint UNIQUE de 'email' em 'usuario'
+            if (dao.pesquisarPorEmail(email) != null) {
+                throw ExcecaoDeJSP.emailDuplicado();
+            }
 
-      erro = false;
-
-    }
-    // Se houver alguma exceção, registra no terminal
-    catch (SQLException e) {
-      System.err.println("Erro ao executar operação no banco:");
-      e.printStackTrace(System.err);
-
-    } catch (ClassNotFoundException e) {
-      System.err.println("Falha ao carregar o driver postgresql:");
-      e.printStackTrace(System.err);
-
-    } catch (Throwable e) {
-      System.err.println("Erro inesperado:");
-      e.printStackTrace(System.err);
+            dao.cadastrar(credenciais);
+        }
     }
 
-    // Redireciona para a página de erro, ou encaminha a requisição e a resposta
-    if (erro) {
-      resp.sendRedirect(req.getContextPath() + PAGINA_ERRO);
+    // === READ ===
+    private List<UsuarioDTO> getListaUsuarios(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+        String campoFiltro = req.getParameter("campo_filtro");
 
-    } else {
-      req.getRequestDispatcher(destino).forward(req, resp);
-    }
-  }
+        if (Objects.equals(campoFiltro, "statusU")) {
+            campoFiltro = "status";
+        }
 
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-    // Dados da requisição
-    String action = req.getParameter("action").trim();
+        String campoSequencia = req.getParameter("campo_sequencia");
+        String direcaoSequencia = req.getParameter("direcao_sequencia");
+        String valorFiltro = req.getParameter("valor_filtro");
 
-    // Dados da resposta
-    String destino = PAGINA_ERRO;
+        try (UsuarioDAO dao = new UsuarioDAO()) {
+            Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
 
-    try {
-      // Faz a ação correspondente à escolha
-      switch (action) {
-        case "create" -> registrarUsuario(req);
-        case "update" -> atualizarUsuario(req);
-        case "delete" -> removerUsuario(req);
-        default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
-      }
-
-      destino = req.getServletPath();
-
-    }
-    // Se houver alguma exceção de JSP, aciona o método doGet
-    catch (ExcecaoDeJSP e) {
-      req.setAttribute("erro", e.getMessage());
-      doGet(req, resp);
-      return;
-
-    }
-    // Se houver alguma exceção, registra no terminal
-    catch (SQLException e) {
-      System.err.println("Erro ao executar operação no banco:");
-      e.printStackTrace(System.err);
-
-    } catch (ClassNotFoundException e) {
-      System.err.println("Falha ao carregar o driver postgresql:");
-      e.printStackTrace(System.err);
-
-    } catch (Throwable e) {
-      System.err.println("Erro inesperado:");
-      e.printStackTrace(System.err);
+            return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
+        }
     }
 
-    // Redireciona para a página de destino
-    resp.sendRedirect(req.getContextPath() + destino);
-  }
+    // === UPDATE ===
+    private void atualizarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
 
-  // Outros Métodos
+        UUID id = UUID.fromString(req.getParameter("id"));
+        String nome = req.getParameter("nome").trim();
+        String emailGerente = req.getParameter("email_gerente").trim();
+        String genero = req.getParameter("genero").trim();
+        String cargo = req.getParameter("cargo").trim();
+        String email = req.getParameter("email").trim();
 
-  // === CREATE ===
-  private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da requisição
-    String nome = req.getParameter("nome").trim();
-    String emailGerente = req.getParameter("email_gerentes").trim();
-    String genero = req.getParameter("genero").trim();
+        String temp = req.getParameter("status").trim();
+        boolean status = Boolean.parseBoolean(temp);
 
-    String temp = req.getParameter("data_nascimento").trim();
-    LocalDate dataNascimento = LocalDate.parse(temp);
+        temp = req.getParameter("fk_fabrica").trim();
+        // Verifica se fábrica foi preenchida
+        if (temp.isBlank()) {
+            throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
+        }
+        int fkFabrica = Integer.parseInt(temp);
 
-    String cargo = req.getParameter("cargo").trim();
-    String email = req.getParameter("email").trim();
+        temp = req.getParameter("nivel_acesso").trim();
+        int nivelAcessoInt = Integer.parseInt(temp);
+        TipoAcesso tipoAcesso = TipoAcesso.deNivel(nivelAcessoInt);
 
-    String senhaOriginal = req.getParameter("senha");
-    String hashSenha = SenhaUtils.hashear(senhaOriginal);
+        AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, emailGerente, genero, cargo, email, tipoAcesso, status, fkFabrica);
 
-    temp = req.getParameter("fk_fabrica");
-    if (temp.isBlank()) {
-      throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
-    }
-    Integer fkFabrica = Integer.parseInt(temp);
+        try (UsuarioDAO dao = new UsuarioDAO()) {
+            // Busca no banco de dados o usuário original
+            AtualizacaoUsuarioDTO original = dao.getCamposAlteraveis(id);
 
-    // Instância do DTO
-    CadastroUsuarioDTO credenciais = new CadastroUsuarioDTO(nome, emailGerente, genero, dataNascimento, cargo, email, hashSenha, fkFabrica);
+            // Verifica se as alterações não violam a chave UNIQUE de 'email' em 'usuario'
+            UsuarioDTO teste = dao.pesquisarPorEmail(email);
+            if (teste != null && !teste.getId().equals(id)) {
+                throw ExcecaoDeJSP.emailDuplicado();
+            }
 
-    // Se a senha não tiver no mínimo 8 caracteres, lança uma exceção de JSP
-    if (!senhaOriginal.matches(".{8,}")) {
-      throw ExcecaoDeJSP.senhaCurta(8);
-    }
-
-    try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Verifica se o cadastro não viola a constraint UNIQUE de 'email' em 'usuario'
-      if (dao.pesquisarPorEmail(email) != null) {
-        throw ExcecaoDeJSP.emailDuplicado();
-      }
-
-      // Cadastra o usuário
-      dao.cadastrar(credenciais);
-    }
-  }
-
-  // === READ ===
-  private List<UsuarioDTO> getListaUsuarios(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    //Dados da requisição
-    String campoFiltro = req.getParameter("campo_filtro");
-
-    if (Objects.equals(campoFiltro, "statusU")){
-        campoFiltro = "status";
+            dao.atualizar(original, alteracoes);
+        }
     }
 
-    String campoSequencia = req.getParameter("campo_sequencia");
-    String direcaoSequencia = req.getParameter("direcao_sequencia");
-    String valorFiltro = req.getParameter("valor_filtro");
+    // === DELETE ===
+    private void removerUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
 
-    try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Conversão do valor
-      Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
+        UUID id = UUID.fromString(req.getParameter("id"));
 
-      // Recupera e retorna os pagamentos cadastrados no banco de dados
-      return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
+        try (UsuarioDAO dao = new UsuarioDAO()) {
+            dao.remover(id);
+        }
     }
-  }
 
-  private List<String> getListaEmailsGerentes() throws SQLException, ClassNotFoundException{
-      try(UsuarioDAO dao = new UsuarioDAO()){
-          return dao.listarEmailGerentes();
-      }
-  }
-
-  private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
-    try (FabricaDAO dao = new FabricaDAO()) {
-      return dao.getMapIdNome();
+    // Método que lista os emails da view 'email_gerentes'
+    private List<String> getListaEmailsGerentes() throws SQLException, ClassNotFoundException {
+        try (UsuarioDAO dao = new UsuarioDAO()) {
+            return dao.listarEmailGerentes();
+        }
     }
-  }
 
-  private AtualizacaoUsuarioDTO getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da requisição
-    UUID id = UUID.fromString(req.getParameter("id"));
-
-    try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Recupera e retorna os dados originais do banco de dados
-      return dao.getCamposAlteraveis(id);
+    // HashMap das fábricas, onde a chave é o ID e o valor o nome da unidade
+    private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
+        try (FabricaDAO dao = new FabricaDAO()) {
+            return dao.getMapIdNome();
+        }
     }
-  }
 
-  // === UPDATE ===
-  private void atualizarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    // Dados da requisição
-    UUID id = UUID.fromString(req.getParameter("id"));
-    String nome = req.getParameter("nome").trim();
-    String emailGerente = req.getParameter("email_gerente").trim();
-    String genero = req.getParameter("genero").trim();
-    String cargo = req.getParameter("cargo").trim();
-    String email = req.getParameter("email").trim();
+    // Resgata os dados do banco de dados que podem ser atualizados, utilizados no método UPDATE
+    private AtualizacaoUsuarioDTO getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
 
-    String temp = req.getParameter("status").trim();
-    boolean status = Boolean.parseBoolean(temp);
+        UUID id = UUID.fromString(req.getParameter("id"));
 
-    temp = req.getParameter("fk_fabrica").trim();
-    if (temp.isBlank()){
-      throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
+        try (UsuarioDAO dao = new UsuarioDAO()) {
+            return dao.getCamposAlteraveis(id);
+        }
     }
-    int fkFabrica = Integer.parseInt(temp);
-
-    temp = req.getParameter("nivel_acesso").trim();
-    int nivelAcessoInt = Integer.parseInt(temp);
-    TipoAcesso tipoAcesso = TipoAcesso.deNivel(nivelAcessoInt);
-
-    // Instância do DTO
-    AtualizacaoUsuarioDTO alteracoes = new AtualizacaoUsuarioDTO(id, nome, emailGerente, genero, cargo, email, tipoAcesso, status, fkFabrica);
-
-    try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Busca no banco de dados o usuário original
-      AtualizacaoUsuarioDTO original = dao.getCamposAlteraveis(id);
-
-      // Verifica se as alterações não violam a chave UNIQUE de 'email' em 'usuario'
-      UsuarioDTO teste = dao.pesquisarPorEmail(email);
-      if (teste != null && !teste.getId().equals(id)) {
-        throw ExcecaoDeJSP.emailDuplicado();
-      }
-
-      // Atualiza o usuário
-      dao.atualizar(original, alteracoes);
-    }
-  }
-
-  // === DELETE ===
-  private void removerUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    // Dados da requisição
-    UUID id = UUID.fromString(req.getParameter("id"));
-
-    try (UsuarioDAO dao = new UsuarioDAO()) {
-      // Remove o usuário
-      dao.remover(id);
-    }
-  }
 }

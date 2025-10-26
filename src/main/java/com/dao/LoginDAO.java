@@ -9,27 +9,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LoginDAO extends DAO {
-  // Construtor
+
   public LoginDAO() throws SQLException, ClassNotFoundException {
     super();
     conn.setAutoCommit(true);
   }
 
-  // Outros Métodos
+  // Método para realizar o login, comparando os dados originais do banco com os inseridos pelo usuário
   public SuperAdmDTO login(LoginDTO credenciais) throws SQLException {
-    // Comando SQL
+
     String sql = "SELECT id, nome, cargo, senha FROM super_adm WHERE email = ?";
 
-    // Variáveis
     String senhaHash, nome, cargo;
     SuperAdmDTO superAdm;
     int id;
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Definindo variável do comando SQL
       pstmt.setString(1, credenciais.getEmail());
 
-      // Resgata do banco de dados o super adm correspondente ao email
       try (ResultSet rs = pstmt.executeQuery()) {
 
         // Se não encontrar retorna null (o login falhou)
@@ -45,12 +42,10 @@ public class LoginDAO extends DAO {
           return null;
         }
 
-        // Variáveis
         id = rs.getInt("id");
         nome = rs.getString("nome");
         cargo = rs.getString("cargo");
 
-        // Retorno e instância do DTO
         superAdm = new SuperAdmDTO(id, nome, cargo, credenciais.getEmail());
       }
     }

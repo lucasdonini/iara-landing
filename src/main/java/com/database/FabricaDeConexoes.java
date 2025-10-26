@@ -6,11 +6,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+// Classe para criar e desfazer conexão com o banco de dados
+
 public class FabricaDeConexoes {
-  // Constantes
+
   private static final Dotenv dotenv = Dotenv.configure().load();
 
-  // Outros Métodos
   public Connection getConnection() throws SQLException, ClassNotFoundException {
     String url = dotenv.get("DB_URL");
 

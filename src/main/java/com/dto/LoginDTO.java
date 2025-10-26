@@ -1,17 +1,17 @@
 package com.dto;
 
+// DTO composto de atributos da tabela super_adm utilizado para o login
+
 public class LoginDTO {
-  // Atributos
+
   private String email;
   private String senha;
 
-  // Construtor
   public LoginDTO(String email, String senha) {
     this.email = email;
     this.senha = senha;
   }
 
-  // Getters e Setters
   public String getEmail() {
     return email;
   }
@@ -28,7 +28,6 @@ public class LoginDTO {
     this.senha = senha;
   }
 
-  // toString
   @Override
   public String toString() {
     return "LoginDTO{email='%s', senha='%s'}".formatted(email, senha);

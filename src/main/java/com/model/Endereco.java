@@ -2,7 +2,7 @@ package com.model;
 
 // tabela: endereco
 public class Endereco {
-  // Atributos
+
   private Integer id; // coluna: id
   private String cep; // coluna: cep
   private Integer numero; // coluna: numero
@@ -10,7 +10,6 @@ public class Endereco {
   private String complemento; //coluna: complemento
   private Integer idFabrica; // coluna: id_fabrica
 
-  // Construtor
   public Endereco(Integer id, String cep, Integer numero, String rua, String complemento, Integer idFabrica) {
     this.id = id;
     this.cep = cep;
@@ -20,7 +19,6 @@ public class Endereco {
     this.idFabrica = idFabrica;
   }
 
-  // Getters e Setters
   public Integer getId() {
     return id;
   }
@@ -69,7 +67,6 @@ public class Endereco {
     this.idFabrica = idFabrica;
   }
 
-  // toString
   @Override
   public String toString() {
     return "Endereco{id=%d, cep='%s', numero=%d, rua='%s', complemento='%s', idFabrica=%d}"
