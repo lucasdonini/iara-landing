@@ -33,6 +33,9 @@
   <input type="text" name="logradouro" placeholder="Logradouro">
   <input type="number" name="numero" placeholder="n°">
   <input type="text" name="complemento" placeholder="Complemento">
+  <input type="text" name="bairro" placeholder="Bairro">
+  <input type="text" name="cidade" placeholder="Cidade">
+  <input type="text" name="estado" placeholder="Estado">
   
   <button type="submit">Cadastrar</button>
 </form>

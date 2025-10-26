@@ -46,6 +46,9 @@
   <input type="text" name="logradouro" value="<%= e.getRua() %>" placeholder="Logradouro">
   <input type="number" name="numero" value="<%= e.getNumero() %>" placeholder="n°">
   <input type="text" name="complemento" value="<%= complemento != null ? complemento : "" %>" placeholder="Complemento">
+  <input type="text" name="bairro" value="<%= e.getBairro() %>" placeholder="Bairro">
+  <input type="text" name="cidade" value="<%= e.getCidade() %>" placeholder="Cidade">
+  <input type="text" name="estado" value="<%= e.getEstado() %>" placeholder="Estado">
   
   <input type="hidden" name="id_fabrica" value="<%= f.getId() %>">
   <input type="hidden" name="action" value="update">

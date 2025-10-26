@@ -16,7 +16,7 @@ public class FabricaDAO extends DAO {
     // Constante dos campos utilizados para ordenação e filtragem da listagem dos dados
     public static final Map<String, String> camposFiltraveis = Map.of(
             "id", "Id",
-            "cnpj", "CNPJ",
+            "cnpj_unidade", "CNPJ",
             "nome_unidade", "Nome da Unidade",
             "status", "Status",
             "email_corporativo", "Email Corporativo",
@@ -36,7 +36,7 @@ public class FabricaDAO extends DAO {
             return switch (campo) {
                 case "id" -> Integer.parseInt(valor);
                 case "status" -> Boolean.parseBoolean(valor);
-                case "email_corporativo", "nome_unidade", "nome_industria", "cnpj", "ramo" -> valor;
+                case "email_corporativo", "nome_unidade", "nome_industria", "cnpj_unidade", "ramo" -> valor;
                 default -> throw new IllegalArgumentException();
             };
         } catch (DateTimeParseException | IllegalArgumentException | NullPointerException e) {
@@ -97,7 +97,7 @@ public class FabricaDAO extends DAO {
 
         List<FabricaDTO> fabricas = new ArrayList<>();
 
-        String sql = "SELECT id, nome_unidade, cnpj, status, email_corporativo, nome_industria, ramo, endereco, plano FROM exibicao_fabrica";
+        String sql = "SELECT id, nome_unidade, cnpj_unidade, status, email_corporativo, nome_industria, ramo, endereco, plano FROM exibicao_fabrica";
 
         // Verificando o campo de filtragem
         if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
@@ -124,7 +124,7 @@ public class FabricaDAO extends DAO {
                 while (rs.next()) {
                     int idFabrica = rs.getInt("id");
                     String nome = rs.getString("nome_unidade");
-                    String cnpj = rs.getString("cnpj");
+                    String cnpj = rs.getString("cnpj_unidade");
                     boolean status = rs.getBoolean("status");
                     String email = rs.getString("email_corporativo");
                     String nomeEmpresa = rs.getString("nome_industria");
@@ -257,7 +257,7 @@ public class FabricaDAO extends DAO {
                 String email = rs.getString("email_corporativo");
                 String nomeEmpresa = rs.getString("nome_industria");
                 String ramo = rs.getString("ramo");
-                int idPlano = rs.getInt("id_plano");
+                int idPlano = rs.getInt("fk_plano");
 
                 f = new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
             }
@@ -304,12 +304,12 @@ public class FabricaDAO extends DAO {
                 }
 
                 String nome = rs.getString("nome_unidade");
-                String cnpj = rs.getString("cnpj");
+                String cnpj = rs.getString("cnpj_unidade");
                 boolean status = rs.getBoolean("status");
                 String email = rs.getString("email_corporativo");
                 String nomeEmpresa = rs.getString("nome_industria");
                 String ramo = rs.getString("ramo");
-                int idPlano = rs.getInt("id_plano");
+                int idPlano = rs.getInt("fk_plano");
 
                 f = new Fabrica(id, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
             }
