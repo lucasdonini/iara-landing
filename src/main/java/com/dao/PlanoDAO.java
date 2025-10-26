@@ -12,302 +12,277 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class PlanoDAO extends DAO {
-  // Constantes
-  public static final Map<String, String> camposFiltraveis = Map.of(
-      "id", "Id",
-      "nome", "Nome",
-      "valor", "Valor",
-      "descricao", "Descrição",
-      "duracao", "Duração do Plano"
-  );
+    // Constante dos campos utilizados para ordenação e filtragem da listagem dos dados
+    public static final Map<String, String> camposFiltraveis = Map.of(
+            "id", "Id",
+            "nome", "Nome",
+            "valor", "Valor",
+            "descricao", "Descrição",
+            "duracao", "Duração do Plano"
+    );
 
-  // Construtor
-  public PlanoDAO() throws SQLException, ClassNotFoundException {
-    super();
-  }
-
-  // Converter Valor
-  public Object converterValor(String campo, String valor){
-      try{
-          return switch(campo){
-              case "id" -> Integer.parseInt(valor);
-              case "valor" -> Double.parseDouble(valor);
-              case "descricao", "nome" -> valor;
-              case "duracao" -> new PGInterval(valor);
-              default -> throw new IllegalArgumentException();
-          };
-      } catch(DateTimeParseException | IllegalArgumentException | NullPointerException | SQLException e){
-          return null;
-      }
-  }
-
-  // Outros Métodos
-
-  // === CREATE ===
-  public void cadastrar(Plano plano) throws SQLException {
-    //Comando SQL
-    String sql = "INSERT INTO plano(nome, valor, descricao, duracao) VALUES (?, ?, ?, ?)";
-
-    try (PreparedStatement pstmt = conn.prepareStatement(sql)) { //Preparando comando SQL
-      //Definindo variáveis no código SQL
-      pstmt.setString(1, plano.getNome());
-      pstmt.setDouble(2, plano.getValor());
-      pstmt.setString(3, plano.getDescricao());
-      pstmt.setObject(4, plano.getDuracao());
-
-      // Cadastra o plano no banco de dados
-      pstmt.execute();
-
-      // Efetuando transação
-      conn.commit();
-
-    } catch (SQLException e) {
-      // Cancelando transação
-      conn.rollback();
-      throw e;
-    }
-  }
-
-  // === READ ===
-  public List<Plano> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
-    // Lista de planos
-    List<Plano> planos = new ArrayList<>();
-
-    // Comando SQL
-    String sql = "SELECT id, nome, valor, descricao, duracao FROM plano";
-
-    // Verificando campo do filtro
-    if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-      sql += " WHERE %s = ?".formatted(campoFiltro);
+    public PlanoDAO() throws SQLException, ClassNotFoundException {
+        super();
     }
 
-    // Verificando campo e direcao da ordenação
-    if (campoSequencia != null && camposFiltraveis.containsKey((campoSequencia))) {
-      sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
-
-    } else {
-      sql += " ORDER BY id ASC";
-    }
-
-    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Definindo variáveis do comando SQL
-      if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
-        pstmt.setObject(1, valorFiltro);
-      }
-
-      // Resgata do banco de dados a lista de planos
-      try (ResultSet rs = pstmt.executeQuery()) {
-        while (rs.next()) {
-          // Variáveis
-          int id = rs.getInt("id");
-          String nome = rs.getString("nome");
-          double valor = rs.getDouble("valor");
-          String descricao = rs.getString("descricao");
-
-          String duracaoS = String.valueOf(rs.getObject("duracao"));
-          PGInterval duracao = new PGInterval(duracaoS);
-
-          // Adicionando instância do DTO na lista de planos
-          planos.add(new Plano(id, nome, valor, descricao, duracao));
+    // Método que converte o valor de acordo com o campo que será filtrado
+    public Object converterValor(String campo, String valor) {
+        try {
+            return switch (campo) {
+                case "id" -> Integer.parseInt(valor);
+                case "valor" -> Double.parseDouble(valor);
+                case "descricao", "nome" -> valor;
+                case "duracao" -> new PGInterval(valor);
+                default -> throw new IllegalArgumentException();
+            };
+        } catch (DateTimeParseException | IllegalArgumentException | NullPointerException | SQLException e) {
+            return null;
         }
-      }
     }
 
-    // Retorna a lista de planos
-    conn.commit();
-    return planos;
-  }
+    // === CREATE ===
+    public void cadastrar(Plano plano) throws SQLException {
 
-  public Plano pesquisarPorId(int id) throws SQLException {
-    // Comando SQL
-    String sql = "SELECT nome, valor, descricao, duracao FROM plano WHERE id = ?";
+        String sql = "INSERT INTO plano(nome, valor, descricao, duracao) VALUES (?, ?, ?, ?)";
 
-    // Objeto não instanciado de plano
-    Plano plano;
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, plano.getNome());
+            pstmt.setDouble(2, plano.getValor());
+            pstmt.setString(3, plano.getDescricao());
+            pstmt.setObject(4, plano.getDuracao());
 
-    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Definindo variável do comando SQL
-      pstmt.setInt(1, id);
+            pstmt.execute();
 
-      // Pesquisa plano pelo ID
-      try (ResultSet rs = pstmt.executeQuery()) {
-        // Se não encontrar retorna null
-        if (!rs.next()) {
-          return null;
+            conn.commit();
+
+        } catch (SQLException e) {
+            conn.rollback();
+            throw e;
+        }
+    }
+
+    // === READ ===
+    public List<Plano> listar(String campoFiltro, Object valorFiltro, String campoSequencia, String direcaoSequencia) throws SQLException {
+
+        // Variável de apoio para verificar se a listagem será filtrada
+        boolean temFiltro = true;
+
+        List<Plano> planos = new ArrayList<>();
+
+        String sql = "SELECT id, nome, valor, descricao, duracao FROM plano";
+
+        // Verificando campo de filtragem
+        if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
+            sql += " WHERE %s = ?".formatted(campoFiltro);
+        } else {
+            temFiltro = false;
         }
 
-        // Variáveis
-        String nome = rs.getString("nome");
-        double valor = rs.getDouble("valor");
-        String descricao = rs.getString("descricao");
+        // Verificando campo e direcao da ordenação
+        if (campoSequencia != null && camposFiltraveis.containsKey((campoSequencia))) {
+            sql += " ORDER BY %s %s".formatted(campoSequencia, direcaoSequencia);
 
-        String duracaoS = String.valueOf(rs.getObject("duracao"));
-        PGInterval duracao = new PGInterval(duracaoS);
-
-        // Instância do Model
-        plano = new Plano(id, nome, valor, descricao, duracao);
-      }
-    }
-
-    // Retorna plano
-    conn.commit();
-    return plano;
-  }
-
-  public Plano pesquisarPorNome(String nome) throws SQLException {
-    // Comando SQL
-    String sql = "SELECT id, valor, descricao, duracao FROM plano WHERE nome = ?";
-
-    // Objeto não instanciado de plano
-    Plano plano;
-
-    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Definindo variável do comando SQL
-      pstmt.setString(1, nome);
-
-      // Pesquisa plano pelo nome
-      try (ResultSet rs = pstmt.executeQuery()) {
-        // Se não encontrar retorna null
-        if (!rs.next()) {
-          return null;
+        } else {
+            sql += " ORDER BY id ASC";
         }
 
-        // Variáveis
-        int id = rs.getInt("id");
-        double valor = rs.getDouble("valor");
-        String descricao = rs.getString("descricao");
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            // Verifica se tem filtro, se sim define a variável do comando SQL
+            if (temFiltro) {
+                pstmt.setObject(1, valorFiltro);
+            }
 
-        String duracaoS = String.valueOf(rs.getObject("duracao"));
-        PGInterval duracao = new PGInterval(duracaoS);
-        // Instância do Model
-        plano = new Plano(id, nome, valor, descricao, duracao);
-      }
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String nome = rs.getString("nome");
+                    double valor = rs.getDouble("valor");
+                    String descricao = rs.getString("descricao");
+
+                    String duracaoS = String.valueOf(rs.getObject("duracao"));
+                    PGInterval duracao = new PGInterval(duracaoS);
+
+                    planos.add(new Plano(id, nome, valor, descricao, duracao));
+                }
+            }
+        }
+
+        conn.commit();
+        return planos;
     }
 
-    // Retorna plano
-    conn.commit();
-    return plano;
-  }
+    // === UPDATE ===
+    public void atualizar(Plano original, Plano alterado) throws SQLException {
 
-  public Plano getCamposAlteraveis(int id) throws SQLException {
-    // Instância do Model
-    Plano plano = pesquisarPorId(id);
+        int id = alterado.getId();
+        String nome = alterado.getNome();
+        double valor = alterado.getValor();
+        String descricao = alterado.getDescricao();
+        PGInterval duracao = alterado.getDuracao();
 
-    // Se for vazio lança exceção
-    if (plano == null) {
-      throw new SQLException("Falha ao recuperar plano");
+
+        StringBuilder sql = new StringBuilder("UPDATE plano SET ");
+        List<Object> valores = new ArrayList<>();
+
+        // Verifica se os valores atualizados são iguais aos registrados, se não atualiza no banco de dados
+        if (!Objects.equals(nome, original.getNome())) {
+            sql.append("nome = ?, ");
+            valores.add(nome);
+        }
+
+        if (original.getValor() != valor) {
+            sql.append("valor = ?, ");
+            valores.add(valor);
+        }
+
+        if (!Objects.equals(descricao, original.getDescricao())) {
+            sql.append("descricao = ?, ");
+            valores.add(descricao);
+        }
+
+        if (!Objects.equals(duracao, original.getDuracao())) {
+            sql.append("duracao = ?, ");
+            valores.add(duracao);
+        }
+
+        // Retorna vazio se nada foi alterado
+        if (valores.isEmpty()) {
+            return;
+        }
+
+        // Remoção da última ", "
+        sql.setLength(sql.length() - 2);
+
+        // Adiciona a cláusula WHERE
+        sql.append(" WHERE id = ?");
+        valores.add(id);
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < valores.size(); i++) {
+                pstmt.setObject(i + 1, valores.get(i));
+            }
+
+            pstmt.executeUpdate();
+
+            conn.commit();
+
+        } catch (SQLException e) {
+            conn.rollback();
+            throw e;
+        }
     }
 
-    // Retorna plano
-    conn.commit();
-    return plano;
-  }
+    // === DELETE ===
+    public void remover(int id) throws SQLException {
 
-  public Map<Integer, String> getMapIdNome() throws SQLException {
-    // Instância do HashMap
-    Map<Integer, String> map = new HashMap<>();
+        String sql = "DELETE FROM plano WHERE id = ?";
 
-    // Comando SQL
-    String sql = "SELECT id, nome FROM plano";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
 
-    // Lista dos IDs e nomes dos planos
-    try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
-      // Variáveis
-      while (rs.next()) {
-        int id = rs.getInt("id");
-        String nome = rs.getString("nome");
+            pstmt.executeUpdate();
 
-        // Adicionando chave e valor no map
-        map.put(id, nome);
-      }
+            conn.commit();
+
+        } catch (SQLException e) {
+            conn.rollback();
+            throw e;
+        }
     }
 
-    // Retorna map
-    conn.commit();
-    return map;
-  }
+    // Resgata o plano pelo ID
+    public Plano pesquisarPorId(int id) throws SQLException {
 
-  // === UPDATE ===
-  public void atualizar(Plano original, Plano alterado) throws SQLException {
-    // Variáveis
-    int id = alterado.getId();
-    String nome = alterado.getNome();
-    double valor = alterado.getValor();
-    String descricao = alterado.getDescricao();
-    PGInterval duracao = alterado.getDuracao();
+        String sql = "SELECT nome, valor, descricao, duracao FROM plano WHERE id = ?";
 
-    // Construção do comando SQL dinâmico
-    StringBuilder sql = new StringBuilder("UPDATE plano SET ");
-    List<Object> valores = new ArrayList<>();
+        Plano plano;
 
-    if (!Objects.equals(nome, original.getNome())) {
-      sql.append("nome = ?, ");
-      valores.add(nome);
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Se não encontrar o plano retorna null
+                if (!rs.next()) {
+                    return null;
+                }
+
+                String nome = rs.getString("nome");
+                double valor = rs.getDouble("valor");
+                String descricao = rs.getString("descricao");
+
+                String duracaoS = String.valueOf(rs.getObject("duracao"));
+                PGInterval duracao = new PGInterval(duracaoS);
+
+                plano = new Plano(id, nome, valor, descricao, duracao);
+            }
+        }
+
+        conn.commit();
+        return plano;
     }
 
-    if (original.getValor() != valor) {
-      sql.append("valor = ?, ");
-      valores.add(valor);
+    // Resgata o plano pelo nome
+    public Plano pesquisarPorNome(String nome) throws SQLException {
+
+        String sql = "SELECT id, valor, descricao, duracao FROM plano WHERE nome = ?";
+
+        Plano plano;
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nome);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Se não encontrar o plano retorna null
+                if (!rs.next()) {
+                    return null;
+                }
+
+                int id = rs.getInt("id");
+                double valor = rs.getDouble("valor");
+                String descricao = rs.getString("descricao");
+
+                String duracaoS = String.valueOf(rs.getObject("duracao"));
+                PGInterval duracao = new PGInterval(duracaoS);
+
+                plano = new Plano(id, nome, valor, descricao, duracao);
+            }
+        }
+
+        conn.commit();
+        return plano;
     }
 
-    if (!Objects.equals(descricao, original.getDescricao())) {
-      sql.append("descricao = ?, ");
-      valores.add(descricao);
+    // Resgata os dados do banco de dados que podem ser atualizados, utilizados no método UPDATE
+    public Plano getCamposAlteraveis(int id) throws SQLException {
+
+        Plano plano = pesquisarPorId(id);
+
+        // Se não encontrar o plano lança exceção
+        if (plano == null) {
+            throw new SQLException("Falha ao recuperar plano");
+        }
+
+        conn.commit();
+        return plano;
     }
 
-    if (!Objects.equals(duracao, original.getDuracao())) {
-        sql.append("duracao = ?, ");
-        valores.add(duracao);
+    // HashMap dos planos, onde a chave é o ID e o valor o nome
+    public Map<Integer, String> getMapIdNome() throws SQLException {
+
+        Map<Integer, String> map = new HashMap<>();
+
+        String sql = "SELECT id, nome FROM plano";
+
+        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nome = rs.getString("nome");
+
+                map.put(id, nome);
+            }
+        }
+
+        conn.commit();
+        return map;
     }
-
-    // Retorna vazio se nada foi alterado
-    if (valores.isEmpty()) {
-      return;
-    }
-
-    // Remoção da última ", "
-    sql.setLength(sql.length() - 2);
-
-    // Adiciona a cláusula WHERE
-    sql.append(" WHERE id = ?");
-    valores.add(id);
-
-    try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
-      // Adiciona a cláusula WHERE
-      for (int i = 0; i < valores.size(); i++) {
-        pstmt.setObject(i + 1, valores.get(i));
-      }
-
-      // Atualiza o plano no banco de dados
-      pstmt.executeUpdate();
-
-      // Efetuando transação
-      conn.commit();
-
-    } catch (SQLException e) {
-      // Cancelando transação
-      conn.rollback();
-      throw e;
-    }
-  }
-
-  // === DELETE ===
-  public void remover(int id) throws SQLException {
-    // Comando SQL
-    String sql = "DELETE FROM plano WHERE id = ?";
-
-    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      // Deleta o plano do banco de dados
-      pstmt.setInt(1, id);
-
-      // Efetuando transação
-      pstmt.executeUpdate();
-      conn.commit();
-
-    } catch (SQLException e) {
-      // Cancelando transação
-      conn.rollback();
-      throw e;
-    }
-  }
 }
