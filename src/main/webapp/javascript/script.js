@@ -18,3 +18,32 @@ window.addEventListener("scroll", () => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    function setupDatePlaceholders() {
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        
+        dateInputs.forEach(input => {
+            // Verifica se está vazio
+            function checkEmpty() {
+                if (!input.value) {
+                    input.classList.add('empty');
+                } else {
+                    input.classList.remove('empty');
+                }
+            }
+            
+            // Verifica inicialmente
+            checkEmpty();
+            
+            // Adiciona listeners
+            input.addEventListener('change', checkEmpty);
+            input.addEventListener('input', checkEmpty);
+            input.addEventListener('focus', function() {
+                this.classList.remove('empty');
+            });
+            input.addEventListener('blur', checkEmpty);
+        });
+    }
+    
+    setupDatePlaceholders();
+});

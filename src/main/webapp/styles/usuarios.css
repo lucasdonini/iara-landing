@@ -1,0 +1,243 @@
+/* Extras */
+
+*{
+    padding: 0;
+    margin: 0;
+}
+
+html{
+    height: 100%;
+}
+
+body{
+    height: 100%;
+}
+
+/* Sidebar */
+
+#logout{
+    display: flex;
+    margin-left: 30px;
+    margin-top: 30px;
+}
+
+button{
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #474747;
+    background-color: #FFFFFF;
+}
+
+#logo-iara {
+    width: 105px;
+    height: 46px;
+}
+
+#imagem{
+    text-align: center;
+    margin-top: 35px;
+    margin-bottom: 35px;
+}
+
+main{
+    display: flex;
+    height: 100%
+}
+
+#sidebar{
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    min-width: 250px;
+}
+
+.topicos{
+    margin-left: 30px;
+    font-size: 17px;
+}
+
+#sidebar hr{
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 25px;
+    width: 70%;
+    background-color: #C4C4C4;
+    opacity: 0.5;
+}
+
+a{
+    text-decoration: none;
+    color: #474747;
+}
+
+ul{
+    list-style: none;
+    margin: auto;
+}
+
+li{
+    padding: 20px;
+    margin-left: 10px;
+}
+
+.active{
+    color: #383F91;
+}
+
+.active a{
+    color: #383F91;
+}
+
+/* Tela principal */
+
+h2{
+    color: #2B3078;
+}
+
+p{
+    color: #2B3078;
+}
+
+#fundo_tela{
+    background-color: #F8F8F8;
+    align-content: center;
+    width: 100%;
+}
+
+#topo{
+    display: flex;
+    justify-content: space-between;
+    width: 95%;
+    height: 10%;
+    margin: auto;
+    align-self: auto;
+}
+
+#cabecalho{
+    display: flex;
+    width: 95%;
+    margin: auto;
+    padding: 30px;
+}
+
+#tela_principal{
+    width: 95%;
+    border-radius: 20px;
+    margin: auto;
+    background-color: #FFFFFF;
+    height: 80%;
+}
+
+#tabela_usuarios{
+    border-width: 3px;
+    border-color: #383F91;
+    border-style: solid;
+    height: 75%;
+    width: 95%;
+    margin: auto;
+    align-content: center;
+}
+
+table{
+    margin: auto;
+    width: 95%;
+}
+
+#tabela_usuarios th{
+    padding: 15px;
+    text-align: left;
+}
+
+#tabela_usuarios td{
+    padding: 15px;
+    text-align: left;
+}
+
+#editar{
+    color: green;
+}
+
+#deletar{
+    color: red;
+}
+
+#titulo{
+    font-size: 25px;
+    color: #383F91;
+    align-content: center;
+}
+
+#cadastrar{
+    font-size: 20px;
+    color: #FFFFFF;
+    background-color: #383F91;
+    padding: 15px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 10px;
+}
+
+.filtro-container {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-filtro {
+    font-size: 20px;
+    color: #FFFFFF;
+    background-color: #383F91;
+    padding: 15px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 10px;
+    text-align: center;
+    align-content: center;
+}
+
+.filtro-card {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    background: #FFFFFF;
+    color: #323c8d;
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Quando ativar */
+
+.filtro-card.ativo {
+    display: block;
+    text-align: left;
+}
+
+.filtragem{
+    padding: 10px;
+}
+
+#filtrar{
+    background-color: #323c8d;
+    color: #FFFFFF;
+    padding: 10px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 5px;
+    margin-left: 64%;
+    margin-top: 2px;
+}
+
+#limpaFiltro{
+    font-size: 20px;
+    color: #FFFFFF;
+    background-color: #383F91;
+    padding: 15px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 10px;
+    text-align: center;
+    align-content: center;
+}
