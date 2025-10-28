@@ -41,7 +41,7 @@
                         <a href="${pageContext.request.contextPath}/area-restrita/index.jsp">Página inicial</a>
                     </li>
                     <li class="active">
-                        <img class="imagem" src="/assets/crud/usuario.svg" alt="icone usuarios">
+                        <img class="imagem" src="/assets/crud/usuarios_azul.svg" alt="icone usuarios">
                         <a href="${pageContext.request.contextPath}/area-restrita/usuarios">Usuários</a>
                     </li>
                     <li>
@@ -62,7 +62,7 @@
                     </li>
                     <li>
                         <img class="imagem" src="/assets/crud/BI.svg" alt="icone BI">
-                        <a href="#">BI</a>
+                        <a href="https://iara-area-restrita.vercel.app/home/dashboard">BI</a>
                     </li>
                 </ul>
             </nav>

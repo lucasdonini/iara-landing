@@ -50,7 +50,7 @@
                         <a href="${pageContext.request.contextPath}/area-restrita/superadms">Super ADM</a>
                     </li>
                     <li class="active">
-                        <img class="imagem" src="/assets/crud/planos.svg" alt="icone planos">
+                        <img class="imagem" src="/assets/crud/planos_azul.svg" alt="icone planos">
                         <a href="${pageContext.request.contextPath}/area-restrita/planos">Planos</a>
                     </li>
                     <li>
@@ -63,7 +63,7 @@
                     </li>
                     <li>
                         <img class="imagem" src="/assets/crud/BI.svg" alt="icone BI">
-                        <a href="#">BI</a>
+                        <a href="https://iara-area-restrita.vercel.app/home/dashboard">BI</a>
                     </li>
                 </ul>
             </nav>
