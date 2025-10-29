@@ -145,3 +145,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+
+function confirmarDelete(event) {
+    event.preventDefault();
+
+    Swal.fire({
+        title: "Tem certeza que deseja excluir?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#383f91",
+        cancelButtonColor: "#fff",
+        confirmButtonText: "Excluir",
+        cancelButtonText: "Cancelar",
+
+        didOpen: (popup) => {
+            // Atributos
+            const confirmButton = popup.querySelector('.swal2-confirm');
+            const cancelButton = popup.querySelector('.swal2-cancel');
+
+            popup.style.fontFamily = "Arial";
+            popup.style.color = "black";
+            confirmButton.style.color = "white";
+            cancelButton.style.color = "black";
+            confirmButton.style.fontWeight = "bold";
+            cancelButton.style.fontWeight = "bold";
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit();
+        }
+    });
+
+    return false;
+}
