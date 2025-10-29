@@ -6,7 +6,7 @@
 
 <head>
     <title>Página de cadastro - Planos</title>
-    <link rel="stylesheet" href="/styles/cadastro-plano.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/cadastro-plano.css">
 </head>
 
 <body>
@@ -25,9 +25,9 @@
             <h2>Cadastre um Plano!</h2>
             <form action="${pageContext.request.contextPath}/area-restrita/planos" method="post" class="LoginForm">
                 <input type="hidden" name="action" value="create">
-                <input type="text" name="nome" placeholder="Nome">
-                <input type="number" step="any" placeholder="Valor (R$)" name="valor">
-                <input type="text" name="descricao" placeholder="Descrição">
+                <input type="text" name="nome" placeholder="Nome" required>
+                <input type="number" step="any" placeholder="Valor (R$)" name="valor" required>
+                <input type="text" name="descricao" placeholder="Descrição" required>
                 <input type="number" min="0" placeholder="Anos" name="anos_duracao">
                 <input type="number" min="0" placeholder="Meses" name="meses_duracao">
                 <input type="number" min="0" placeholder="Dias" name="dias_duracao">

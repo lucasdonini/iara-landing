@@ -32,12 +32,12 @@
                 <div class="form-container">
                     <div class="form-section">
                         <h2>Dados da Fábrica</h2>
-                        <input type="text" name="nome" placeholder="Nome">
-                        <input type="text" name="cnpj" pattern="\d{14}" title="CNPJ inválido" placeholder="CNPJ">
-                        <input type="email" name="email" placeholder="Email para contato">
-                        <input type="text" name="ramo" placeholder="Ramo">
-                        <input type="text" name="empresa" placeholder="Nome da empresa">
-                        <select name="id_plano">
+                        <input type="text" name="nome" placeholder="Nome" required>
+                        <input type="text" name="cnpj" pattern="\d{14}" title="CNPJ inválido" placeholder="CNPJ" required>
+                        <input type="email" name="email" placeholder="Email para contato" required>
+                        <input type="text" name="ramo" placeholder="Ramo" required>
+                        <input type="text" name="empresa" placeholder="Nome da empresa" required>
+                        <select name="id_plano" required>
                             <option value="">Selecione o Plano</option>
                             <% for (int id : planos.keySet()) { %>
                             <option value="<%= id %>">
@@ -50,13 +50,13 @@
 
                     <div class="form-section">
                         <h2>Endereço da Fábrica</h2>
-                        <input type="text" name="cep" pattern="\d{8}" title="Insira um CEP válido" placeholder="CEP">
-                        <input type="text" name="logradouro" placeholder="Logradouro">
-                        <input type="number" name="numero" placeholder="n°">
-                        <input type="text" name="complemento" placeholder="Complemento">
-                        <input type="text" name="estado" placeholder="Estado">
-                        <input type="text" name="bairro" placeholder="Bairro">
-                        <input type="text" name="cidade" placeholder="Cidade">
+                        <input type="text" name="cep" pattern="\d{8}" title="Insira um CEP válido" placeholder="CEP" required>
+                        <input type="text" name="logradouro" placeholder="Logradouro" required>
+                        <input type="number" name="numero" placeholder="n°" required>
+                        <input type="text" name="complemento" placeholder="Complemento" required>
+                        <input type="text" name="estado" placeholder="Estado" required>
+                        <input type="text" name="bairro" placeholder="Bairro" required>
+                        <input type="text" name="cidade" placeholder="Cidade" required>
                     </div>
                 </div>
 
