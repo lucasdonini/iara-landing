@@ -18,3 +18,20 @@
     width: 150px;
     height: 46px;
 }
+
+#tabela_usuarios{
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+button.btn-filtro:hover{
+    border-bottom-color: #2d6689;
+}
+
+#limpaFiltro:hover{
+    background-color: #2d6689;
+}
+
+#cadastrar:hover{
+    background-color: #2d6689;
+}

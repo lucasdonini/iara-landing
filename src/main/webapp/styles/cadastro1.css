@@ -18,7 +18,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    z-index: 10; /* fica acima de tudo */
+    z-index: 10;
     transition: background-color 0.3s;
 }
 
@@ -32,11 +32,11 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: hidden; /* evita scroll com partículas */
+    overflow: hidden;
     position: relative;
 }
 
-/* Fundo com partículas */
+
 .bg-particles {
     position: absolute;
     top: 0;
@@ -48,16 +48,14 @@ body {
     pointer-events: none;
 }
 
-/* Container geral */
 .login-container {
     display: flex;
     width: 80%;
     max-width: 1000px;
     position: relative;
-    z-index: 1; /* ficar acima das partículas */
+    z-index: 1;
 }
 
-/* Lado esquerdo */
 .left-side {
     flex: 1;
     display: flex;
@@ -70,7 +68,7 @@ body {
     max-width: 350px;
 }
 
-/* Lado direito */
+
 .right-side {
     flex: 1;
     display: flex;

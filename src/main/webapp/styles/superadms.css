@@ -103,7 +103,7 @@ p {
 #fundo_tela {
     background-color: #F8F8F8;
     align-content: center;
-    width: 100%;
+    width: 83.66%;
 }
 
 #topo {
@@ -154,31 +154,6 @@ table {
 #tabela_usuarios td {
     padding: 15px;
     text-align: left;
-}
-
-#editar{
-    color: green;
-}
-
-#deletar{
-    color: red;
-}
-
-.tabela-container {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.tabela-container::-webkit-scrollbar {
-    width: 10px;
-}
-
-.tabela-container::-webkit-scrollbar-thumb {
-    background-color: #525AC0;
-}
-
-.tabela-container::-webkit-scrollbar-thumb:hover {
-    background-color: #3643c2;
 }
 
 #editar{

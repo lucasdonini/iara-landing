@@ -1,27 +1,28 @@
 /* Extras */
 
-*{
+* {
     padding: 0;
     margin: 0;
+    font-family: Poppins;
 }
 
-html{
+html {
     height: 100%;
 }
 
-body{
+body {
     height: 100%;
 }
 
 /* Sidebar */
 
-#logout{
+#logout {
     display: flex;
     margin-left: 30px;
     margin-top: 30px;
 }
 
-button{
+button {
     border: none;
     cursor: pointer;
     font-size: 16px;
@@ -34,30 +35,30 @@ button{
     height: 46px;
 }
 
-#imagem{
+#imagem {
     text-align: center;
     margin-top: 35px;
     margin-bottom: 35px;
 }
 
-main{
+main {
     display: flex;
-    height: 100%
+    height: 100%;
 }
 
-#sidebar{
+#sidebar {
     background-color: #FFFFFF;
     display: flex;
     flex-direction: column;
     min-width: 250px;
 }
 
-.topicos{
+.topicos {
     margin-left: 30px;
     font-size: 17px;
 }
 
-#sidebar hr{
+#sidebar hr {
     margin: auto;
     margin-top: 10px;
     margin-bottom: 25px;
@@ -66,46 +67,46 @@ main{
     opacity: 0.5;
 }
 
-a{
+a {
     text-decoration: none;
     color: #474747;
 }
 
-ul{
+ul {
     list-style: none;
     margin: auto;
 }
 
-li{
+li {
     padding: 20px;
     margin-left: 10px;
 }
 
-.active{
+.active {
     color: #383F91;
 }
 
-.active a{
+.active a {
     color: #383F91;
 }
 
 /* Tela principal */
 
-h2{
+h2 {
     color: #2B3078;
 }
 
-p{
+p {
     color: #2B3078;
 }
 
-#fundo_tela{
+#fundo_tela {
     background-color: #F8F8F8;
     align-content: center;
-    width: 100%;
+    width: 83.66%;
 }
 
-#topo{
+#topo {
     display: flex;
     justify-content: space-between;
     width: 95%;
@@ -114,14 +115,15 @@ p{
     align-self: auto;
 }
 
-#cabecalho{
+#cabecalho {
     display: flex;
     width: 95%;
     margin: auto;
     padding: 30px;
+    justify-content: space-between;
 }
 
-#tela_principal{
+#tela_principal {
     width: 95%;
     border-radius: 20px;
     margin: auto;
@@ -129,7 +131,7 @@ p{
     height: 80%;
 }
 
-#tabela_usuarios{
+#tabela_usuarios {
     border-width: 3px;
     border-color: #383F91;
     border-style: solid;
@@ -139,17 +141,17 @@ p{
     align-content: center;
 }
 
-table{
+table {
     margin: auto;
     width: 95%;
 }
 
-#tabela_usuarios th{
+#tabela_usuarios th {
     padding: 15px;
     text-align: left;
 }
 
-#tabela_usuarios td{
+#tabela_usuarios td {
     padding: 15px;
     text-align: left;
 }
@@ -162,13 +164,13 @@ table{
     color: red;
 }
 
-#titulo{
+#titulo {
     font-size: 25px;
     color: #383F91;
     align-content: center;
 }
 
-#cadastrar{
+#cadastrar {
     font-size: 20px;
     color: #FFFFFF;
     background-color: #383F91;
@@ -176,6 +178,8 @@ table{
     padding-left: 40px;
     padding-right: 40px;
     border-radius: 10px;
+    text-align: center;
+    align-content: center;
 }
 
 .filtro-container {

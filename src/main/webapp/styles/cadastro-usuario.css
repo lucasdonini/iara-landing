@@ -56,7 +56,7 @@ body {
     width: 80%;
     max-width: 1000px;
     position: relative;
-    z-index: 1; /* ficar acima das partículas */
+    z-index: 1;
 }
 
 
@@ -87,6 +87,7 @@ body {
     width: 100%;
     max-width: 700px;
     box-shadow: 0px 6px 12px rgba(0,0,0,0.1);
+    z-index: 1;
     text-align: center;
 }
 

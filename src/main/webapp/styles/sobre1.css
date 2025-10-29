@@ -26,6 +26,11 @@
     text-align: justify;
 }
 
+#introducao img{
+    margin-top: 50px;
+    margin-left: 70px;
+}
+
 #introducao .imagem {
     margin-left: 0;
     display: flex;
@@ -46,6 +51,7 @@
     align-items: center;
     gap: 40px;
     padding: 60px 5%;
+    margin-top: 80px;
 }
 
 #missao .imagem {
@@ -58,7 +64,7 @@
     max-width: 70%;
     height: auto;
     border-radius: 20px;
-    border-color: #17396D;
+    border-color: #383F91;
 }
 
 
@@ -80,7 +86,7 @@
 }
 
 #missao .subtitulo {
-    color: #5991B3;
+    color: #383F91;
     font-size: 1.2rem;
     margin-bottom: 0px;
     text-transform: uppercase;
@@ -98,6 +104,7 @@
     justify-content: space-between;
     padding: 80px 8%;
     position: relative;
+    margin-top: -120px;
 }
 
 #como-surgiu .texto {
@@ -111,13 +118,13 @@
 }
 
 #como-surgiu .imagem img {
-    max-width: 120%;
+    max-width: 85%;
     height: auto;
 }
 
 
 #como-surgiu .subtitulo {
-    color: #5991B3;
+    color: #383F91;
     font-size: 1.2rem;
     margin-bottom: 0px;
     text-transform: uppercase;
@@ -136,6 +143,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 40px;
+    margin-top: -50px;
 }
 
 
@@ -160,51 +168,12 @@
 }
 
 #contato .subtitulo {
-    color: #5991B3;
+    color: #383F91;
     font-size: 1.2rem;
     margin-bottom: 0px;
     text-transform: uppercase;
     opacity: 1;
 }
-
-/* CTA */
-#cta {
-    display: flex;
-    justify-content: space-around;
-    background-color: #313131;
-    border-radius: 10px;
-    max-width: 70%;
-    min-height: 500px;
-    margin: auto;
-    margin-top: 15%;
-    margin-bottom: 15%;
-}
-
-#cta img {
-    width: 500px;
-    height: auto;
-}
-
-#texto {
-    color: white;
-    font-size: 1.5rem;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 80px;
-}
-
-#cta .btn-principal {
-    background-color: #FAFAFA;
-    color: #000000;
-    cursor: pointer;
-    min-width: 34%;
-    height: 60px;
-    margin-top: 20px;
-}
-
 
 /* REPONSIVITY */
 @media screen and (max-width: 1170px) {
@@ -236,14 +205,16 @@
         text-align: center;
         width: 100%;
         padding: 40px 20px;
+        margin-top: -20px;
     }
-    
+
     #como-surgiu{
         flex-direction: column;
         align-items: center;
         text-align: center;
         width: 100%;
         padding: 40px 20px;
+        margin-top: -50px;
     }
 
     #contato{
@@ -262,35 +233,10 @@
         margin: auto;
     }
 
-    #cta {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 40px 20px;
-        max-width: 80%;
-        min-height: auto;
-        margin-top: -5%;
-        margin-bottom: 20%;
-    }
-
-    #cta h2{
-        text-align: center;
-    }
-
-    #texto {
-        padding: 20px;
-        align-items: center;
-    }
-
-    #cta .btn-principal{
-        border-radius: 5px;
-        padding: 10px;
-    }
-
     .texto_responsivo {
         max-width: 100%;
         padding: 15px;
         text-align: center;
     }
-    
+
 }

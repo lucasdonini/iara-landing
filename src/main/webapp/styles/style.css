@@ -12,7 +12,7 @@ body{
     background-color: #F7F7F7;
 }
 
-.logo-iara {
+#logo-iara {
     width: 105px;
     height: 46px;
 }
@@ -26,7 +26,7 @@ a{
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #3B779B;
+    background-color: #383F91;
     color: #FAFAFA;
     border-radius: 12px;
     padding: 10px 44px;
@@ -44,7 +44,7 @@ a{
     border: none;
     align-items: center;
     justify-content: center;
-    background-color: #3B779B;
+    background-color: #383F91;
     color: #FAFAFA;
     border-radius: 12px;
     padding: 10px 44px;
@@ -56,28 +56,89 @@ img{
     user-select: none;
 }
 
+/* CTA */
+#cta {
+    display: flex;
+    justify-content: space-around;
+    background-color: #313131;
+    border-radius: 10px;
+    max-width: 70%;
+    min-height: 500px;
+    margin: auto;
+    margin-top: 15%;
+    margin-bottom: 15%;
+}
+
+#texto {
+    color: white;
+    font-size: 1.5rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px;
+}
+
+#cta img{
+    width: 350px;
+}
+
+#cta .iarazinha{
+    align-self: center;
+    margin-right: 100px;
+}
+
 @media screen and (max-width: 1170px) {
     .mobile_out{
         display: none;
     }
 
-    h1 { 
-        font-size: 1.8rem !important; 
+    h1 {
+        font-size: 1.8rem !important;
     }
 
-    h2 { 
-        font-size: 1.5rem !important; 
+    h2 {
+        font-size: 1.5rem !important;
     }
 
-    h3 { 
-        font-size: 1.2rem !important; 
+    h3 {
+        font-size: 1.2rem !important;
     }
 
-    p  { 
-        font-size: 1rem !important; 
+    p  {
+        font-size: 1rem !important;
     }
 
-    a, li { 
-        font-size: 1rem !important; 
+    a, li {
+        font-size: 1rem !important;
+    }
+
+    #cta {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 40px 20px;
+        max-width: 80%;
+        min-height: auto;
+        margin-top: 20%;
+        margin-bottom: 20%;
+    }
+
+    #cta h2{
+        text-align: center;
+    }
+
+    #texto {
+        padding: 20px;
+        align-items: center;
+    }
+
+    #cta .iarazinha{
+        margin: auto;
+    }
+
+    #cta img{
+        width: 200px;
     }
 }
