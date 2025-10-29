@@ -99,14 +99,13 @@
                             <div class="filtragem">
                                 <label>
                                     Campo de Filtragem:
-                                    <select name="campo_filtro">
+                                    <select id="campoFiltro" name="campo_filtro">
                                         <option value="" selected>Nenhum selecionado</option>
-
-                                        <% for (String chave : camposFiltraveis.keySet()) { %>
-                                        <option value="<%= chave %>">
-                                            <%= camposFiltraveis.get(chave) %>
-                                        </option>
-                                        <% } %>
+                                        <option value="id" data-type="number">ID</option>
+                                        <option value="nome" data-type="text">Nome</option>
+                                        <option value="valor" data-type="decimal" placeholder="R$">Valor</option>
+                                        <option value="descricao" data-type="text-area">Descrição</option>
+                                        <option value="duracao" data-type="duracao">Duração</option>
                                     </select>
                                 </label>
                             </div>
@@ -217,6 +216,7 @@
     </div>
 
 </main>
+<script src="${pageContext.request.contextPath}/javascript/infoTrader.js"></script>
 </body>
 
 </html>

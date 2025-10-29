@@ -98,23 +98,23 @@
                             <div class="filtragem">
                                 <label>
                                     Campo de Filtragem:
-                                    <select name="campo_filtro">
+                                    <select id="campoFiltro" name="campo_filtro">
                                         <option value="" selected>Nenhum selecionado</option>
-
-                                        <% for (String chave : camposFiltraveis.keySet()) { %>
-                                        <option value="<%= chave %>">
-                                            <%= camposFiltraveis.get(chave) %>
-                                        </option>
-                                        <% } %>
+                                        <option value="nome" data-type="text">Nome</option>
+                                        <option value="genero" data-type="select">Gênero</option>
+                                        <option value="data_nascimento" data-type="date-nascimento">Data de Nascimento</option>
+                                        <option value="cargo" data-type="text">Cargo</option>
+                                        <option value="email" data-type="email">Email</option>
+                                        <option value="tipo_acesso" data-type="select">Tipo de Acesso</option>
+                                        <option value="statusU" data-type="select">Status</option>
+                                        <option value="data_criacao" data-type="datetime-local">Data de Criação</option>
                                     </select>
                                 </label>
                             </div>
 
                             <div class="filtragem">
-                                <label>
-                                    Valor Filtrado:
-                                    <input type="text" name="valor_filtro">
-                                </label>
+                                <label for="valorFiltro">Valor Filtrado:</label>
+                                <input type="text" id="valorFiltro" name="valor_filtro">
                             </div>
 
                             <div class="filtragem">
@@ -226,6 +226,7 @@
     </div>
 
 </main>
+<script src="${pageContext.request.contextPath}/javascript/infoTrader.js"></script>
 </body>
 
 </html>

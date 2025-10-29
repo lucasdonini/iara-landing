@@ -104,15 +104,17 @@
                             <div class="filtragem">
                                 <label>
                                     Campo de Filtragem:
-                                    <select name="campo_filtro">
+                                    <select id="campoFiltro" name="campo_filtro">
                                         <option value="" selected>Nenhum selecionado</option>
-
-                                        <% for (String chave : camposFiltraveis.keySet()) { %>
-                                        <option value="<%= chave %>">
-                                            <%= camposFiltraveis.get(chave) %>
-                                        </option>
-                                        <% } %>
+                                        <option value="id" data-type="number">ID</option>
+                                        <option value="valor" data-type="decimal">Valor Pago</option>
+                                        <option value="statusP" data-type="select">Status</option>
+                                        <option value="data_vencimento" data-type="date">Data Vencimento</option>
+                                        <option value="data_pagamento" data-type="datetime-local">Data Pagamento</option>
+                                        <option value="data_inicio" data-type="datetime-local">Data de Início</option>
+                                        <option value="fk_metodopag" data-type="select">Metodo de Pagamento</option>
                                     </select>
+
                                 </label>
                             </div>
 
@@ -225,6 +227,7 @@
     </div>
 
 </main>
+<script src="${pageContext.request.contextPath}/javascript/infoTrader.js"></script>
 </body>
 
 </html>
