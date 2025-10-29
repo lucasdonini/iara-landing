@@ -7,6 +7,7 @@
 <%
     AtualizacaoUsuarioDTO usuario = (AtualizacaoUsuarioDTO) request.getAttribute("usuario");
     Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
+    List<String> emailGerentes = (List<String>) request.getAttribute("emailGerentes");
     String erro = (String) request.getAttribute("erro");
 %>
 <html>
@@ -37,8 +38,16 @@
                 <input type="hidden" name="id" value="<%= usuario.getId() %>">
                 <input type="text" name="nome" value="<%= usuario.getNome() %>" placeholder="Novo nome">
                 <input type="text" name="email" value="<%= usuario.getEmail() %>" placeholder="Novo email">
-                <input type="email" name="email_gerente" value="<%= usuario.getEmailGerente() %>"
-                       placeholder="Email do novo gerente">
+                <select name="email_gerente">
+                    <% if (usuario.getEmailGerente() == null) {%>
+                    <option value="" selected>-- Selecione --</option>
+                    <% } %>
+                    <% for (String email : emailGerentes) { %>
+                    <option value="<%= email %>" <%= email.equals(usuario.getEmailGerente()) ? "selected" : "" %>>
+                        <%= email %>
+                    </option>
+                    <% } %>
+                </select>
                 <input type="text" name="cargo" value="<%= usuario.getCargo() %>">
 
                 <select name="nivel_acesso">
