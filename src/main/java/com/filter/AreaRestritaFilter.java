@@ -13,7 +13,7 @@ import java.io.IOException;
 
 // Servlet para filtrar o acesso a páginas JSP da área-restrita, uma vez que não estamos utilizando WEB-INF
 
-//@WebFilter(filterName = "area-restrita-filter", urlPatterns = "/area-restrita/*")
+@WebFilter(filterName = "area-restrita-filter", urlPatterns = "/area-restrita/*")
 public class AreaRestritaFilter extends HttpFilter {
 
   private static final String PAGINA_LOGIN = "/jsp/login.jsp";
