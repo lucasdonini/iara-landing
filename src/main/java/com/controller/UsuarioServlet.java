@@ -140,7 +140,7 @@ public class UsuarioServlet extends HttpServlet {
     private void registrarUsuario(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
 
         String nome = req.getParameter("nome").trim();
-        String emailGerente = req.getParameter("email_gerente").trim();
+        String emailGerente = req.getParameter("email_gerentes").trim();
         String genero = req.getParameter("genero").trim();
 
         String temp = req.getParameter("data_nascimento").trim();

@@ -30,7 +30,7 @@
     <div class="right-side">
         <div class="login-box">
             <img src="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Logo/logo-iara.png" alt="Logo IARA" class="logo">
-            <h2>Editar Usuário - ID: <%= usuario.getId() %>
+            <h2>Editar Usuário - Email: <%= usuario.getEmail() %>
             </h2>
 
             <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="post">
