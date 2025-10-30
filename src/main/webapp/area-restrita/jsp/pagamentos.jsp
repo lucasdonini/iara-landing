@@ -5,6 +5,7 @@
 <%@ page import="com.model.DirecaoOrdenacao" %>
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="com.model.MetodoPagamento" %>
+<%@ page import="com.utils.DataUtils" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
@@ -190,10 +191,10 @@
                             <%= pagamento.getStatus() ? "Pago" : "Pendente" %>
                         </td>
                         <td>
-                            <%= pagamento.getDataVencimento() %>
+                            <%= pagamento.getDataVencimento().format(DataUtils.DMY) %>
                         </td>
                         <td>
-                            <%= dtPagto == null ? "Pagamento Pendente" : dtPagto %>
+                            <%= dtPagto == null ? "Pagamento Pendente" : dtPagto.format(DataUtils.DMY) %>
                         </td>
                         <td>
                             <%= MetodoPagamento.deId(pagamento.getMetodoPagamento().getId()) %>

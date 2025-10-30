@@ -42,18 +42,18 @@
 
                 <select name="status">
                     <option value="" selected>Selecione o status do Pagamento</option>
-                    <option value="true" <%=pagamento.getStatus() ? "selected" : "" %>>Pagamento realizado ✅</option>
-                    <option value="false" <%=!pagamento.getStatus() ? "selected" : "" %>>Pagamento pendente ❌</option>
+                    <option value="true" <%= pagamento.getStatus() ? "selected" : "" %>>Pagamento realizado ✅</option>
+                    <option value="false" <%=! pagamento.getStatus() ? "selected" : "" %>>Pagamento pendente ❌</option>
                 </select>
 
                 <input type="date" name="data_inicio" data-placeholder="Selecione a Data de Início"
-                       value="<%= pagamento.getDataInicio() %>">
+                       value="<%= pagamento.getDataInicio() == null ? "" : pagamento.getDataInicio().toLocalDate() %>">
 
                 <input type="date" name="data_vencimento" data-placeholder="Selecione a Data de Vencimento"
                        value="<%= pagamento.getDataVencimento() %>">
 
                 <input type="date" name="data_pagamento" data-placeholder="Selecione a Data de Pagamento"
-                       value="<%= pagamento.getDataPagamento() %>">
+                       value="<%= pagamento.getDataPagamento() == null ? "" : pagamento.getDataPagamento().toLocalDate() %>">
 
                 <select name="metodo_pagamento">
                     <option value="" select>-- Selecione --</option>
