@@ -20,8 +20,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/styles/planos.css">
-    <link rel="stylesheet" href="/styles/crud_geral.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/planos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/crud_geral.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -29,7 +30,7 @@
     <div id="sidebar">
         <aside>
             <div id="logout">
-                <img class="imagem" src="/assets/crud/pagina_anterior.svg" alt="simbolo de sair">
+                <img class="imagem" src="${pageContext.request.contextPath}/assets/crud/pagina_anterior.svg" alt="simbolo de sair">
                 <form action="${pageContext.request.contextPath}/login-handler" method="post">
                     <input type="hidden" name="action" value="logout">
                     <button type="submit">Sair</button>
@@ -37,37 +38,37 @@
             </div>
 
             <div id="imagem">
-                <img id="logo-iara" src="/assets/imagens gerais/iara_maior.svg" alt="Logo IARA">
+                <img id="logo-iara" src="${pageContext.request.contextPath}/assets/imagens gerais/iara_maior.svg" alt="Logo IARA">
             </div>
 
             <nav>
                 <ul>
                     <li>
-                        <img class="imagem" src="/assets/crud/home.svg" alt="icone home">
+                        <img class="imagem" src="${pageContext.request.contextPath}/assets/crud/home.svg" alt="icone home">
                         <a href="${pageContext.request.contextPath}/area-restrita/index.jsp">Página inicial</a>
                     </li>
                     <li>
-                        <img class="imagem" src="/assets/crud/usuario.svg" alt="icone usuarios">
+                        <img class="imagem" src="${pageContext.request.contextPath}/assets/crud/usuario.svg" alt="icone usuarios">
                         <a href="${pageContext.request.contextPath}/area-restrita/usuarios">Usuários</a>
                     </li>
                     <li>
-                        <img class="imagem" src="/assets/crud/super_adm.svg" alt="icone super adm">
+                        <img class="imagem" src="${pageContext.request.contextPath}/assets/crud/super_adm.svg" alt="icone super adm">
                         <a href="${pageContext.request.contextPath}/area-restrita/superadms">Super ADM</a>
                     </li>
                     <li>
-                        <img class="imagem" src="/assets/crud/planos.svg" alt="icone planos">
+                        <img class="imagem" src="${pageContext.request.contextPath}/assets/crud/planos.svg" alt="icone planos">
                         <a href="${pageContext.request.contextPath}/area-restrita/planos">Planos</a>
                     </li>
                     <li>
-                        <img class="imagem" src="/assets/crud/fabricas.svg" alt="icone fábricas">
+                        <img class="imagem" src="${pageContext.request.contextPath}/assets/crud/fabricas.svg" alt="icone fábricas">
                         <a href="${pageContext.request.contextPath}/area-restrita/fabricas">Fábricas</a>
                     </li>
                     <li class="active">
-                        <img class="imagem" src="/assets/crud/pagamento_azul.svg" alt="icone pagamentos">
+                        <img class="imagem" src="${pageContext.request.contextPath}/assets/crud/pagamento_azul.svg" alt="icone pagamentos">
                         <a href="${pageContext.request.contextPath}/area-restrita/pagamentos">Pagamentos</a>
                     </li>
                     <li>
-                        <img class="imagem" src="/assets/crud/BI.svg" alt="icone BI">
+                        <img class="imagem" src="${pageContext.request.contextPath}/assets/crud/BI.svg" alt="icone BI">
                         <a href="https://iara-area-restrita.vercel.app/home/dashboard">BI</a>
                     </li>
                 </ul>
@@ -83,7 +84,7 @@
                 <p>Gerencie e organize seus Pagamentos</p>
             </div>
             <div id="foto_perfil">
-                <img id="perfil" src="/assets/crud/foto_perfil.svg" alt="foto de perfil">
+                <img id="perfil" src="${pageContext.request.contextPath}/assets/crud/foto_perfil.svg" alt="foto de perfil">
             </div>
         </div>
 
@@ -104,15 +105,17 @@
                             <div class="filtragem">
                                 <label>
                                     Campo de Filtragem:
-                                    <select name="campo_filtro">
+                                    <select id="campoFiltro" name="campo_filtro">
                                         <option value="" selected>Nenhum selecionado</option>
-
-                                        <% for (String chave : camposFiltraveis.keySet()) { %>
-                                        <option value="<%= chave %>">
-                                            <%= camposFiltraveis.get(chave) %>
-                                        </option>
-                                        <% } %>
+                                        <option value="id" data-type="number">ID</option>
+                                        <option value="valor" data-type="decimal">Valor Pago</option>
+                                        <option value="statusP" data-type="select">Status</option>
+                                        <option value="data_vencimento" data-type="date">Data Vencimento</option>
+                                        <option value="data_pagamento" data-type="datetime-local">Data Pagamento</option>
+                                        <option value="data_inicio" data-type="datetime-local">Data de Início</option>
+                                        <option value="fk_metodopag" data-type="select">Metodo de Pagamento</option>
                                     </select>
+
                                 </label>
                             </div>
 
@@ -210,7 +213,7 @@
                                 <input type="hidden" name="action" value="update">
                                 <button id="editar" type="submit">Editar</button>
                             </form>
-                            <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="post">
+                            <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="post" onsubmit="confirmarDelete(event)">
                                 <input type="hidden" name="id" value="<%= pagamento.getId() %>">
                                 <input type="hidden" name="action" value="delete">
                                 <button id="deletar" type="submit">Deletar</button>
@@ -225,6 +228,7 @@
     </div>
 
 </main>
+<script src="${pageContext.request.contextPath}/javascript/infoTrader.js"></script>
 </body>
 
 </html>

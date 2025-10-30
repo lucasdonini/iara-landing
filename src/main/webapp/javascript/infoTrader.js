@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     // Resgata elementos HTMl
     const campoFiltro = document.getElementById("campoFiltro");
-    const containerValorFiltro = document.getElementById("containerValorFiltro");
+    const containerValorFiltro = document.getElementsByClassName("filtragem")[1];
 
     // Chama a função quando um novo campo é selecionado
     campoFiltro.addEventListener("change", () => {
@@ -43,16 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 inativa.value = "false";
 
                 select.add(ativa); select.add(inativa);
-            } else if (value === "tipo_pagamento"){
-                const debito = new Option("Débito");
-                const credito = new Option("Crédito");
-                const pix = new Option("PIX");
-
-                debito.value = "debito";
-                credito.value = "credito";
-                pix.value = "pix";
-
-                select.add(debito); select.add(credito); select.add(pix);
             } else if(value === "tipo_acesso"){
                 const geren = new Option("Gerenciamento");
                 const alt = new Option("Alteração");
@@ -75,8 +65,46 @@ document.addEventListener("DOMContentLoaded", () => {
                 outros.value = "outros";
 
                 select.add(masculino); select.add(feminino); select.add(outros);
+            } else if(value === "fk_metodopag"){
+                const credito = new Option("Cartão de Crédito");
+                const boleto = new Option("Boleto");
+                const pix = new Option("PIX");
+                const trans = new Option("Transferência Bancária");
+                const debito = new Option("Débito Automático");
+
+                credito.value = "1";
+                boleto.value = "2";
+                pix.value = "3";
+                trans.value = "4";
+                debito.value = "5";
+
+                select.add(credito); select.add(boleto); select.add(pix); select.add(trans); select.add(debito);
             }
             containerValorFiltro.appendChild(select);
+        } else if (tipo === "duracao"){
+            const numDuracao = document.createElement("input");
+            const labelDuracao = document.createElement("select");
+
+            numDuracao.id = "valorFiltro";
+            numDuracao.name = "valor_filtro";
+            labelDuracao.id = "labelDuracao";
+            labelDuracao.name = "label_duracao";
+
+            numDuracao.type = "number";
+            numDuracao.min = "0";
+            numDuracao.placeholder = "Ex: 2 (anos, meses...)";
+
+            const anos = new Option("Anos");
+            anos.value = "years";
+            const meses = new Option("Meses");
+            meses.value = "months";
+            const dias = new Option("Dias");
+            dias.value = "days";
+
+            labelDuracao.add(anos); labelDuracao.add(meses); labelDuracao.add(dias);
+
+            containerValorFiltro.appendChild(numDuracao);
+            containerValorFiltro.appendChild(labelDuracao);
         } else {
             const input = document.createElement("input");
             input.id = "valorFiltro";
@@ -87,8 +115,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 input.step = "0.01";
                 input.inputMode = "decimal";
                 input.placeholder = "R$";
-            }
-            else{
+            } else if (tipo === "date-nascimento"){
+                input.type = "date";
+                const data = new Date();
+                data.setFullYear(data.getFullYear()-16);
+
+                input.max = data.toISOString().split("T")[0];
+            } else if (tipo === "date" || tipo === "datetime-local"){
+                input.type = tipo;
+                const data = new Date();
+                data.setFullYear(data.getFullYear()+15);
+
+                input.max = data.toISOString().split("T")[0];
+            } else{
                 input.type = tipo;
                 if (tipo === "date"){
                     input.max = "1999-12-31";
@@ -99,3 +138,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+
+function confirmarDelete(event) {
+    event.preventDefault();
+
+    Swal.fire({
+        title: "Tem certeza que deseja excluir?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#383f91",
+        cancelButtonColor: "#fff",
+        confirmButtonText: "Excluir",
+        cancelButtonText: "Cancelar",
+
+        didOpen: (popup) => {
+            // Atributos
+            const confirmButton = popup.querySelector('.swal2-confirm');
+            const cancelButton = popup.querySelector('.swal2-cancel');
+
+            popup.style.fontFamily = "Arial";
+            popup.style.color = "black";
+            confirmButton.style.color = "white";
+            cancelButton.style.color = "black";
+            confirmButton.style.fontWeight = "bold";
+            cancelButton.style.fontWeight = "bold";
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit();
+        }
+    });
+
+    return false;
+}
