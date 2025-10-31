@@ -66,10 +66,6 @@
                         <img class="imagem" src="/assets/crud/pagamento_azul.svg" alt="icone pagamentos">
                         <a href="${pageContext.request.contextPath}/area-restrita/pagamentos">Pagamentos</a>
                     </li>
-                    <li>
-                        <img class="imagem" src="/assets/crud/BI.svg" alt="icone BI">
-                        <a href="https://iara-area-restrita.vercel.app/home/dashboard">BI</a>
-                    </li>
                 </ul>
             </nav>
         </aside>

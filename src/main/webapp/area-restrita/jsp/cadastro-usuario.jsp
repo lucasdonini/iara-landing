@@ -45,7 +45,7 @@
                 </select>
 
                 <select name="genero">
-                    <option value="" selected>-- Selecione --</option>
+                    <option value="" selected>Selecione</option>
 
                     <% for (Genero g : Genero.values()) { %>
                     <option value="<%= g.name().toLowerCase() %>">
