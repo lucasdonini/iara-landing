@@ -31,11 +31,16 @@
             <form action="${pageContext.request.contextPath}/area-restrita/superadms" method="post">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="id" value="<%= adm.getId() %>">
-                <input type="text" name="nome" value="<%= adm.getNome() %>" placeholder="Novo nome">
-                <input type="text" name="cargo" value="<%= adm.getCargo() %>" placeholder="Novo cargo">
-                <input type="email" name="email" value="<%= adm.getEmail() %>" placeholder="Novo email">
-                <input type="text" name="senha_atual" placeholder="Insira sua senha atual">
-                <input type="text" name="nova_senha" pattern=".{8,}" title="A senha deve ter pelo menos 8 dígitos"
+                <label for="nome">Nome:</label>
+                <input type="text" name="nome" id="nome" value="<%= adm.getNome() %>" placeholder="Novo nome">
+                <label for="cargo">Cargo:</label>
+                <input type="text" id="cargo" name="cargo" value="<%= adm.getCargo() %>" placeholder="Novo cargo">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="<%= adm.getEmail() %>" placeholder="Novo email">
+                <label for="senha_atual">Senha Atual:</label>
+                <input type="text" id="senha_atual" name="senha_atual" placeholder="Insira sua senha atual">
+                <label for="nova_senha">Nova Senha:</label>
+                <input type="text" id="nova_senha" name="nova_senha" pattern=".{8,}" title="A senha deve ter pelo menos 8 dígitos"
                        placeholder="Insira sua nova senha">
                 <button type="submit">Salvar</button>
             </form>

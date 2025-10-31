@@ -36,13 +36,18 @@
             <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="post">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="id" value="<%= usuario.getId() %>">
-                <input type="text" name="nome" value="<%= usuario.getNome() %>" placeholder="Novo nome">
-                <input type="text" name="email" value="<%= usuario.getEmail() %>" placeholder="Novo email">
-                <input type="email" name="email_gerente" value="<%= usuario.getEmailGerente() %>"
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" value="<%= usuario.getNome() %>" placeholder="Novo nome">
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email" value="<%= usuario.getEmail() %>" placeholder="Novo email">
+                <label for="email_gerente">Email do Gerente:</label>
+                <input type="email" id="email_gerente" name="email_gerente" value="<%= usuario.getEmailGerente() %>"
                        placeholder="Email do novo gerente">
-                <input type="text" name="cargo" value="<%= usuario.getCargo() %>">
+                <label for="cargo">Cargo:</label>
+                <input type="text" id="cargo" name="cargo" value="<%= usuario.getCargo() %>">
 
-                <select name="nivel_acesso">
+                <label for="nivel_acesso">Nível de Acesso:</label>
+                <select name="nivel_acesso" id="nivel_acesso">
                     <% for (TipoAcesso t : TipoAcesso.values()) { %>
                     <option value="<%= t.nivel() %>" <%=t == usuario.getTipoAcesso() ? "selected" : "" %>>
                         <%= t.descricao() %>
@@ -50,7 +55,8 @@
                     <% } %>
                 </select>
 
-                <select name="status">
+                <label id="status">Status:</label>
+                <select name="status" id="status">
                     <% for (boolean b : List.of(true, false)) { %>
                     <option value="<%= b %>" <%=b == usuario.getStatus() ? "selected" : "" %>>
                         <%= b ? "Ativo" : "Inativo" %>
@@ -58,7 +64,8 @@
                     <% } %>
                 </select>
 
-                <select name="fk_fabrica">
+                <label for="fk_fabrica">Fábrica:</label>
+                <select name="fk_fabrica" id="fk_fabrica">
                     <% for (int id : fabricas.keySet()) { %>
                     <option value="<%= id %>" <%=id == usuario.getFkFabrica() ? "selected" : "" %>>
                         <%= fabricas.get(id) %>
@@ -66,7 +73,8 @@
                     <% } %>
                 </select>
 
-                <select name="genero">
+                <label for="genero">Gênero:</label>
+                <select name="genero" id="genero">
                     <% for (Genero g : Genero.values()) { %>
                     <option value="<%= g.name().toLowerCase() %>" <%= g.equals(usuario.getGenero()) ? "selected" : "" %>>
                         <%= g.toString() %>

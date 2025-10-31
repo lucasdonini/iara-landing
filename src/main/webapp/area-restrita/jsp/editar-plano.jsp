@@ -34,13 +34,19 @@
             <form action="${pageContext.request.contextPath}/area-restrita/planos" method="post">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="id" value="<%= plano.getId() %>">
-                <input type="text" name="nome" value="<%= plano.getNome() %>" placeholder="Novo nome">
-                <input type="number" name="valor" step="any" value="<%= plano.getValor() %>" placeholder="Novo valor">
-                <input type="text" name="descricao" value="<%= plano.getDescricao() %>" placeholder="Nova descricao">
-                <input type="number" min="0" placeholder="Anos" value="<%= duracao.getYears() %>" name="anos_duracao">
-                <input type="number" min="0" placeholder="Meses" value="<%= duracao.getMonths() %>"
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" value="<%= plano.getNome() %>" placeholder="Novo nome">
+                <label for="valor">Valor:</label>
+                <input type="number" id="valor" name="valor" step="any" value="<%= plano.getValor() %>" placeholder="Novo valor">
+                <label for="descricao">Descrição:</label>
+                <input type="text" id="descricao" name="descricao" value="<%= plano.getDescricao() %>" placeholder="Nova descricao">
+                <label for="anos">Anos:</label>
+                <input type="number" id="anos" min="0" placeholder="Anos" value="<%= duracao.getYears() %>" name="anos_duracao">
+                <label for="meses">Meses:</label>
+                <input type="number" id="meses" min="0" placeholder="Meses" value="<%= duracao.getMonths() %>"
                        name="meses_duracao">
-                <input type="number" min="0" placeholder="Dias" value="<%= duracao.getDays() %>" name="dias_duracao">
+                <label for="dias">Dias:</label>
+                <input type="number" id="dias" min="0" placeholder="Dias" value="<%= duracao.getDays() %>" name="dias_duracao">
                 <button type="submit">Salvar</button>
             </form>
         </div>

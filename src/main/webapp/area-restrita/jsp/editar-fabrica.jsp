@@ -38,16 +38,22 @@
                 <div class="form-container">
                     <div class="form-section">
                         <h2>Dados da Fábrica</h2>
-                        <input type="text" name="nome" value="<%= f.getNomeUnidade() %>" placeholder="Nome">
-                        <input type="text" name="cnpj" value="<%= f.getCnpj() %>" pattern="\d{14}" title="CNPJ inválido"
-                               placeholder="CNPJ">
-                        <input type="email" name="email" value="<%= f.getEmailCorporativo() %>"
+                        <label for="nome">Nome da Fábrica:</label>
+                        <input type="text" id="nome" name="nome" value="<%= f.getNomeUnidade() %>" placeholder="Nome">
+                        <label for="cnpj">CNPJ:</label>
+                        <input type="text" id="cnpj" name="cnpj" value="<%= f.getCnpj() %>" pattern="\d{14}" title="CNPJ inválido"
+                               placeholder="XX.XXX.XXX/YYYY-ZZ">
+                        <label for="email">Email Corporativo:</label>
+                        <input type="email" id="email" name="email" value="<%= f.getEmailCorporativo() %>"
                                placeholder="Email para contato">
-                        <input type="text" name="ramo" value="<%= f.getRamo() %>" placeholder="Ramo">
-                        <input type="text" name="nome_empresa" value="<%= f.getNomeIndustria() %>"
+                        <label for="ramo">Ramo:</label>
+                        <input type="text" id="ramo" name="ramo" value="<%= f.getRamo() %>" placeholder="Ramo">
+                        <label for="nome_empresa">Nome da Empresa:</label>
+                        <input type="text" id="nome_empresa" name="nome_empresa" value="<%= f.getNomeIndustria() %>"
                                placeholder="Nome da empresa">
 
-                        <select name="status">
+                        <label for="status">Status:</label>
+                        <select id="status" name="status">
                             <% for (Boolean b : List.of(true, false)) { %>
                             <option value="<%= b.toString() %>" <%=b ? "selected" : "" %>>
                                 <%= b ? "Ativa" : "Inativa" %>
@@ -55,7 +61,8 @@
                             <% } %>
                         </select>
 
-                        <select name="id_plano">
+                        <label for="id_plano">Plano:</label>
+                        <select id="id_plano" name="id_plano">
                             <% for (int idPlano : planos.keySet()) { %>
                             <option value="<%= idPlano %>" <%=idPlano == f.getIdPlano() ? "selected" : "" %>>
                                 <%= planos.get(idPlano) %>
@@ -66,16 +73,24 @@
 
                     <div class="form-section">
                         <h2>Endereço da Fábrica</h2>
-                        <input type="text" name="cep" value="<%= e.getCep() %>" pattern="\d{8}"
+
+                        <label for="cep">CEP:</label>
+                        <input type="text" id="cep" name="cep" value="<%= e.getCep() %>" pattern="\d{8}"
                                title="Insira um CEP válido"
-                               placeholder="CEP">
-                        <input type="text" name="logradouro" value="<%= e.getRua() %>" placeholder="Logradouro">
-                        <input type="number" name="numero" value="<%= e.getNumero() %>" placeholder="n°">
-                        <input type="text" name="complemento" value="<%= complemento != null ? complemento : "" %>"
+                               placeholder="XXXXX-XXX">
+                        <label id="logradouro">Logradouro:</label>
+                        <input type="text" id="logradouro" name="logradouro" value="<%= e.getRua() %>" placeholder="Logradouro">
+                        <label id="numero">Número:</label>
+                        <input type="number" id="numero" name="numero" value="<%= e.getNumero() %>" placeholder="n°">
+                        <label id="complemento">Complemento:</label>
+                        <input type="text" id="complemento" name="complemento" value="<%= complemento != null ? complemento : "" %>"
                                placeholder="Complemento">
-                        <input type="text" name="estado" value="<%= e.getEstado() %>" placeholder="Estado">
-                        <input type="text" name="bairro" value="<%= e.getBairro() %>" placeholder="Bairro">
-                        <input type="text" name="cidade" value="<%= e.getCidade() %>" placeholder="Cidade">
+                        <label for="estado">Estado:</label>
+                        <input type="text" id="estado" name="estado" value="<%= e.getEstado() %>" placeholder="Estado">
+                        <label for="bairro">Bairro:</label>
+                        <input type="text" id="bairro" name="bairro" value="<%= e.getBairro() %>" placeholder="Bairro">
+                        <label for="cidade">Cidade:</label>
+                        <input type="text" id="cidade" name="cidade" value="<%= e.getCidade() %>" placeholder="Cidade">
                     </div>
                 </div>
 

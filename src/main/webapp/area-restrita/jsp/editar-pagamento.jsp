@@ -38,25 +38,31 @@
                 <input type="hidden" name="id" value="<%= pagamento.getId() %>">
                 <input type="hidden" name="action" value="update">
 
-                <input type="number" placeholder="Digite o novo valor" name="valor_pago"
+                <label for="valor_pago">Valor Pago:</label>
+                <input type="number" id="valor_pago" placeholder="Digite o novo valor" name="valor_pago"
                        value="<%= pagamento.getValor() %>">
 
-                <select name="status">
+                <label for="status">Status:</label>
+                <select id="status" name="status">
                     <option value="" selected>Selecione o status do Pagamento</option>
                     <option value="true" <%=pagamento.getStatus() ? "selected" : "" %>>Pagamento realizado ✅</option>
                     <option value="false" <%=!pagamento.getStatus() ? "selected" : "" %>>Pagamento pendente ❌</option>
                 </select>
 
-                <input type="date" name="data_inicio" data-placeholder="Selecione a Data de Início"
+                <label for="data_inicio">Data de Ínicio:</label>
+                <input type="date" id="data_inicio" name="data_inicio" data-placeholder="Selecione a Data de Início"
                        value="<%= pagamento.getDataInicio() %>">
 
-                <input type="date" name="data_vencimento" data-placeholder="Selecione a Data de Vencimento"
+                <label for="data_vencimento">Data de Venciemento:</label>
+                <input type="date" id="data_vencimento" name="data_vencimento" data-placeholder="Selecione a Data de Vencimento"
                        value="<%= pagamento.getDataVencimento() %>">
 
-                <input type="date" name="data_pagamento" data-placeholder="Selecione a Data de Pagamento"
+                <label for="data_pagamento">Data de Pagamento:</label>
+                <input type="date" id="data_pagamento" name="data_pagamento" data-placeholder="Selecione a Data de Pagamento"
                        value="<%= pagamento.getDataPagamento() %>">
 
-                <select name="metodo_pagamento">
+                <label for="metodo_pagamento">Método de Pagamento:</label>
+                <select id="metodo_pagamento" name="metodo_pagamento">
                     <option value="" select>-- Selecione --</option>
 
                     <% for (MetodoPagamento m : MetodoPagamento.values()) { %>
@@ -66,7 +72,8 @@
                     <% } %>
                 </select>
 
-                <select name="fk_fabrica">
+                <label for="fk_fabrica">Fábrica:</label>
+                <select id="fk_fabrica" name="fk_fabrica">
                     <option value="" selected>Selecione o ID da Fábrica que o pagamento refere-se</option>
                     <% for (int id : fabricas.keySet()) { %>
                     <option value="<%= id %>" <%=id == pagamento.getFkFabrica() ? "selected" : "" %>>
@@ -75,7 +82,8 @@
                     <% } %>
                 </select>
 
-                <select name="fk_plano">
+                <label for="fk_plano">Plano:</label>
+                <select id="fk_plano" name="fk_plano">
                     <option value="" selected>-- Selecione --</option>
 
                     <% for (int id : planos.keySet()) { %>
