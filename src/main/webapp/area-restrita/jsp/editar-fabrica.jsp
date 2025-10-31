@@ -13,8 +13,9 @@
 <html lang="pt-BR">
 
 <head>
-    <title>Title</title>
+    <title>Editar Fábrica | Área Restrita</title>
     <link rel="stylesheet" href="/styles/editar-fabrica.css">
+    <link rel="icon" href="../assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
 </head>
 
 <body>

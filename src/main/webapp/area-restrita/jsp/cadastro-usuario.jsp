@@ -9,8 +9,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <title>Landing Teste</title>
+    <title>Cadastrar Usuário | Área Restrita</title>
     <link rel="stylesheet" href="/styles/cadastro-usuario.css">
+    <link rel="icon" href="../assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
 </head>
 <body>
 <a href="${pageContext.request.contextPath}/area-restrita/usuarios" class="btn-sair">Cancelar</a>

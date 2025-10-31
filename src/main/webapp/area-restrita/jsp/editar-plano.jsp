@@ -9,8 +9,9 @@
 %>
 
 <head>
-    <title>Landing Teste</title>
+    <title>Editar Plano | Área Restrita</title>
     <link rel="stylesheet" href="/styles/editar-plano.css">
+    <link rel="icon" href="../assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
 </head>
 
 <body>

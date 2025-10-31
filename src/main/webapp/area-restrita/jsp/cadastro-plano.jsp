@@ -5,8 +5,9 @@
 <html lang="pt-BR">
 
 <head>
-    <title>Página de cadastro - Planos</title>
+    <title>Cadastrar Plano | Área Restrita</title>
     <link rel="stylesheet" href="/styles/cadastro-plano.css">
+    <link rel="icon" href="../assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
 </head>
 
 <body>

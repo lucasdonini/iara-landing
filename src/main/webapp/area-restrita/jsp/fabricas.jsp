@@ -14,9 +14,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Fábricas | Área Restrita</title>
     <link rel="stylesheet" href="/styles/fabricas.css">
     <link rel="stylesheet" href="/styles/crud_geral.css">
+    <link rel="icon" href="../assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
 </head>
 
 <body>

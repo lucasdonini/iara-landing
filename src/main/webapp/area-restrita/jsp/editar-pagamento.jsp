@@ -13,8 +13,9 @@
 <html lang="pt-BR">
 
 <head>
-    <title>Landing Teste</title>
+    <title>Editar Pagamento | Área Restrita</title>
     <link rel="stylesheet" href="/styles/editar-pagamento.css">
+    <link rel="icon" href="../assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
 </head>
 
 <body>
