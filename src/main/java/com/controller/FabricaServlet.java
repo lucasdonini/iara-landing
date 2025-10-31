@@ -8,6 +8,7 @@ import com.dto.FabricaDTO;
 import com.exception.ExcecaoDeJSP;
 import com.model.Endereco;
 import com.model.Fabrica;
+import com.utils.RegexUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -143,6 +144,31 @@ public class FabricaServlet extends HttpServlet {
     String cidade = req.getParameter("cidade").trim();
     String estado = req.getParameter("estado").trim();
 
+    // --- Validação de dados: Endereço
+    if (!RegexUtils.validarCep(cep)) {
+      throw ExcecaoDeJSP.valorInvalido("cep");
+    }
+
+    if (rua.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("logradouro");
+    }
+
+    if (complemento.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("complemento");
+    }
+
+    if (bairro.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("bairro");
+    }
+
+    if (cidade.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("cidade");
+    }
+
+    if (estado.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("estado");
+    }
+
 
     Endereco endereco = new Endereco(null, cep, numero, rua, complemento, null, bairro, cidade, estado);
 
@@ -155,6 +181,30 @@ public class FabricaServlet extends HttpServlet {
 
     temp = req.getParameter("id_plano").trim();
     int idPlano = Integer.parseInt(temp);
+
+    // --- Validação de dados: Fábrica ---
+    if (nome.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("nome");
+    }
+
+    if (!RegexUtils.validarEmail(email)) {
+      throw ExcecaoDeJSP.valorInvalido("email");
+
+    } else if (email.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("email");
+    }
+
+    if (!RegexUtils.validarCnpj(cnpj)) {
+      throw ExcecaoDeJSP.valorInvalido("cnpj");
+    }
+
+    if (empresa.length() > 150) {
+      throw ExcecaoDeJSP.textoMuitoLongo("empresa");
+    }
+
+    if (ramo.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("ramo");
+    }
 
     CadastroFabricaDTO credenciais = new CadastroFabricaDTO(nome, cnpj, email, empresa, ramo, idPlano);
 
@@ -212,6 +262,30 @@ public class FabricaServlet extends HttpServlet {
     temp = req.getParameter("id_plano").trim();
     int idPlano = Integer.parseInt(temp);
 
+    // --- Validação de dados: Fábrica ---
+    if (nome.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("nome");
+    }
+
+    if (!RegexUtils.validarEmail(email)) {
+      throw ExcecaoDeJSP.valorInvalido("email");
+
+    } else if (email.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("email");
+    }
+
+    if (!RegexUtils.validarCnpj(cnpj)) {
+      throw ExcecaoDeJSP.valorInvalido("cnpj");
+    }
+
+    if (nomeEmpresa.length() > 150) {
+      throw ExcecaoDeJSP.textoMuitoLongo("empresa");
+    }
+
+    if (ramo.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("ramo");
+    }
+
     // Instância do Model
     Fabrica alterado = new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
 
@@ -226,6 +300,31 @@ public class FabricaServlet extends HttpServlet {
     String bairro = req.getParameter("bairro").trim();
     String cidade = req.getParameter("cidade").trim();
     String estado = req.getParameter("estado").trim();
+
+    // --- Validação de dados: Endereço
+    if (!RegexUtils.validarCep(cep)) {
+      throw ExcecaoDeJSP.valorInvalido("cep");
+    }
+
+    if (rua.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("logradouro");
+    }
+
+    if (complemento.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("complemento");
+    }
+
+    if (bairro.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("bairro");
+    }
+
+    if (cidade.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("cidade");
+    }
+
+    if (estado.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("estado");
+    }
 
     Endereco endAlterado = new Endereco(null, cep, numero, rua, complemento, idFabrica, bairro, cidade, estado);
 
