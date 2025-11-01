@@ -84,7 +84,6 @@ body {
     width: 100%;
     max-width: 1000px;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
-    text-align: center;
     z-index: 0;
 }
 
@@ -173,8 +172,12 @@ button:hover {
     margin-left: 20px;
 }
 
-.labels{
-    text-align: left;
+#titulo{
+    text-align: center;
+}
+
+#container_logo{
+    text-align: center;
 }
 
 @keyframes float {

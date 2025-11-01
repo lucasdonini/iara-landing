@@ -27,9 +27,7 @@
     <div class="right-side">
         <div class="login-box">
             <img src="/assets/IARA%20-%20Imagens%20Landing/Logo/logo-iara.png" alt="Logo IARA" class="logo">
-            <h2>Editar Plano - ID:
-                <%= plano.getId() %>
-            </h2>
+            <h2>Editar Plano</h2>
 
             <form action="${pageContext.request.contextPath}/area-restrita/planos" method="post">
                 <input type="hidden" name="action" value="update">
