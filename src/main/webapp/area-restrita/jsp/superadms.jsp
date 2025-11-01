@@ -90,15 +90,14 @@
                     </button>
 
                     <div class="filtro-card">
-                        <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="get">
+                        <form action="${pageContext.request.contextPath}/area-restrita/superadms" method="get">
                             <input type="hidden" name="action" value="read">
 
                             <div class="filtragem">
                                 <label>
                                     Campo de Filtragem:
-                                    <select id="campoFiltro" name="campo_filtro">
+                                    <select id="campoFiltro" name="campo_filtro" onchange="tipoCampoPlanoAdm()">
                                         <option value="" selected>Nenhum selecionado</option>
-                                        <option value="id" data-type="number">ID</option>
                                         <option value="nome" data-type="text">Nome</option>
                                         <option value="cargo" data-type="text">Cargo</option>
                                         <option value="email" data-type="email">Email</option>
@@ -145,7 +144,7 @@
                     </div>
                 </div>
 
-                <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="get">
+                <form action="${pageContext.request.contextPath}/area-restrita/superadms" method="get">
                     <input type="hidden" name="action" value="read">
                     <button id="limpaFiltro" type="submit">Limpar Filtros</button>
                 </form>
