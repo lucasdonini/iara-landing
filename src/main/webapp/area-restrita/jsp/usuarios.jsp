@@ -3,9 +3,12 @@
 <%@ page import="java.util.List" %>
 <%@ page import="static com.dao.UsuarioDAO.camposFiltraveis" %>
 <%@ page import="com.model.DirecaoOrdenacao" %>
+<%@ page import="java.util.Map" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
     List<UsuarioDTO> usuarios = (List<UsuarioDTO>) request.getAttribute("usuarios");
+    List<String> emailGerentes = (List<String>) request.getAttribute("emailGerentes");
+    Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
 %>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -99,7 +102,7 @@
                             <div class="filtragem">
                                 <label>
                                     Campo de Filtragem:
-                                    <select id="campoFiltro" name="campo_filtro">
+                                    <select id="campoFiltro" name="campo_filtro" onchange="tipoCampoUsuario()">
                                         <option value="" selected>Nenhum selecionado</option>
                                         <option value="nome" data-type="text">Nome</option>
                                         <option value="genero" data-type="select">Gênero</option>
@@ -107,8 +110,10 @@
                                         <option value="cargo" data-type="text">Cargo</option>
                                         <option value="email" data-type="email">Email</option>
                                         <option value="tipo_acesso" data-type="select">Tipo de Acesso</option>
-                                        <option value="statusU" data-type="select">Status</option>
+                                        <option value="status" data-type="select">Status</option>
                                         <option value="data_criacao" data-type="datetime-local">Data de Criação</option>
+                                        <option value="gerente" data-type="email-gerente">Email do Gerente</option>
+                                        <option value="fk_fabrica" data-type="fabrica">Fábrica</option>
                                     </select>
                                 </label>
                             </div>
@@ -116,6 +121,26 @@
                             <div class="filtragem">
                                 <label for="valorFiltro">Valor Filtrado:</label>
                                 <input type="text" id="valorFiltro" name="valor_filtro">
+                            </div>
+
+                            <div class="filtragem" style="display: none">
+                                <label for="valorGerente">Valor Filtrado:</label>
+                                <select name="valor_gerente" id="valorGerente">
+                                    <option value="">--- SELECIONE ---</option>
+                                <% for (String email : emailGerentes) {%>
+                                    <option value=<%=email%>><%=email%></option>
+                                <% } %>
+                                </select>
+                            </div>
+
+                            <div class="filtragem" style="display: none">
+                                <label for="valorFabrica">Valor Filtrado:</label>
+                                <select name="valor_fabrica" id="valorFabrica">
+                                    <option value="">--- SELECIONE ---</option>
+                                    <% for (Integer fabrica : fabricas.keySet()) {%>
+                                    <option value=<%=fabrica%>><%=fabricas.get(fabrica)%></option>
+                                    <% } %>
+                                </select>
                             </div>
 
                             <div class="filtragem">
