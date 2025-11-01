@@ -36,269 +36,265 @@ public class PagamentoServlet extends HttpServlet {
     boolean erro = true;
     String destino = null;
 
-    try {
-      switch (action) {
-        case "read" -> {
-          List<Pagamento> pagamentos = listarPagamentos(req);
-          Map<Integer, String> fabricas = getMapFabricas();
-          Map<Integer, String> planos = getMapPlanos();
+        try {
+            switch (action) {
+                case "read" -> {
+                    List<Pagamento> pagamentos = listarPagamentos(req);
+                    Map<Integer, String> fabricas = getMapFabricas();
+                    Map<Integer, String> planos = getMapPlanos();
 
-          req.setAttribute("pagamentos", pagamentos);
-          req.setAttribute("fabricas", fabricas);
-          req.setAttribute("planos", planos);
+                    req.setAttribute("pagamentos", pagamentos);
+                    req.setAttribute("fabricas", fabricas);
+                    req.setAttribute("planos", planos);
 
-          destino = PAGINA_PRINCIPAL;
+                    destino = PAGINA_PRINCIPAL;
+                }
+
+                case "update" -> {
+                    Pagamento pagamento = getInformacoesAlteraveis(req);
+                    Map<Integer, String> fabricas = getMapFabricas();
+                    Map<Integer, String> planos = getMapPlanos();
+
+                    req.setAttribute("pagamento", pagamento);
+                    req.setAttribute("fabricas", fabricas);
+                    req.setAttribute("planos", planos);
+
+                    destino = PAGINA_EDICAO;
+                }
+
+                case "create" -> {
+                    Map<Integer, String> fabricas = getMapFabricas();
+                    Map<Integer, String> planos = getMapPlanos();
+
+                    req.setAttribute("fabricas", fabricas);
+                    req.setAttribute("planos", planos);
+
+                    destino = PAGINA_CADASTRO;
+                }
+
+                default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
+            }
+
+            erro = false;
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar operação no banco:");
+            e.printStackTrace(System.err);
+
+        } catch (ClassNotFoundException e) {
+            System.err.println("Falha ao carregar o driver postgresql:");
+            e.printStackTrace(System.err);
+
+        } catch (Throwable e) {
+            System.err.println("Erro inesperado:");
+            e.printStackTrace(System.err);
         }
 
-        case "update" -> {
-          Pagamento pagamento = getInformacoesAlteraveis(req);
-          Map<Integer, String> fabricas = getMapFabricas();
-          Map<Integer, String> planos = getMapPlanos();
+        if (erro) {
+            resp.sendRedirect(req.getContextPath() + PAGINA_ERRO);
 
-          req.setAttribute("pagamento", pagamento);
-          req.setAttribute("fabricas", fabricas);
-          req.setAttribute("planos", planos);
+        } else {
+            req.getRequestDispatcher(destino).forward(req, resp);
+        }
+    }
 
-          destino = PAGINA_EDICAO;
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        String action = req.getParameter("action").trim();
+
+        String destino = PAGINA_ERRO;
+
+        try {
+            switch (action) {
+                case "create" -> registrarPagamento(req);
+                case "update" -> atualizarPagamento(req);
+                case "delete" -> removerPagamento(req);
+                default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
+            }
+
+            destino = req.getServletPath();
+
+        }
+        // Se houver alguma exceção de JSP, aciona o método doGet
+        catch (ExcecaoDeJSP e) {
+            req.setAttribute("erro", e.getMessage());
+            doGet(req, resp);
+            return;
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao executar operação no banco:");
+            e.printStackTrace(System.err);
+
+        } catch (ClassNotFoundException e) {
+            System.err.println("Falha ao carregar o driver postgresql:");
+            e.printStackTrace(System.err);
+
+        } catch (Throwable e) {
+            System.err.println("Erro inesperado:");
+            e.printStackTrace(System.err);
         }
 
-        case "create" -> {
-          Map<Integer, String> fabricas = getMapFabricas();
-          Map<Integer, String> planos = getMapPlanos();
+        resp.sendRedirect(req.getContextPath() + destino);
+    }
 
-          req.setAttribute("fabricas", fabricas);
-          req.setAttribute("planos", planos);
+    // === CREATE ===
+    private void registrarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
+        String temp = req.getParameter("status").trim();
+        boolean status = Boolean.parseBoolean(temp);
 
-          destino = PAGINA_CADASTRO;
+        temp = req.getParameter("data_vencimento").trim();
+        LocalDate dataVencimento = LocalDate.parse(temp);
+
+        temp = req.getParameter("data_inicio").trim();
+        LocalDateTime dataInicio = temp.isBlank() ? null : LocalDate.parse(temp).atStartOfDay();
+
+        LocalDateTime dataPagamento = null;
+        double valor;
+
+        // Se o status do pagamento for 'pago', data_pagamento se torna obrigatória
+        if (status) {
+            temp = req.getParameter("data_pagamento").trim();
+
+            if (temp.isBlank()) {
+                throw ExcecaoDeJSP.campoNecessarioFaltante("Data do Pagamento");
+            }
+
+            dataPagamento = LocalDate.parse(temp).atStartOfDay();
+
         }
 
-        default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
-      }
+        temp = req.getParameter("valor").trim();
+        valor = Double.parseDouble(temp);
 
-      erro = false;
+        temp = req.getParameter("metodo_pagamento").trim();
+        MetodoPagamento metodoPagamento = MetodoPagamento.deId(Integer.parseInt(temp));
 
-    } catch (SQLException e) {
-      System.err.println("Erro ao executar operação no banco:");
-      e.printStackTrace(System.err);
+        temp = req.getParameter("fk_fabrica").trim();
+        // Verifica se a fábrica foi preenchida
+        if (temp.isBlank()) {
+            throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
+        }
+        int fkFabrica = Integer.parseInt(temp);
 
-    } catch (ClassNotFoundException e) {
-      System.err.println("Falha ao carregar o driver postgresql:");
-      e.printStackTrace(System.err);
+        temp = req.getParameter("fk_plano").trim();
+        // Verifica se o plano foi preenchido
+        if (temp.isBlank()) {
+            throw ExcecaoDeJSP.campoNecessarioFaltante("plano");
+        }
+        int fkPlano = Integer.parseInt(temp);
 
-    } catch (Throwable e) {
-      System.err.println("Erro inesperado:");
-      e.printStackTrace(System.err);
+        Pagamento pagamento = new Pagamento(null, valor, status, dataVencimento, dataPagamento, dataInicio, metodoPagamento, fkFabrica, fkPlano);
+
+        try (PagamentoDAO dao = new PagamentoDAO()) {
+            dao.cadastrar(pagamento);
+        }
     }
 
-    if (erro) {
-      resp.sendRedirect(req.getContextPath() + PAGINA_ERRO);
+    // === READ ===
+    private List<Pagamento> listarPagamentos(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+        String campoFiltro = req.getParameter("campo_filtro");
+        String campoSequencia = req.getParameter("campo_sequencia");
+        String direcaoSequencia = req.getParameter("direcao_sequencia");
+        String valorFiltro = null;
 
-    } else {
-      req.getRequestDispatcher(destino).forward(req, resp);
-    }
-  }
+        // Verifica se o campo é 'null' para realizar o switch. Se for 'null', o valor do filtro fica como nulo também
+        if (campoFiltro != null){
 
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-    String action = req.getParameter("action").trim();
+            // Resgata um parâmetro diferente de acordo com o nome do campo de filtragem
+            switch (campoFiltro) {
+                case "fk_plano" -> valorFiltro = req.getParameter("valor_plano");
+                case "fk_fabrica" -> valorFiltro = req.getParameter("valor_fabrica");
+                default -> valorFiltro = req.getParameter("valor_filtro");
+            }
+        }
 
-    String destino = PAGINA_ERRO;
+        try (PagamentoDAO dao = new PagamentoDAO()) {
+            Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
 
-    try {
-      switch (action) {
-        case "create" -> registrarPagamento(req);
-        case "update" -> atualizarPagamento(req);
-        case "delete" -> removerPagamento(req);
-        default -> throw new RuntimeException("valor inválido para o parâmetro 'action': " + action);
-      }
-
-      destino = req.getServletPath();
-
-    }
-    // Se houver alguma exceção de JSP, aciona o método doGet
-    catch (ExcecaoDeJSP e) {
-      req.setAttribute("erro", e.getMessage());
-      doGet(req, resp);
-      return;
-
-    } catch (SQLException e) {
-      System.err.println("Erro ao executar operação no banco:");
-      e.printStackTrace(System.err);
-
-    } catch (ClassNotFoundException e) {
-      System.err.println("Falha ao carregar o driver postgresql:");
-      e.printStackTrace(System.err);
-
-    } catch (Throwable e) {
-      System.err.println("Erro inesperado:");
-      e.printStackTrace(System.err);
+            return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
+        }
     }
 
-    resp.sendRedirect(req.getContextPath() + destino);
-  }
+    // === UPDATE ===
+    private void atualizarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
+        String temp = req.getParameter("id").trim();
+        int id = Integer.parseInt(temp);
 
-  // === CREATE ===
-  private void registrarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    String temp = req.getParameter("status").trim();
-    boolean status = Boolean.parseBoolean(temp);
+        temp = req.getParameter("valor_pago").trim();
+        double valorPago = Double.parseDouble(temp);
 
-    temp = req.getParameter("data_vencimento").trim();
-    LocalDate dataVencimento = LocalDate.parse(temp);
+        temp = req.getParameter("status").trim();
+        boolean status = Boolean.parseBoolean(temp);
 
-    temp = req.getParameter("data_inicio").trim();
-    LocalDateTime dataInicio = temp.isBlank() ? null : LocalDate.parse(temp).atStartOfDay();
+        temp = req.getParameter("data_vencimento").trim();
+        LocalDate dataVencimento = LocalDate.parse(temp);
 
-    LocalDateTime dataPagamento = null;
-    double valor;
+        LocalDateTime dataPagamento = null;
+        // Se o status do pagamento for 'pago', data_pagamento se torna obrigatório
+        if (status) {
+            temp = req.getParameter("data_pagamento").trim();
 
-    // Se o status do pagamento for 'pago', data_pagamento se torna obrigatória
-    if (status) {
-      temp = req.getParameter("data_pagamento").trim();
+            if (temp.isBlank()) {
+                throw ExcecaoDeJSP.campoNecessarioFaltante("Data de Pagamento");
+            }
 
-      if (temp.isBlank()) {
-        throw ExcecaoDeJSP.campoNecessarioFaltante("Data do Pagamento");
-      }
+            dataPagamento = LocalDate.parse(temp).atStartOfDay();
+        }
 
-      dataPagamento = LocalDate.parse(temp).atStartOfDay();
+        temp = req.getParameter("data_inicio").trim();
+        LocalDateTime dataInicio = temp.isBlank() ? null : LocalDate.parse(temp).atStartOfDay();
 
+        temp = req.getParameter("metodo_pagamento");
+        int fkMetodopag = Integer.parseInt(temp);
+        MetodoPagamento metodoPagamento = MetodoPagamento.deId(fkMetodopag);
+
+        temp = req.getParameter("fk_fabrica").trim();
+        int fkFabrica = Integer.parseInt(temp);
+
+        temp = req.getParameter("fk_plano").trim();
+        int fkPLano = Integer.parseInt(temp);
+
+        Pagamento alterado = new Pagamento(id, valorPago, status, dataVencimento, dataPagamento, dataInicio, metodoPagamento, fkFabrica, fkPLano);
+
+        try (PagamentoDAO dao = new PagamentoDAO()) {
+            // Recupera os dados originais do banco de dados
+            Pagamento original = dao.getCamposAlteraveis(id);
+
+            dao.atualizar(original, alterado);
+        }
     }
 
-    temp = req.getParameter("valor").trim();
-    valor = Double.parseDouble(temp);
+    // === DELETE ===
+    private void removerPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+        String temp = req.getParameter("id").trim();
+        int id = Integer.parseInt(temp);
 
-    temp = req.getParameter("metodo_pagamento").trim();
-    MetodoPagamento metodoPagamento = MetodoPagamento.deId(Integer.parseInt(temp));
-
-    temp = req.getParameter("fk_fabrica").trim();
-    // Verifica se a fábrica foi preenchida
-    if (temp.isBlank()) {
-      throw ExcecaoDeJSP.campoNecessarioFaltante("fabrica");
-    }
-    int fkFabrica = Integer.parseInt(temp);
-
-    temp = req.getParameter("fk_plano").trim();
-    // Verifica se o plano foi preenchido
-    if (temp.isBlank()) {
-      throw ExcecaoDeJSP.campoNecessarioFaltante("plano");
-    }
-    int fkPlano = Integer.parseInt(temp);
-
-    // --- Validação de dados ---
-    if (valor < 0) {
-      throw ExcecaoDeJSP.valorInvalido("valor");
+        try (PagamentoDAO dao = new PagamentoDAO()) {
+            dao.remover(id);
+        }
     }
 
-    Pagamento pagamento = new Pagamento(null, valor, status, dataVencimento, dataPagamento, dataInicio, metodoPagamento, fkFabrica, fkPlano);
+    // Resgata os dados do banco de dados que podem ser atualizados, utilizados no método UPDATE
+    private Pagamento getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
+        String temp = req.getParameter("id").trim();
+        int id = Integer.parseInt(temp);
 
-    try (PagamentoDAO dao = new PagamentoDAO()) {
-      dao.cadastrar(pagamento);
-    }
-  }
-
-  // === READ ===
-  private List<Pagamento> listarPagamentos(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    String campoFiltro = req.getParameter("campo_filtro");
-
-    if (Objects.equals(campoFiltro, "statusP")) {
-      campoFiltro = "status";
+        try (PagamentoDAO dao = new PagamentoDAO()) {
+            return dao.pesquisarPorId(id);
+        }
     }
 
-    String campoSequencia = req.getParameter("campo_sequencia");
-    String direcaoSequencia = req.getParameter("direcao_sequencia");
-    String valorFiltro = req.getParameter("valor_filtro");
-
-    try (PagamentoDAO dao = new PagamentoDAO()) {
-      Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
-
-      return dao.listar(campoFiltro, valorFiltroConvertido, campoSequencia, direcaoSequencia);
-    }
-  }
-
-  // === UPDATE ===
-  private void atualizarPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException, ExcecaoDeJSP {
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
-
-    temp = req.getParameter("valor_pago").trim();
-    double valorPago = Double.parseDouble(temp);
-
-    temp = req.getParameter("status").trim();
-    boolean status = Boolean.parseBoolean(temp);
-
-    temp = req.getParameter("data_vencimento").trim();
-    LocalDate dataVencimento = LocalDate.parse(temp);
-
-    LocalDateTime dataPagamento = null;
-    // Se o status do pagamento for 'pago', data_pagamento se torna obrigatório
-    if (status) {
-      temp = req.getParameter("data_pagamento").trim();
-
-      if (temp.isBlank()) {
-        throw ExcecaoDeJSP.campoNecessarioFaltante("Data de Pagamento");
-      }
-
-      dataPagamento = LocalDate.parse(temp).atStartOfDay();
+    // HashMap das fábricas, onde a chave é o ID e o valor o nome da unidade
+    private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
+        try (FabricaDAO dao = new FabricaDAO()) {
+            return dao.getMapIdNome();
+        }
     }
 
-    temp = req.getParameter("data_inicio").trim();
-    LocalDateTime dataInicio = temp.isBlank() ? null : LocalDate.parse(temp).atStartOfDay();
-
-    temp = req.getParameter("metodo_pagamento");
-    int fkMetodopag = Integer.parseInt(temp);
-    MetodoPagamento metodoPagamento = MetodoPagamento.deId(fkMetodopag);
-
-    temp = req.getParameter("fk_fabrica").trim();
-    int fkFabrica = Integer.parseInt(temp);
-
-    temp = req.getParameter("fk_plano").trim();
-    int fkPLano = Integer.parseInt(temp);
-
-    // --- Validação de dados ---
-    if (valorPago < 0) {
-      throw ExcecaoDeJSP.valorInvalido("valor pago");
+    // HashMap dos planos, onde a chave é o ID e o valor o nome
+    private Map<Integer, String> getMapPlanos() throws SQLException, ClassNotFoundException {
+        try (PlanoDAO dao = new PlanoDAO()) {
+            return dao.getMapIdNome();
+        }
     }
-
-    Pagamento alterado = new Pagamento(id, valorPago, status, dataVencimento, dataPagamento, dataInicio, metodoPagamento, fkFabrica, fkPLano);
-
-    try (PagamentoDAO dao = new PagamentoDAO()) {
-      // Recupera os dados originais do banco de dados
-      Pagamento original = dao.getCamposAlteraveis(id);
-
-      dao.atualizar(original, alterado);
-    }
-  }
-
-  // === DELETE ===
-  private void removerPagamento(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
-
-    try (PagamentoDAO dao = new PagamentoDAO()) {
-      dao.remover(id);
-    }
-  }
-
-  // Resgata os dados do banco de dados que podem ser atualizados, utilizados no método UPDATE
-  private Pagamento getInformacoesAlteraveis(HttpServletRequest req) throws SQLException, ClassNotFoundException {
-    String temp = req.getParameter("id").trim();
-    int id = Integer.parseInt(temp);
-
-    try (PagamentoDAO dao = new PagamentoDAO()) {
-      return dao.pesquisarPorId(id);
-    }
-  }
-
-  // HashMap das fábricas, onde a chave é o ID e o valor o nome da unidade
-  private Map<Integer, String> getMapFabricas() throws SQLException, ClassNotFoundException {
-    try (FabricaDAO dao = new FabricaDAO()) {
-      return dao.getMapIdNome();
-    }
-  }
-
-  // HashMap dos planos, onde a chave é o ID e o valor o nome
-  private Map<Integer, String> getMapPlanos() throws SQLException, ClassNotFoundException {
-    try (PlanoDAO dao = new PlanoDAO()) {
-      return dao.getMapIdNome();
-    }
-  }
 }

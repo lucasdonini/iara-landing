@@ -22,7 +22,6 @@ public class UsuarioDAO extends DAO {
             "data_nascimento", "Data de Nascimento",
             "cargo", "Cargo",
             "email", "Email",
-            "id_fabrica", "Fábrica",
             "tipo_acesso", "Tipo de Acesso",
             "status", "Status",
             "data_criacao", "Data de Registro"
@@ -36,11 +35,11 @@ public class UsuarioDAO extends DAO {
     public Object converterValor(String campo, String valor) {
         try {
             return switch (campo) {
-                case "tipo_acesso", "id_fabrica" -> Integer.parseInt(valor);
+                case "tipo_acesso", "fk_fabrica" -> Integer.parseInt(valor);
                 case "status" -> Boolean.parseBoolean(valor);
                 case "data_nascimento" -> LocalDate.parse(valor);
                 case "data_criacao" -> LocalDateTime.parse(valor);
-                case "nome", "genero", "cargo", "email" -> valor;
+                case "nome", "genero", "cargo", "email", "gerente" -> valor;
                 default -> new IllegalArgumentException();
             };
         } catch (DateTimeParseException | NumberFormatException | NullPointerException e) {
@@ -112,7 +111,9 @@ public class UsuarioDAO extends DAO {
         } else if ("gerente".equals(campoFiltro)) {
             sql += " WHERE g.email = ?";
 
-        } else {
+        }  else if ("fk_fabrica".equals(campoFiltro)) {
+            sql += "WHERE u.fk_fabrica = ?";
+        }else {
             temFiltro = false;
         }
 

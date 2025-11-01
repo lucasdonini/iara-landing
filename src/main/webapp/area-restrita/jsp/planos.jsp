@@ -6,19 +6,18 @@
 <%@ page import="org.postgresql.util.PGInterval" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-  List<Plano> planos = (List<Plano>) request.getAttribute("planos");
+    List<Plano> planos = (List<Plano>) request.getAttribute("planos");
 %>
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Planos | Área Restrita</title>
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/planos.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/crud_geral.css">
-  <link rel="icon"
-        href="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/planos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/crud_geral.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -33,12 +32,12 @@
           <button type="submit">Sair</button>
         </form>
       </div>
-      
+
       <div id="imagem">
         <img id="logo-iara" src="${pageContext.request.contextPath}/assets/imagens gerais/iara_maior.svg"
              alt="Logo IARA">
       </div>
-      
+
       <nav>
         <ul>
           <li>
@@ -71,36 +70,35 @@
       </nav>
     </aside>
   </div>
-  
+
   <div id="fundo_tela">
-    
+
     <div id="topo">
       <div id="local">
         <h2>Gerenciar Planos</h2>
         <p>Gerencie e organize seus Planos</p>
       </div>
     </div>
-    
-    <div id="tela_principal">
-      <div id="cabecalho">
-        <h1 id="titulo">Lista de Planos</h1>
-        
-        <div class="filtro-container">
-          <button class="btn-filtro"
-                  onclick="document.querySelector('.filtro-card').classList.toggle('ativo')">
-            Filtro
-          </button>
-          
-          <div class="filtro-card">
-            <form action="${pageContext.request.contextPath}/area-restrita/planos" method="get">
-              <input type="hidden" name="action" value="read">
-              
-              <div class="filtragem">
-                <label>
-                  Campo de Filtragem:
-                  <select id="campoFiltro" name="campo_filtro">
-                    <option value="" selected>Nenhum selecionado</option>
-                    <option value="id" data-type="number">ID</option>
+
+        <div id="tela_principal">
+            <div id="cabecalho">
+                <h1 id="titulo">Lista de Planos</h1>
+
+                <div class="filtro-container">
+                    <button class="btn-filtro"
+                            onclick="document.querySelector('.filtro-card').classList.toggle('ativo')">
+                        Filtro
+                    </button>
+
+                    <div class="filtro-card">
+                        <form action="${pageContext.request.contextPath}/area-restrita/planos" method="get">
+                            <input type="hidden" name="action" value="read">
+
+                            <div class="filtragem">
+                                <label>
+                                    Campo de Filtragem:
+                                    <select id="campoFiltro" name="campo_filtro" onchange="tipoCampoPlanoAdm()">
+                                        <option value="" selected>Nenhum selecionado</option>
                     <option value="nome" data-type="text">Nome</option>
                     <option value="valor" data-type="decimal" placeholder="R$">Valor</option>
                     <option value="descricao" data-type="text-area">Descrição</option>
@@ -108,20 +106,20 @@
                   </select>
                 </label>
               </div>
-              
+
               <div class="filtragem">
                 <label>
                   Valor Filtrado:
                   <input type="text" name="valor_filtro">
                 </label>
               </div>
-              
+
               <div class="filtragem">
                 <label>
                   Ordenar por:
                   <select name="campo_sequencia">
                     <option value="" selected>Nenhum selecionado</option>
-                    
+
                     <% for (String chave : camposFiltraveis.keySet()) { %>
                     <option value="<%= chave %>">
                       <%= camposFiltraveis.get(chave) %>
@@ -130,7 +128,7 @@
                   </select>
                 </label>
               </div>
-              
+
               <div class="filtragem">
                 <label>
                   Direção de ordenação
@@ -142,21 +140,21 @@
                   Decrescente
                 </label>
               </div>
-              
+
               <input type="submit" value="Filtrar" id="filtrar">
             </form>
           </div>
         </div>
-        
+
         <form action="${pageContext.request.contextPath}/area-restrita/planos" method="get">
           <input type="hidden" name="action" value="read">
           <button id="limpaFiltro" type="submit">Limpar Filtros</button>
         </form>
-        
+
         <a id="cadastrar"
            href="${pageContext.request.contextPath}/area-restrita/planos?action=create">Cadastrar</a>
       </div>
-      
+
       <div id="tabela_usuarios">
         <table border="0">
           <tr>
@@ -166,7 +164,7 @@
             <th>Descrição</th>
             <th>Duração</th>
           </tr>
-          
+
           <% for (Plano plano : planos) { %>
           <tr>
             <td>
@@ -188,11 +186,11 @@
                 int meses = duracao.getMonths();
                 int dias = duracao.getDays();
               %>
-              
+
               <%= anos > 0 ? "%d anos".formatted(anos) : "" %>
               <%= meses > 0 ? "%d meses".formatted(meses) : "" %>
               <%= dias > 0 ? "%d dias".formatted(dias) : "" %>
-            
+
             </td>
             <td>
               <form action="${pageContext.request.contextPath}/area-restrita/planos" method="get">
@@ -211,7 +209,7 @@
           <% } %>
         </table>
       </div>
-    
+
     </div>
   </div>
 

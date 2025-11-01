@@ -42,7 +42,10 @@ public class FabricaServlet extends HttpServlet {
       switch (action) {
         case "read" -> {
           List<FabricaDTO> fabricas = listarFabricas(req);
+          Map<Integer, String> planos = getMapPlanos();
+
           req.setAttribute("fabricas", fabricas);
+          req.setAttribute("planos", planos);
           destino = PAGINA_PRINCIPAL;
         }
 
@@ -253,14 +256,20 @@ public class FabricaServlet extends HttpServlet {
   // === READ ===
   private List<FabricaDTO> listarFabricas(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     String campoFiltro = req.getParameter("campo_filtro");
-
-    if (Objects.equals(campoFiltro, "statusF")) {
-      campoFiltro = "status";
-    }
-
     String campoSequencia = req.getParameter("campo_sequencia");
     String direcaoSequencia = req.getParameter("direcao_sequencia");
-    String valorFiltro = req.getParameter("valor_filtro");
+    String valorFiltro = null;
+
+    // Verifica se o campo é 'null' para realizar o switch. Se for 'null', o valor do filtro fica como nulo também
+    if (campoFiltro != null) {
+
+        // Resgata um parâmetro diferente de acordo com o nome do campo de filtragem
+        if ("plano".equals(campoFiltro)) {
+            valorFiltro = req.getParameter("valor_plano");
+        } else {
+            valorFiltro = req.getParameter("valor_filtro");
+        }
+    }
 
     try (FabricaDAO dao = new FabricaDAO()) {
       Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);

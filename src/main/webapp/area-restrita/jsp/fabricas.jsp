@@ -2,10 +2,12 @@
 <%@ page import="static com.dao.FabricaDAO.camposFiltraveis" %>
 <%@ page import="com.model.DirecaoOrdenacao" %>
 <%@ page import="com.dto.FabricaDTO" %>
+<%@ page import="java.util.Map" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
-  List<FabricaDTO> fabricas = (List<FabricaDTO>) request.getAttribute("fabricas");
+    List<FabricaDTO> fabricas = (List<FabricaDTO>) request.getAttribute("fabricas");
+    Map<Integer, String> planos = (Map<Integer, String>) request.getAttribute("planos");
 %>
 
 <!DOCTYPE html>
@@ -33,12 +35,12 @@
           <button type="submit">Sair</button>
         </form>
       </div>
-      
+
       <div id="imagem">
         <img id="logo-iara" src="${pageContext.request.contextPath}/assets/imagens gerais/iara_maior.svg"
              alt="Logo IARA">
       </div>
-      
+
       <nav>
         <ul>
           <li>
@@ -72,58 +74,66 @@
       </nav>
     </aside>
   </div>
-  
+
   <div id="fundo_tela">
-    
+
     <div id="topo">
       <div id="local">
         <h2>Gerenciar Fábricas</h2>
         <p>Gerencie e organize suas Fábricas</p>
       </div>
     </div>
-    
+
     <div id="tela_principal">
-      <div id="cabecalho">
-        <h1 id="titulo">Lista de Fábricas</h1>
-        
-        <div class="filtro-container">
-          <button class="btn-filtro"
-                  onclick="document.querySelector('.filtro-card').classList.toggle('ativo')">
-            Filtro
-          </button>
-          
-          <div class="filtro-card">
-            <form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="get">
-              <input type="hidden" name="action" value="read">
-              
-              <div class="filtragem">
-                <label>
-                  Campo de Filtragem:
-                  <select id="campoFiltro" name="campo_filtro">
-                    <option value="" selected>Nenhum selecionado</option>
-                    <option value="id" data-type="number">ID</option>
-                    <option value="nome_unidade" data-type="text">Nome</option>
-                    <option value="cnpj" data-type="number">CNPJ</option>
-                    <option value="statusF" data-type="select">Status</option>
-                    <option value="nome_industria" data-type="text">Empresa</option>
-                    <option value="ramo" data-type="text">Ramo</option>
-                  </select>
-                </label>
+        <div id="cabecalho">
+            <h1 id="titulo">Lista de Fábricas</h1>
+
+            <div class="filtro-container">
+                <button class="btn-filtro"
+                        onclick="document.querySelector('.filtro-card').classList.toggle('ativo')">
+                    Filtro
+                </button>
+
+                <div class="filtro-card">
+                    <form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="get">
+                        <input type="hidden" name="action" value="read">
+
+                        <div class="filtragem">
+                            <label>
+                                Campo de Filtragem:
+                                <select id="campoFiltro" name="campo_filtro" onchange="tipoCampoFabrica()">
+                                    <option value="" selected>Nenhum selecionado</option>
+                                    <option value="nome_unidade" data-type="text">Nome</option>
+                                    <option value="cnpj" data-type="number">CNPJ</option>
+                                    <option value="status" data-type="select">Status</option>
+                                    <option value="nome_industria" data-type="text">Empresa</option>
+                                    <option value="ramo" data-type="text">Ramo</option>
+                                    <option value="plano" data-type="plano">Plano</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="filtragem" id="filtroGeral">
+                            <label for="valorFiltro">Valor Filtrado:</label>
+                            <input type="text" id="valorFiltro" name="valor_filtro">
+                        </div>
+
+                        <div class="filtragem" style="display: none">
+                            <label for="valorPlano">Valor Filtrado:</label>
+                            <select name="valor_plano" id="valorPlano">
+                                <option value="">--- SELECIONE ---</option>
+                                <% for (String plano : planos.values()) {%>
+                                <option value="<%=plano%>"><%=plano%></option>
+                                <% } %>
+                            </select>
               </div>
-              
-              <div class="filtragem">
-                <label>
-                  Valor Filtrado:
-                  <input type="text" name="valor_filtro">
-                </label>
-              </div>
-              
+
               <div class="filtragem">
                 <label>
                   Ordenar por:
                   <select name="campo_sequencia">
                     <option value="" selected>Nenhum selecionado</option>
-                    
+
                     <% for (String chave : camposFiltraveis.keySet()) { %>
                     <option value="<%= chave %>">
                       <%= camposFiltraveis.get(chave) %>
@@ -132,7 +142,7 @@
                   </select>
                 </label>
               </div>
-              
+
               <div class="filtragem">
                 <label>
                   Direção de ordenação
@@ -142,21 +152,21 @@
                          value="<%= DirecaoOrdenacao.DECRESCENTE.getSql() %>"> Decrescente
                 </label>
               </div>
-              
+
               <input type="submit" value="Filtrar" id="filtrar">
             </form>
           </div>
         </div>
-        
+
         <form action="${pageContext.request.contextPath}/area-restrita/fabricas" method="get">
           <input type="hidden" name="action" value="read">
           <button id="limpaFiltro" type="submit">Limpar Filtros</button>
         </form>
-        
-        
+
+
         <a id="cadastrar" href="${pageContext.request.contextPath}/area-restrita/fabricas?action=create">Cadastrar</a>
       </div>
-      
+
       <div id="tabela_usuarios">
         <table border="0">
           <tr>
@@ -216,7 +226,7 @@
           <% } %>
         </table>
       </div>
-    
+
     </div>
   </div>
 

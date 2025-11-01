@@ -22,8 +22,8 @@ public class FabricaDAO extends DAO {
             "email_corporativo", "Email Corporativo",
             "nome_industria", "Nome da Indústria",
             "ramo", "Ramo",
-            "endereco", "Endereço",
-            "plano", "Plano"
+            "plano", "Plano",
+            "fabrica", "Fabrica"
     );
 
     public FabricaDAO() throws SQLException, ClassNotFoundException {
@@ -36,7 +36,7 @@ public class FabricaDAO extends DAO {
             return switch (campo) {
                 case "id" -> Integer.parseInt(valor);
                 case "status" -> Boolean.parseBoolean(valor);
-                case "email_corporativo", "nome_unidade", "nome_industria", "cnpj_unidade", "ramo" -> valor;
+                case "email_corporativo", "nome_unidade", "nome_industria", "cnpj_unidade", "ramo", "plano" -> valor;
                 default -> throw new IllegalArgumentException();
             };
         } catch (DateTimeParseException | IllegalArgumentException | NullPointerException e) {

@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/crud_geral.css">
   <link rel="icon"
         href="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -39,12 +40,12 @@
           <button type="submit">Sair</button>
         </form>
       </div>
-      
+
       <div id="imagem">
         <img id="logo-iara" src="${pageContext.request.contextPath}/assets/imagens gerais/iara_maior.svg"
              alt="Logo IARA">
       </div>
-      
+
       <nav>
         <ul>
           <li>
@@ -77,60 +78,79 @@
       </nav>
     </aside>
   </div>
-  
+
   <div id="fundo_tela">
-    
+
     <div id="topo">
       <div id="local">
         <h2>Gerenciar Pagamentos</h2>
         <p>Gerencie e organize seus Pagamentos</p>
       </div>
     </div>
-    
-    <div id="tela_principal">
-      <div id="cabecalho">
-        <h1 id="titulo">Lista de Pagamentos</h1>
-        
-        <div class="filtro-container">
-          <button class="btn-filtro"
-                  onclick="document.querySelector('.filtro-card').classList.toggle('ativo')">
-            Filtro
-          </button>
-          
-          <div class="filtro-card">
-            <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="get">
-              <input type="hidden" name="action" value="read">
-              
-              <div class="filtragem">
-                <label>
-                  Campo de Filtragem:
-                  <select id="campoFiltro" name="campo_filtro">
-                    <option value="" selected>Nenhum selecionado</option>
-                    <option value="id" data-type="number">ID</option>
-                    <option value="valor" data-type="decimal">Valor Pago</option>
-                    <option value="statusP" data-type="select">Status</option>
-                    <option value="data_vencimento" data-type="date">Data Vencimento</option>
-                    <option value="data_pagamento" data-type="datetime-local">Data Pagamento</option>
-                    <option value="data_inicio" data-type="datetime-local">Data de Início</option>
-                    <option value="fk_metodopag" data-type="select">Metodo de Pagamento</option>
-                  </select>
-                
-                </label>
+
+        <div id="tela_principal">
+            <div id="cabecalho">
+                <h1 id="titulo">Lista de Pagamentos</h1>
+
+                <div class="filtro-container">
+                    <button class="btn-filtro"
+                            onclick="document.querySelector('.filtro-card').classList.toggle('ativo')">
+                        Filtro
+                    </button>
+
+                    <div class="filtro-card">
+                        <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="get">
+                            <input type="hidden" name="action" value="read">
+
+                            <div class="filtragem">
+                                <label>
+                                    Campo de Filtragem:
+                                    <select id="campoFiltro" name="campo_filtro" onchange="tipoCampoPagamento()">
+                                        <option value="" selected>Nenhum selecionado</option>
+                                        <option value="valor" data-type="decimal">Valor Pago</option>
+                                        <option value="status" data-type="select">Status</option>
+                                        <option value="data_vencimento" data-type="date">Data Vencimento</option>
+                                        <option value="data_pagamento" data-type="datetime-local">Data Pagamento</option>
+                                        <option value="data_inicio" data-type="datetime-local">Data de Início</option>
+                                        <option value="fk_metodopag" data-type="select">Metodo de Pagamento</option>
+                                        <option value="fk_plano" data-type="plano">Plano</option>
+                                        <option value="fk_fabrica" data-type="fabrica">Fábrica</option>
+                                    </select>
+
+                                </label>
+                            </div>
+
+                            <div class="filtragem" id="filtroGeral">
+                                <label for="valorFiltro">Valor Filtrado:</label>
+                                <input type="text" id="valorFiltro" name="valor_filtro">
+                            </div>
+
+                            <div class="filtragem" style="display: none">
+                                <label for="valorPlano">Valor Filtrado:</label>
+                                <select name="valor_plano" id="valorPlano">
+                                    <option value="">--- SELECIONE ---</option>
+                                    <% for (Integer plano : planos.keySet()) {%>
+                                    <option value=<%=plano%>><%=planos.get(plano)%></option>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <div class="filtragem" style="display: none">
+                                <label for="valorFabrica">Valor Filtrado:</label>
+                                <select name="valor_fabrica" id="valorFabrica">
+                                    <option value="">--- SELECIONE ---</option>
+                                    <% for (Integer fabrica : fabricas.keySet()) {%>
+                                    <option value=<%=fabrica%>><%=fabricas.get(fabrica)%></option>
+                                    <% } %>
+                                </select>
               </div>
-              
-              <div class="filtragem">
-                <label>
-                  Valor Filtrado:
-                  <input type="text" name="valor_filtro">
-                </label>
-              </div>
-              
+
               <div class="filtragem">
                 <label>
                   Ordenar por:
                   <select name="campo_sequencia">
                     <option value="" selected>Nenhum selecionado</option>
-                    
+
                     <% for (String chave : camposFiltraveis.keySet()) { %>
                     <option value="<%= chave %>">
                       <%= camposFiltraveis.get(chave) %>
@@ -139,7 +159,7 @@
                   </select>
                 </label>
               </div>
-              
+
               <div class="filtragem">
                 <label>
                   Direção de ordenação
@@ -151,20 +171,20 @@
                   Decrescente
                 </label>
               </div>
-              
+
               <input type="submit" value="Filtrar" id="filtrar">
             </form>
           </div>
         </div>
-        
+
         <form action="${pageContext.request.contextPath}/area-restrita/pagamentos" method="get">
           <input type="hidden" name="action" value="read">
           <button id="limpaFiltro" type="submit">Limpar Filtros</button>
         </form>
-        
+
         <a id="cadastrar" href="${pageContext.request.contextPath}/area-restrita/pagamentos?action=create">Cadastrar</a>
       </div>
-      
+
       <div id="tabela_usuarios">
         <table border="0">
           <tr>
@@ -223,7 +243,7 @@
           <% } %>
         </table>
       </div>
-    
+
     </div>
   </div>
 

@@ -3,21 +3,23 @@
 <%@ page import="java.util.List" %>
 <%@ page import="static com.dao.UsuarioDAO.camposFiltraveis" %>
 <%@ page import="com.model.DirecaoOrdenacao" %>
+<%@ page import="java.util.Map" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
-  List<UsuarioDTO> usuarios = (List<UsuarioDTO>) request.getAttribute("usuarios");
+    List<UsuarioDTO> usuarios = (List<UsuarioDTO>) request.getAttribute("usuarios");
+    List<String> emailGerentes = (List<String>) request.getAttribute("emailGerentes");
+    Map<Integer, String> fabricas = (Map<Integer, String>) request.getAttribute("fabricas");
 %>
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Usuários | Área Restrita</title>
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/usuarios.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/crud_geral.css">
-  <link rel="icon"
-        href="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Teste</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/usuarios.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/crud_geral.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -32,12 +34,12 @@
           <button type="submit">Sair</button>
         </form>
       </div>
-      
+
       <div id="imagem">
         <img id="logo-iara" src="${pageContext.request.contextPath}/assets/imagens gerais/iara_maior.svg"
              alt="Logo IARA">
       </div>
-      
+
       <nav>
         <ul>
           <li>
@@ -71,34 +73,34 @@
       </nav>
     </aside>
   </div>
-  
+
   <div id="fundo_tela">
-    
+
     <div id="topo">
       <div id="local">
         <h2>Gerenciar Usuários</h2>
         <p>Gerencie e organize seus Usuários</p>
       </div>
     </div>
-    
+
     <div id="tela_principal">
       <div id="cabecalho">
         <h1 id="titulo">Lista de Usuários</h1>
-        
+
         <div class="filtro-container">
           <button class="btn-filtro"
                   onclick="document.querySelector('.filtro-card').classList.toggle('ativo')">
             Filtro
           </button>
-          
+
           <div class="filtro-card">
             <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="get">
               <input type="hidden" name="action" value="read">
-              
+
               <div class="filtragem">
                 <label>
                   Campo de Filtragem:
-                  <select id="campoFiltro" name="campo_filtro">
+                  <select id="campoFiltro" name="campo_filtro" onchange="tipoCampoUsuario()">
                     <option value="" selected>Nenhum selecionado</option>
                     <option value="nome" data-type="text">Nome</option>
                     <option value="genero" data-type="select">Gênero</option>
@@ -106,23 +108,45 @@
                     <option value="cargo" data-type="text">Cargo</option>
                     <option value="email" data-type="email">Email</option>
                     <option value="tipo_acesso" data-type="select">Tipo de Acesso</option>
-                    <option value="statusU" data-type="select">Status</option>
+                    <option value="status" data-type="select">Status</option>
                     <option value="data_criacao" data-type="datetime-local">Data de Criação</option>
+                                        <option value="gerente" data-type="email-gerente">Email do Gerente</option>
+                                        <option value="fk_fabrica" data-type="fabrica">Fábrica</option>
                   </select>
                 </label>
               </div>
-              
+
               <div class="filtragem">
                 <label for="valorFiltro">Valor Filtrado:</label>
                 <input type="text" id="valorFiltro" name="valor_filtro">
+                            </div>
+
+                            <div class="filtragem" style="display: none">
+                                <label for="valorGerente">Valor Filtrado:</label>
+                                <select name="valor_gerente" id="valorGerente">
+                                    <option value="">--- SELECIONE ---</option>
+                                <% for (String email : emailGerentes) {%>
+                                    <option value=<%=email%>><%=email%></option>
+                                <% } %>
+                                </select>
+                            </div>
+
+                            <div class="filtragem" style="display: none">
+                                <label for="valorFabrica">Valor Filtrado:</label>
+                                <select name="valor_fabrica" id="valorFabrica">
+                                    <option value="">--- SELECIONE ---</option>
+                                    <% for (Integer fabrica : fabricas.keySet()) {%>
+                                    <option value=<%=fabrica%>><%=fabricas.get(fabrica)%></option>
+                                    <% } %>
+                                </select>
               </div>
-              
+
               <div class="filtragem">
                 <label>
                   Ordenar por:
                   <select name="campo_sequencia">
                     <option value="" selected>Nenhum selecionado</option>
-                    
+
                     <% for (String chave : camposFiltraveis.keySet()) { %>
                     <option value="<%= chave %>">
                       <%= camposFiltraveis.get(chave) %>
@@ -131,7 +155,7 @@
                   </select>
                 </label>
               </div>
-              
+
               <div class="filtragem">
                 <label>
                   Direção de ordenação
@@ -143,20 +167,20 @@
                   Decrescente
                 </label>
               </div>
-              
+
               <input type="submit" value="Filtrar" id="filtrar">
             </form>
           </div>
         </div>
-        
+
         <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="get">
           <input type="hidden" name="action" value="read">
           <button id="limpaFiltro" type="submit">Limpar Filtros</button>
         </form>
-        
+
         <a id="cadastrar" href="${pageContext.request.contextPath}/area-restrita/usuarios?action=create">Cadastrar</a>
       </div>
-      
+
       <div id="tabela_usuarios">
         <table border="0">
           <tr>
@@ -170,7 +194,7 @@
             <th>Gênero</th>
             <th>Cargo</th>
           </tr>
-          
+
           <% for (UsuarioDTO u : usuarios) { %>
           <tr>
             <td>
@@ -206,7 +230,7 @@
                 <input type="hidden" name="action" value="update">
                 <button id="editar" type="submit">Editar</button>
               </form>
-              
+
               <form action="${pageContext.request.contextPath}/area-restrita/usuarios" method="post"
                     onsubmit="confirmarDelete(event)">
                 <input type="hidden" name="id" value="<%= u.getId() %>">
@@ -218,7 +242,7 @@
           <% } %>
         </table>
       </div>
-    
+
     </div>
   </div>
 
