@@ -173,6 +173,10 @@ button:hover {
     margin-left: 20px;
 }
 
+.labels{
+    text-align: left;
+}
+
 @keyframes float {
     0% {
         transform: translateY(0);

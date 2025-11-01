@@ -40,24 +40,24 @@
                         <h2>Dados da Fábrica</h2>
                         <div id="divisao1">
                             <div id="divisao1_1">
-                                <label for="nome">Nome da Fábrica:</label>
+                                <label class="labels" for="nome">Nome da Fábrica:</label>
                                 <input type="text" id="nome" name="nome" value="<%= f.getNomeUnidade() %>" placeholder="Nome">
-                                <label for="cnpj">CNPJ:</label>
+                                <label class="labels" for="cnpj">CNPJ:</label>
                                 <input type="text" id="cnpj" name="cnpj" value="<%= f.getCnpj() %>" pattern="\d{14}" title="CNPJ inválido"
                                        placeholder="XX.XXX.XXX/YYYY-ZZ">
-                                <label for="email">Email Corporativo:</label>
+                                <label class="labels" for="email">Email Corporativo:</label>
                                 <input type="email" id="email" name="email" value="<%= f.getEmailCorporativo() %>"
                                        placeholder="Email para contato">
-                                <label for="ramo">Ramo:</label>
+                                <label class="labels" for="ramo">Ramo:</label>
                                 <input type="text" id="ramo" name="ramo" value="<%= f.getRamo() %>" placeholder="Ramo">
                             </div>
 
                             <div id="coluna1_2">
-                                <label for="nome_empresa">Nome da Empresa:</label>
+                                <label class="labels" for="nome_empresa">Nome da Empresa:</label>
                                 <input type="text" id="nome_empresa" name="nome_empresa" value="<%= f.getNomeIndustria() %>"
                                        placeholder="Nome da empresa">
 
-                                <label for="status">Status:</label>
+                                <label class="labels" for="status">Status:</label>
                                 <select id="status" name="status">
                                     <% for (Boolean b : List.of(true, false)) { %>
                                     <option value="<%= b.toString() %>" <%=b ? "selected" : "" %>>
@@ -66,7 +66,7 @@
                                     <% } %>
                                 </select>
 
-                                <label for="id_plano">Plano:</label>
+                                <label class="labels" for="id_plano">Plano:</label>
                                 <select id="id_plano" name="id_plano">
                                     <% for (int idPlano : planos.keySet()) { %>
                                     <option value="<%= idPlano %>" <%=idPlano == f.getIdPlano() ? "selected" : "" %>>
@@ -82,25 +82,25 @@
                         <h2>Endereço da Fábrica</h2>
                         <div id="divisao2">
                             <div id="coluna2_1">
-                                <label for="cep">CEP:</label>
+                                <label class="labels" for="cep">CEP:</label>
                                 <input type="text" id="cep" name="cep" value="<%= e.getCep() %>" pattern="\d{8}"
                                        title="Insira um CEP válido"
                                        placeholder="XXXXX-XXX">
-                                <label for="logradouro">Logradouro:</label>
+                                <label class="labels" for="logradouro">Logradouro:</label>
                                 <input type="text" id="logradouro" name="logradouro" value="<%= e.getRua() %>" placeholder="Logradouro">
-                                <label for="numero">Número:</label>
+                                <label class="labels" for="numero">Número:</label>
                                 <input type="number" id="numero" name="numero" value="<%= e.getNumero() %>" placeholder="n°">
-                                <label for="complemento">Complemento:</label>
+                                <label class="labels" for="complemento">Complemento:</label>
                                 <input type="text" id="complemento" name="complemento" value="<%= complemento != null ? complemento : "" %>"
                                        placeholder="Complemento">
                             </div>
 
                             <div id="coluna2_2">
-                                <label for="estado">Estado:</label>
+                                <label class="labels" for="estado">Estado:</label>
                                 <input type="text" id="estado" name="estado" value="<%= e.getEstado() %>" placeholder="Estado">
-                                <label for="bairro">Bairro:</label>
+                                <label class="labels" for="bairro">Bairro:</label>
                                 <input type="text" id="bairro" name="bairro" value="<%= e.getBairro() %>" placeholder="Bairro">
-                                <label for="cidade">Cidade:</label>
+                                <label class="labels" for="cidade">Cidade:</label>
                                 <input type="text" id="cidade" name="cidade" value="<%= e.getCidade() %>" placeholder="Cidade">
                             </div>
                         </div>

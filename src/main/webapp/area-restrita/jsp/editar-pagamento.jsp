@@ -55,7 +55,7 @@
                         <input type="date" id="data_inicio" name="data_inicio" data-placeholder="Selecione a Data de Início"
                                value="<%= pagamento.getDataInicio() %>">
 
-                        <label for="data_vencimento">Data de Venciemento:</label>
+                        <label for="data_vencimento">Data de Vencimento:</label>
                         <input type="date" id="data_vencimento" name="data_vencimento" data-placeholder="Selecione a Data de Vencimento"
                                value="<%= pagamento.getDataVencimento() %>">
                     </div>
@@ -98,6 +98,8 @@
                         </select>
                     </div>
                 </div>
+
+
 
                 <button type="submit">Salvar</button>
             </form>
