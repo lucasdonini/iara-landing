@@ -4,10 +4,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexUtils {
-  private static final String REGEX_EMAIL = "\\w+(\\.\\w+)*@\\w+(\\.\\w+)+";
-  private static final String REGEX_CNPJ = "\\d{14}";
-  private static final String REGEX_CPF = "\\d{11}";
-  private static final String REGEX_CEP = "\\d{8}";
+  public static final String REGEX_EMAIL = "\\w+(\\.\\w+)*@\\w+(\\.\\w+)+";
+  public static final String REGEX_CNPJ = "\\d{14}";
+  public static final String REGEX_CPF = "\\d{11}";
+  public static final String REGEX_CEP = "\\d{8}";
 
   private static boolean validarCampo(String campo, String regex) {
     Pattern p = Pattern.compile(regex);

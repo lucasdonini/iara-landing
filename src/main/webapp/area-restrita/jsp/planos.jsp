@@ -110,7 +110,9 @@
               <div class="filtragem">
                 <label>
                   Valor Filtrado:
-                  <input type="text" name="valor_filtro">
+                  <input type="text"
+                         name="valor_filtro"
+                  >
                 </label>
               </div>
 

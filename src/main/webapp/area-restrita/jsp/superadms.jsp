@@ -105,7 +105,10 @@
                             <div class="filtragem">
                                 <label>
                                     <label for="valorFiltro">Valor Filtrado:</label>
-                                    <input type="text" id="valorFiltro" name="valor_filtro">
+                                    <input type="text"
+                                           id="valorFiltro"
+                                           name="valor_filtro"
+                                    >
                                 </label>
                             </div>
 
