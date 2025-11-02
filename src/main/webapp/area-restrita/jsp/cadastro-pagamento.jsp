@@ -43,7 +43,7 @@
                 <input type="number" name="valor" step="0.01" min="0" placeholder="Valor (em R$)">
 
                 <select name="metodo_pagamento">
-                    <option value="" select>-- Selecione --</option>
+                    <option value="" select>Selecione o Método do Pagamento</option>
 
                     <% for (MetodoPagamento m : MetodoPagamento.values()) { %>
                     <option value="<%= m.getId() %>">
@@ -53,7 +53,7 @@
                 </select>
 
                 <select name="fk_fabrica">
-                    <option value="" selected>Selecione o ID da Fábrica que o pagamento refere-se</option>
+                    <option value="" selected>Selecione a Fábrica que o pagamento refere-se</option>
 
                     <% for (int id : fabricas.keySet()) { %>
                     <option value="<%= id %>">
@@ -63,7 +63,7 @@
                 </select>
 
                 <select name="fk_plano">
-                    <option value="" selected>-- Selecione --</option>
+                    <option value="" selected>Selecione o Plano</option>
 
                     <% for (int id : planos.keySet()) { %>
                     <option value="<%= id %>">

@@ -37,7 +37,7 @@
                 <input type="text" name="cargo" placeholder="Cargo">
 
                 <select name="fk_fabrica" required>
-                    <option value="" selected>Selecione</option>
+                    <option value="" selected>Selecione a Fábrica</option>
                     <% for (int id : fabricas.keySet()) { %>
                     <option value="<%= id %>">
                         <%= fabricas.get(id) %>
@@ -46,7 +46,7 @@
                 </select>
 
                 <select name="genero">
-                    <option value="" selected>Selecione</option>
+                    <option value="" selected>Selecione o Gênero</option>
 
                     <% for (Genero g : Genero.values()) { %>
                     <option value="<%= g.name().toLowerCase() %>">

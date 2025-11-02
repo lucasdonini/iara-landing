@@ -50,7 +50,7 @@
                             <option value="false" <%=!pagamento.getStatus() ? "selected" : "" %>>Pagamento pendente ❌</option>
                         </select>
 
-                        <label for="data_inicio">Data de Ínicio:</label>
+                        <label for="data_inicio">Data de Início:</label>
                         <input type="date" id="data_inicio" name="data_inicio" data-placeholder="Selecione a Data de Início"
                                value="<%= pagamento.getDataInicio() %>">
 
@@ -60,11 +60,11 @@
                     </div>
 
                     <div id="coluna2">
-                        <label for="data_pagamento">Data de Pagamento:</label>
-                        <input type="date" id="data_pagamento" name="data_pagamento" data-placeholder="Selecione a Data de Pagamento"
+                        <label for="data_pagamento">Data do Pagamento:</label>
+                        <input type="date" id="data_pagamento" name="data_pagamento" data-placeholder="Selecione a Data do Pagamento"
                                value="<%= pagamento.getDataPagamento() %>">
 
-                        <label for="metodo_pagamento">Método de Pagamento:</label>
+                        <label for="metodo_pagamento">Método do Pagamento:</label>
                         <select id="metodo_pagamento" name="metodo_pagamento">
                             <option value="" select>-- Selecione --</option>
 
