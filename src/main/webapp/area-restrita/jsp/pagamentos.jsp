@@ -33,7 +33,7 @@
                 <img class="imagem" src="/assets/crud/pagina_anterior.svg" alt="simbolo de sair">
                 <form action="${pageContext.request.contextPath}/login-handler" method="post">
                     <input type="hidden" name="action" value="logout">
-                    <button type="submit">Sair</button>
+                    <button id="sair" type="submit">Sair</button>
                 </form>
             </div>
 

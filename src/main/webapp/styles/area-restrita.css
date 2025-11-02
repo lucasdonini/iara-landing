@@ -159,3 +159,15 @@ h2{
 #frase{
     font-size: 24px;
 }
+
+a:hover {
+    color: #2B3078;
+}
+
+li:hover {
+    color: #2B3078;
+}
+
+button:hover {
+    color: #2B3078;
+}
