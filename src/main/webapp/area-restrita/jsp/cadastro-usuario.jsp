@@ -47,6 +47,7 @@
 
                 <input name="data_nascimento"
                        type="date"
+                       data-placeholder="Data de nascimento"
                        max="<%= LocalDate.now().minusYears(16) %>"
                        required
                 >
