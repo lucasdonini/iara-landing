@@ -61,4 +61,9 @@ public class ExcecaoDeJSP extends Exception {
     String msg = "O valor informado para %s é inválido.".formatted(campo);
     return new ExcecaoDeJSP(msg);
   }
+
+  public static ExcecaoDeJSP textoMuitoLongo(String campo) {
+    String msg = "O valor informado para %s é muito longo".formatted(campo);
+    return new ExcecaoDeJSP(msg);
+  }
 }

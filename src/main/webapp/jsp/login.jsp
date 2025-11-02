@@ -43,7 +43,7 @@
                 <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
 
                 <label for="senha">Senha</label>
-                <input type="password" id="senha" name="senha" placeholder="Senha123" required>
+                <input type="password" id="senha" name="senha" placeholder="Senha123" required autocomplete="off">
 
                 <button type="submit">ENTRAR</button>
             </form>
