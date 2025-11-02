@@ -125,11 +125,15 @@ p{
 }
 
 #titulo{
+    font-weight: normal;
+    color: #383F91;
     font-size: 80px;
     padding: 5px;
 }
 
 #subtitulo{
+    font-weight: normal;
+    color: #383F91;
     font-size: 27px;
     padding: 20px;
 }

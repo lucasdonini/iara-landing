@@ -160,7 +160,6 @@
             <div id="tabela_usuarios">
                 <table border="0">
                     <tr>
-                        <th>ID</th>
                         <th>Valor Pago</th>
                         <th>Status</th>
                         <th>Data de Vencimento</th>
@@ -174,9 +173,6 @@
                             LocalDateTime dtPagto = pagamento.getDataPagamento();
                     %>
                     <tr>
-                        <td>
-                            <%= pagamento.getId() %>
-                        </td>
                         <td>
                             <%= pagamento.getValor() %>
                         </td>

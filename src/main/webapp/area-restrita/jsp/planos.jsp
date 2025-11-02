@@ -156,7 +156,6 @@
             <div id="tabela_usuarios">
                 <table border="0">
                     <tr>
-                        <th>ID</th>
                         <th>Nome</th>
                         <th>Valor</th>
                         <th>Descrição</th>
@@ -165,9 +164,6 @@
 
                     <% for (Plano plano : planos) { %>
                     <tr>
-                        <td>
-                            <%= plano.getId() %>
-                        </td>
                         <td>
                             <%= plano.getNome() %>
                         </td>

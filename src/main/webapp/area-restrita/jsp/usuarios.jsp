@@ -154,7 +154,6 @@
             <div id="tabela_usuarios">
                 <table border="0">
                     <tr>
-                        <th>ID</th>
                         <th>Nome</th>
                         <th>Email</th>
                         <th>Email Gerente</th>
@@ -168,9 +167,6 @@
 
                     <% for (UsuarioDTO u : usuarios) { %>
                     <tr>
-                        <td>
-                            <%= u.getId() %>
-                        </td>
                         <td>
                             <%= u.getNome() %>
                         </td>

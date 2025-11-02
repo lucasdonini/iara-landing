@@ -154,7 +154,6 @@
             <div id="tabela_usuarios">
                 <table border="0">
                     <tr>
-                        <th>ID</th>
                         <th>Nome</th>
                         <th>CNPJ</th>
                         <th>Status</th>
@@ -166,9 +165,6 @@
                     </tr>
                     <% for (FabricaDTO f : fabricas) { %>
                     <tr>
-                        <td>
-                            <%= f.getId() %>
-                        </td>
                         <td>
                             <%= f.getNomeUnidade() %>
                         </td>
