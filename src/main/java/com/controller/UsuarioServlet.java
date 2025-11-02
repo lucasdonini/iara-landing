@@ -8,6 +8,7 @@ import com.dto.UsuarioDTO;
 import com.exception.ExcecaoDeJSP;
 import com.model.Genero;
 import com.model.TipoAcesso;
+import com.utils.RegexUtils;
 import com.utils.SenhaUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -45,9 +46,11 @@ public class UsuarioServlet extends HttpServlet {
                 case "read" -> {
                     List<UsuarioDTO> usuarios = getListaUsuarios(req);
                     Map<Integer, String> fabricas = getMapFabricas();
+                    List<String> emailGerentes = getListaEmailsGerentes();
 
                     req.setAttribute("usuarios", usuarios);
                     req.setAttribute("fabricas", fabricas);
+                    req.setAttribute("emailGerentes", emailGerentes);
                     destino = PAGINA_PRINCIPAL;
                 }
 
@@ -179,14 +182,20 @@ public class UsuarioServlet extends HttpServlet {
     // === READ ===
     private List<UsuarioDTO> getListaUsuarios(HttpServletRequest req) throws SQLException, ClassNotFoundException {
         String campoFiltro = req.getParameter("campo_filtro");
-
-        if (Objects.equals(campoFiltro, "statusU")) {
-            campoFiltro = "status";
-        }
-
         String campoSequencia = req.getParameter("campo_sequencia");
         String direcaoSequencia = req.getParameter("direcao_sequencia");
-        String valorFiltro = req.getParameter("valor_filtro");
+        String valorFiltro = null;
+
+        // Verifica se o campo é 'null' para realizar o switch. Se for 'null', o valor do filtro fica como nulo também
+        if (campoFiltro != null){
+
+            // Resgata um parâmetro diferente de acordo com o nome do campo de filtragem
+            switch(campoFiltro) {
+                case "gerente" -> valorFiltro = req.getParameter("valor_gerente");
+                case "fk_fabrica" -> valorFiltro = req.getParameter("valor_fabrica");
+                default -> valorFiltro = req.getParameter("valor_filtro");
+            }
+        }
 
         try (UsuarioDAO dao = new UsuarioDAO()) {
             Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);

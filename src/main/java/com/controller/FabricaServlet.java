@@ -8,6 +8,7 @@ import com.dto.FabricaDTO;
 import com.exception.ExcecaoDeJSP;
 import com.model.Endereco;
 import com.model.Fabrica;
+import com.utils.RegexUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -41,7 +42,10 @@ public class FabricaServlet extends HttpServlet {
       switch (action) {
         case "read" -> {
           List<FabricaDTO> fabricas = listarFabricas(req);
+          Map<Integer, String> planos = getMapPlanos();
+
           req.setAttribute("fabricas", fabricas);
+          req.setAttribute("planos", planos);
           destino = PAGINA_PRINCIPAL;
         }
 
@@ -143,6 +147,46 @@ public class FabricaServlet extends HttpServlet {
     String cidade = req.getParameter("cidade").trim();
     String estado = req.getParameter("estado").trim();
 
+    // --- Validação de dados: Endereço
+    if (!RegexUtils.validarCep(cep)) {
+      throw ExcecaoDeJSP.valorInvalido("cep");
+
+    } else if (cep.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("cep");
+    }
+
+    if (rua.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("logradouro");
+
+    } else if (rua.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("logradouro");
+    }
+
+    if (complemento.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("complemento");
+    }
+
+    if (bairro.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("bairro");
+
+    } else if (bairro.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("bairro");
+    }
+
+    if (cidade.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("cidade");
+
+    } else if (cidade.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("cidade");
+    }
+
+    if (estado.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("estado");
+
+    } else if (estado.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("estado");
+    }
+
 
     Endereco endereco = new Endereco(null, cep, numero, rua, complemento, null, bairro, cidade, estado);
 
@@ -155,6 +199,42 @@ public class FabricaServlet extends HttpServlet {
 
     temp = req.getParameter("id_plano").trim();
     int idPlano = Integer.parseInt(temp);
+
+    // --- Validação de dados: Fábrica ---
+    if (nome.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("nome");
+
+    } else if (nome.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("nome");
+    }
+
+    if (!RegexUtils.validarEmail(email)) {
+      throw ExcecaoDeJSP.valorInvalido("email");
+
+    } else if (email.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("email");
+
+    } else if (email.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("email");
+    }
+
+    if (!RegexUtils.validarCnpj(cnpj)) {
+      throw ExcecaoDeJSP.valorInvalido("cnpj");
+
+    } else if (cnpj.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("cnpj");
+    }
+
+    if (empresa.length() > 150) {
+      throw ExcecaoDeJSP.textoMuitoLongo("empresa");
+    }
+
+    if (ramo.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("ramo");
+
+    } else if (ramo.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("ramo");
+    }
 
     CadastroFabricaDTO credenciais = new CadastroFabricaDTO(nome, cnpj, email, empresa, ramo, idPlano);
 
@@ -176,14 +256,20 @@ public class FabricaServlet extends HttpServlet {
   // === READ ===
   private List<FabricaDTO> listarFabricas(HttpServletRequest req) throws SQLException, ClassNotFoundException {
     String campoFiltro = req.getParameter("campo_filtro");
-
-    if (Objects.equals(campoFiltro, "statusF")) {
-      campoFiltro = "status";
-    }
-
     String campoSequencia = req.getParameter("campo_sequencia");
     String direcaoSequencia = req.getParameter("direcao_sequencia");
-    String valorFiltro = req.getParameter("valor_filtro");
+    String valorFiltro = null;
+
+    // Verifica se o campo é 'null' para realizar o switch. Se for 'null', o valor do filtro fica como nulo também
+    if (campoFiltro != null) {
+
+        // Resgata um parâmetro diferente de acordo com o nome do campo de filtragem
+        if ("plano".equals(campoFiltro)) {
+            valorFiltro = req.getParameter("valor_plano");
+        } else {
+            valorFiltro = req.getParameter("valor_filtro");
+        }
+    }
 
     try (FabricaDAO dao = new FabricaDAO()) {
       Object valorFiltroConvertido = dao.converterValor(campoFiltro, valorFiltro);
@@ -212,6 +298,42 @@ public class FabricaServlet extends HttpServlet {
     temp = req.getParameter("id_plano").trim();
     int idPlano = Integer.parseInt(temp);
 
+    // --- Validação de dados: Fábrica ---
+    if (nome.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("nome");
+
+    } else if (nome.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("nome");
+    }
+
+    if (!RegexUtils.validarEmail(email)) {
+      throw ExcecaoDeJSP.valorInvalido("email");
+
+    } else if (email.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("email");
+
+    } else if (email.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("email");
+    }
+
+    if (!RegexUtils.validarCnpj(cnpj)) {
+      throw ExcecaoDeJSP.valorInvalido("cnpj");
+
+    } else if (cnpj.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("cnpj");
+    }
+
+    if (nomeEmpresa.length() > 150) {
+      throw ExcecaoDeJSP.textoMuitoLongo("empresa");
+    }
+
+    if (ramo.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("ramo");
+
+    } else if (ramo.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("ramo");
+    }
+
     // Instância do Model
     Fabrica alterado = new Fabrica(idFabrica, nome, cnpj, status, email, nomeEmpresa, ramo, idPlano);
 
@@ -226,6 +348,46 @@ public class FabricaServlet extends HttpServlet {
     String bairro = req.getParameter("bairro").trim();
     String cidade = req.getParameter("cidade").trim();
     String estado = req.getParameter("estado").trim();
+
+    // --- Validação de dados: Endereço
+    if (!RegexUtils.validarCep(cep)) {
+      throw ExcecaoDeJSP.valorInvalido("cep");
+
+    } else if (cep.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("cep");
+    }
+
+    if (rua.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("logradouro");
+
+    } else if (rua.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("logradouro");
+    }
+
+    if (complemento.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("complemento");
+    }
+
+    if (bairro.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("bairro");
+
+    } else if (bairro.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("bairro");
+    }
+
+    if (cidade.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("cidade");
+
+    } else if (cidade.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("cidade");
+    }
+
+    if (estado.length() > 100) {
+      throw ExcecaoDeJSP.textoMuitoLongo("estado");
+
+    } else if (estado.isBlank()) {
+      throw ExcecaoDeJSP.campoNecessarioFaltante("estado");
+    }
 
     Endereco endAlterado = new Endereco(null, cep, numero, rua, complemento, idFabrica, bairro, cidade, estado);
 

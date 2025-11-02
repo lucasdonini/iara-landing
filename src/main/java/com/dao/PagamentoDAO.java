@@ -21,7 +21,7 @@ public class PagamentoDAO extends DAO {
             "tipo_pagamento", "Tipo de Pagamento",
             "data_vencimento", "Data de Vencimento",
             "data_pagamento", "Data do Pagamento",
-            "fk_metodopag", "Fábrica"
+            "fk_metodopag", "Metodo Pagamento"
     );
 
     public PagamentoDAO() throws SQLException, ClassNotFoundException {
@@ -32,7 +32,7 @@ public class PagamentoDAO extends DAO {
     public Object converterValor(String campo, String valor) {
         try {
             return switch (campo) {
-                case "id", "fk_metodopag" -> Integer.parseInt(valor);
+                case "id", "fk_metodopag", "fk_plano", "fk_fabrica" -> Integer.parseInt(valor);
                 case "valor" -> Double.parseDouble(valor);
                 case "status" -> Boolean.parseBoolean(valor);
                 case "data_vencimento" -> LocalDate.parse(valor);
@@ -90,7 +90,11 @@ public class PagamentoDAO extends DAO {
         //Verificando o campo de filtragem
         if (campoFiltro != null && camposFiltraveis.containsKey(campoFiltro)) {
             sql += " WHERE %s = ?".formatted(campoFiltro);
-        } else {
+        } else if ("fk_fabrica".equals(campoFiltro)) {
+            sql += " WHERE fk_fabrica = ?";
+        } else if ("fk_plano".equals(campoFiltro)) {
+            sql += " WHERE fk_plano = ?";
+        }else {
             temFiltro = false;
         }
 
