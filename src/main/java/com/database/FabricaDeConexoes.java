@@ -1,7 +1,5 @@
 package com.database;
 
-import io.github.cdimascio.dotenv.Dotenv;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,10 +8,8 @@ import java.sql.SQLException;
 
 public class FabricaDeConexoes {
 
-  private static final Dotenv dotenv = Dotenv.configure().load();
-
   public Connection getConnection() throws SQLException, ClassNotFoundException {
-    String url = dotenv.get("DB_URL");
+    String url = System.getenv("DB_URL");
 
     Class.forName("org.postgresql.Driver");
 
@@ -21,7 +17,7 @@ public class FabricaDeConexoes {
       throw new IllegalStateException("Variável de ambiente 'DB_URL' não encontrada");
     }
 
-    return DriverManager.getConnection(url, dotenv.get("DB_USER"), dotenv.get("DB_PASSWORD"));
+    return DriverManager.getConnection(url, System.getenv("DB_USER"), System.getenv("DB_PASSWORD"));
   }
 
   public void closeConnection(Connection conn) throws SQLException {
