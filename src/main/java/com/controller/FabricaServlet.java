@@ -1,5 +1,10 @@
 package com.controller;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
 import com.dao.EnderecoDAO;
 import com.dao.FabricaDAO;
 import com.dao.PlanoDAO;
@@ -9,18 +14,13 @@ import com.exception.ExcecaoDeJSP;
 import com.model.Endereco;
 import com.model.Fabrica;
 import com.utils.RegexUtils;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kotlin.Pair;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @WebServlet("/area-restrita/fabricas")
 public class FabricaServlet extends HttpServlet {

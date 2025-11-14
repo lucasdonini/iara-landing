@@ -2,7 +2,6 @@ package com.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 // tabela: pagamento
 public class Pagamento {

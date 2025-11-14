@@ -1,16 +1,19 @@
 package com.dao;
 
-import com.dto.CadastroFabricaDTO;
-import com.dto.FabricaDTO;
-import com.model.Fabrica;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import com.dto.CadastroFabricaDTO;
+import com.dto.FabricaDTO;
+import com.model.Fabrica;
 
 public class FabricaDAO extends DAO {
     // Constante dos campos utilizados para ordenação e filtragem da listagem dos dados

@@ -1,5 +1,12 @@
 package com.controller;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import com.dao.FabricaDAO;
 import com.dao.UsuarioDAO;
 import com.dto.AtualizacaoUsuarioDTO;
@@ -8,21 +15,13 @@ import com.dto.UsuarioDTO;
 import com.exception.ExcecaoDeJSP;
 import com.model.Genero;
 import com.model.TipoAcesso;
-import com.utils.RegexUtils;
 import com.utils.SenhaUtils;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 
 @WebServlet("/area-restrita/usuarios")
 public class UsuarioServlet extends HttpServlet {

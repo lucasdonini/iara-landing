@@ -1,11 +1,11 @@
 package com.dto;
 
-import com.model.Genero;
-import com.model.TipoAcesso;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.model.Genero;
+import com.model.TipoAcesso;
 
 // DTO da tabela usuario utilizado para a visualização dos dados registrados no banco de dados
 
@@ -57,7 +57,7 @@ public class UsuarioDTO {
       return emailGerente;
   }
 
-  public void setEmailGerente(String nomeGerente) {
+  public void setEmailGerente(String emailGerente) {
       this.emailGerente = emailGerente;
   }
 

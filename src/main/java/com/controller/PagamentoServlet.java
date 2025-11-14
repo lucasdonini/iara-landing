@@ -1,24 +1,24 @@
 package com.controller;
 
-import com.dao.FabricaDAO;
-import com.dao.PagamentoDAO;
-import com.dao.PlanoDAO;
-import com.exception.ExcecaoDeJSP;
-import com.model.MetodoPagamento;
-import com.model.Pagamento;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+
+import com.dao.FabricaDAO;
+import com.dao.PagamentoDAO;
+import com.dao.PlanoDAO;
+import com.exception.ExcecaoDeJSP;
+import com.model.MetodoPagamento;
+import com.model.Pagamento;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/area-restrita/pagamentos")
 public class PagamentoServlet extends HttpServlet {
