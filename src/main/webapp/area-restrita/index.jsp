@@ -3,7 +3,7 @@
 <html lang="pt-BR">
 
 <head>
-  <title>Home | Área Restrita</title>
+  <title>IARA | Área Restrita</title>
   <link rel="stylesheet" href="/styles/area-restrita.css">
   <link rel="stylesheet" href="/styles/crud_geral.css">
   <link rel="icon" href="../assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">

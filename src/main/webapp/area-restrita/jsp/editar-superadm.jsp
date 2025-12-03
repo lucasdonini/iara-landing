@@ -8,7 +8,7 @@
 <html>
 
 <head>
-    <title>Editar Super ADM | Área Restrita</title>
+    <title>IARA | Editar Super ADM</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/editar-superadm.css">
     <link rel="icon"
           href="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">

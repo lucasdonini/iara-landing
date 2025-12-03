@@ -15,7 +15,7 @@
 <html>
 
 <head>
-    <title>Editar Usuário | Área Restrita</title>
+    <title>IARA | Editar Usuário</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/editar-usuario.css">
     <link rel="icon"
           href="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">

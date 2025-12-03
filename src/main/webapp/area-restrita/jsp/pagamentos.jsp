@@ -20,7 +20,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagamentos | Área Restrita</title>
+    <title>IARA | Pagamentos</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/planos.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/crud_geral.css">
     <link rel="icon"

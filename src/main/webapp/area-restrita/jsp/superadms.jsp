@@ -10,7 +10,7 @@
 <html lang="pt-BR">
 
 <head>
-    <title>Super Administradores | Área Restrita</title>
+    <title>IARA | Super Administradores</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/superadms.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/crud_geral.css">
     <link rel="icon" href="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">

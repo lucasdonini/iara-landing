@@ -14,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planos | Área Restrita</title>
+    <title>IARA | Planos</title>
     <link rel="icon"
           href="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/planos.css">

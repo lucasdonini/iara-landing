@@ -13,7 +13,7 @@
 <html lang="pt-BR">
 
 <head>
-    <title>Editar Pagamento | Área Restrita</title>
+    <title>IARA | Editar Pagamento</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/editar-pagamento.css">
     <link rel="icon"
           href="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">

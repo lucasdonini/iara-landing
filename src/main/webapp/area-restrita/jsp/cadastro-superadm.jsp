@@ -7,7 +7,7 @@
 <html lang="pt-BR">
 
 <head>
-    <title>Cadastrar Super ADM | Área Restrita</title>
+    <title>IARA | Cadastrar Super ADM</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/cadastro-superadm.css">
     <link rel="icon"
           href="${pageContext.request.contextPath}/assets/IARA%20-%20Imagens%20Landing/Geral/Mascote%20IARA.png">
